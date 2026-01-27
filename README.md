@@ -147,3 +147,5 @@ npm run dev
 
 **部署目标**
 - AWS (CloudFront + S3 + ECS)
+
+## 第一个开发 账号是  wotlos@moddv.com
