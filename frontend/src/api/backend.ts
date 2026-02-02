@@ -3,31 +3,32 @@
  * Connects to the Node.js backend for AI generation
  */
 
-const API_BASE_URL = 'http://127.0.0.1:3000'
+const API_BASE_URL = "http://127.0.0.1:3000";
 
 // Types from backend/src/server.js
 export interface GenerateCharacterRequest {
-  photo: string // base64 string
-  childName: string
-  childAge: number
-  theme: string
+  photo: string; // base64 string
+  childName: string;
+  childAge: number;
+  theme: string;
+  gender: string; // '男' | '女'
 }
 
 export interface GenerateCharacterResponse {
-  imageUrl: string
+  imageUrl: string;
 }
 
 export interface GenerateStoryRequest {
-  characterName: string
-  childAge: number
-  theme: string
-  preferences?: string
+  characterName: string;
+  childAge: number;
+  theme: string;
+  preferences?: string;
 }
 
 export interface StoryResponse {
-  title: string
-  content: string
-  sections: string[]
+  title: string;
+  content: string;
+  sections: string[];
 }
 
 /**
@@ -40,38 +41,38 @@ export interface StoryResponse {
  * Upload photo response
  */
 export interface UploadPhotoResponse {
-  success: boolean
-  img_url?: string
-  error?: string
+  success: boolean;
+  img_url?: string;
+  error?: string;
 }
 
 /**
  * Compose story request
  */
 export interface ComposeRequest {
-  child_name: string
-  gender: string // '男' | '女'
-  age?: number
-  theme: string // '森林冒险' | '太空冒险' | '海洋探险' | '超级英雄'
-  img_url: string
+  child_name: string;
+  gender: string; // '男' | '女'
+  age?: number;
+  theme: string; // '森林冒险' | '太空冒险' | '海洋探险' | '超级英雄'
+  img_url: string;
 }
 
 /**
  * Compose story response
  */
 export interface ComposeResponse {
-  success: boolean
-  message?: string
-  story_id?: string
+  success: boolean;
+  message?: string;
+  story_id?: string;
   data?: {
-    child_name: string
-    gender: string
-    age?: number
-    theme: string
-    img_url: string
-    status: string
-  }
-  error?: string
+    child_name: string;
+    gender: string;
+    age?: number;
+    theme: string;
+    img_url: string;
+    status: string;
+  };
+  error?: string;
 }
 
 /**
@@ -80,29 +81,29 @@ export interface ComposeResponse {
  */
 export async function uploadPhoto(file: File): Promise<string> {
   try {
-    const formData = new FormData()
-    formData.append('photo', file)
+    const formData = new FormData();
+    formData.append("photo", file);
 
     const response = await fetch(`${API_BASE_URL}/api/upload-photo`, {
-      method: 'POST',
-      body: formData  // Don't set Content-Type header, let browser set it with boundary
-    })
+      method: "POST",
+      body: formData, // Don't set Content-Type header, let browser set it with boundary
+    });
 
     if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || `Server error: ${response.status}`)
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Server error: ${response.status}`);
     }
 
-    const data: UploadPhotoResponse = await response.json()
+    const data: UploadPhotoResponse = await response.json();
 
     if (!data.success || !data.img_url) {
-      throw new Error(data.error || 'Upload failed')
+      throw new Error(data.error || "Upload failed");
     }
 
-    return data.img_url
+    return data.img_url;
   } catch (error) {
-    console.error('Photo upload failed:', error)
-    throw error
+    console.error("Photo upload failed:", error);
+    throw error;
   }
 }
 
@@ -112,23 +113,23 @@ export async function uploadPhoto(file: File): Promise<string> {
 export async function composeStory(request: ComposeRequest): Promise<ComposeResponse> {
   try {
     const response = await fetch(`${API_BASE_URL}/api/compose`, {
-      method: 'POST',
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(request)
-    })
+      body: JSON.stringify(request),
+    });
 
     if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || `Server error: ${response.status}`)
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Server error: ${response.status}`);
     }
 
-    const data: ComposeResponse = await response.json()
-    return data
+    const data: ComposeResponse = await response.json();
+    return data;
   } catch (error) {
-    console.error('Compose story failed:', error)
-    throw error
+    console.error("Compose story failed:", error);
+    throw error;
   }
 }
 
@@ -137,24 +138,24 @@ export async function composeStory(request: ComposeRequest): Promise<ComposeResp
  */
 export async function generateCharacter(request: GenerateCharacterRequest): Promise<string> {
   try {
-    const response = await fetch('/api/stories/generate-character', {
-      method: 'POST',
+    const response = await fetch("/api/stories/generate-character", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(request)
-    })
+      body: JSON.stringify(request),
+    });
 
     if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || `Server error: ${response.status}`)
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Server error: ${response.status}`);
     }
 
-    const data: GenerateCharacterResponse = await response.json()
-    return data.imageUrl
+    const data: GenerateCharacterResponse = await response.json();
+    return data.imageUrl;
   } catch (error) {
-    console.error('Character generation failed:', error)
-    throw error
+    console.error("Character generation failed:", error);
+    throw error;
   }
 }
 
@@ -163,23 +164,23 @@ export async function generateCharacter(request: GenerateCharacterRequest): Prom
  */
 export async function generateStory(request: GenerateStoryRequest): Promise<StoryResponse> {
   try {
-    const response = await fetch('/api/stories/generate-story', {
-      method: 'POST',
+    const response = await fetch("/api/stories/generate-story", {
+      method: "POST",
       headers: {
-        'Content-Type': 'application/json'
+        "Content-Type": "application/json",
       },
-      body: JSON.stringify(request)
-    })
+      body: JSON.stringify(request),
+    });
 
     if (!response.ok) {
-      const errorData = await response.json()
-      throw new Error(errorData.error || `Server error: ${response.status}`)
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Server error: ${response.status}`);
     }
 
-    const data: StoryResponse = await response.json()
-    return data
+    const data: StoryResponse = await response.json();
+    return data;
   } catch (error) {
-    console.error('Story generation failed:', error)
-    throw error
+    console.error("Story generation failed:", error);
+    throw error;
   }
 }
