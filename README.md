@@ -30,10 +30,10 @@ brushbuddy-h5/
 │   ├── src/
 │   │   ├── pages/
 │   │   │   ├── home/                    # 首页 (新/老用户状态)
-│   │   │   ├── create-story/            # 创建绘本流程 (5步)
+│   │   │   ├── create/                  # 创建绘本流程 (3步)
 │   │   │   └── brushing/                # 沉浸式刷牙页面
 │   │   ├── api/
-│   │   │   └── gemini.ts                # Gemini API 集成
+│   │   │   └── backend.ts               # 后端 API 集成
 │   │   └── router/
 │   └── package.json
 │
@@ -50,10 +50,10 @@ brushbuddy-h5/
 
 | 模块 | 功能 | 状态 |
 |------|------|------|
-| **首页** | 新用户/老用户状态切换 | ✅ |
-| **创建绘本** | 5步流程 (角色→照片→信息→预览→隐私) | ✅ |
+| **首页** | 新用户/老用户状态切换，视频自动播放 | ✅ |
+| **创建绘本** | 3步流程 (照片信息→主题选择→预览确认) | ✅ |
 | **刷牙页面** | 2分钟计时，每30秒切换区域 | ✅ |
-| **Gemini AI** | 角色生成 + 故事生成 | ✅ (需API Key) |
+| **AI接口** | 角色生成 + 故事生成 (API预留) | ✅ |
 | **支付接口** | PayPal + Apple IAP 预留 | ✅ |
 
 ---
@@ -71,20 +71,18 @@ npm run dev
 ```bash
 cd backend
 npm install
-cp .env.example .env  # 配置 Gemini API Key
+cp .env.example .env  # 配置 API Key
 npm run dev
 ```
 
 ---
 
-## 🔑 配置 Gemini API
+## 🎨 UI设计
 
-1. 访问 [Google AI Studio](https://makersuite.google.com/app/apikey) 获取 API Key
-2. 在 `backend/.env` 中配置:
-   ```
-   GEMINI_API_KEY=你的API密钥
-   ```
-3. 重启后端服务器
+- **容器尺寸**: 390×844px (移动端标准)
+- **设计资源**: PNG + CSS (不使用SVG)
+- **首页**: 3张背景图轮播 + 视频自动播放
+- **创建页**: 分步骤表单 + 预览功能
 
 ---
 
@@ -98,25 +96,6 @@ npm run dev
 - `POST /api/payments/apple-iap/verify` - 验证收据
 
 > 注：支付接口已预留，等待后续实现
-
----
-
-## 📱 页面对应关系 (严格按照PRD)
-
-| PRD章节 | 页面 | 文件 |
-|---------|------|------|
-| 3.2 | 首页 | `pages/home/HomeView.vue` |
-| 3.3 | 创建绘本流程 | `pages/create-story/CreateStoryView.vue` |
-| 3.5 | 沉浸式刷牙页面 | `pages/brushing/BrushingView.vue` |
-
----
-
-## 🎨 UI规范
-
-- **背景色**: `#FFF9F0` → `#FFF5E6` (渐变)
-- **主色调**: `#FF6B6B` (珊瑚红)
-- **字体**: Comic Sans MS / Chalkboard SE
-- **圆角**: 16-24px
 
 ---
 
@@ -146,6 +125,11 @@ npm run dev
 - CORS支持
 
 **部署目标**
-- AWS (CloudFront + S3 + ECS)
+- Vercel / Netlify (前端)
+- AWS (后端)
 
-## 第一个开发 账号是  wotlos@moddv.com
+---
+
+## 第一个开发账号
+
+wotlos@moddv.com
