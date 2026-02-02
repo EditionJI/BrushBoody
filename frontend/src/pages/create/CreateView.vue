@@ -129,45 +129,40 @@
         <img src="/images/创建页/Create a story.png" alt="Create a story" class="title-image" />
       </div>
 
-      <!-- Main Content Area -->
-      <div class="preview-main-content">
-        <!-- Title Label -->
-        <img src="/images/创建页/Previewing_ page 1.png" alt="Previewing page 1" class="preview-title" />
+      <!-- Title Label -->
+      <img src="/images/创建页/Previewing_ page 1.png" alt="Previewing page 1" class="preview-title" />
 
-        <!-- Preview Image Area -->
-        <div class="preview-image-container">
-          <img
-            v-if="uploadedPhoto"
-            :src="uploadedPhoto"
-            alt="Preview"
-            class="preview-image"
-          />
-          <img
-            v-else
-            src="/images/首页/背景.png"
-            alt="Placeholder"
-            class="preview-placeholder"
-          />
-          <img src="/images/创建页/Mask group.png" alt="Mask" class="preview-mask" />
-        </div>
-
-        <!-- Question Label -->
-        <img src="/images/创建页/Does the character and story style look correct_.png" alt="Question" class="preview-question" />
+      <!-- Preview Image Area -->
+      <div class="preview-image-container">
+        <img
+          v-if="uploadedPhoto"
+          :src="uploadedPhoto"
+          alt="Preview"
+          class="preview-image"
+        />
+        <img
+          v-else
+          src="/images/首页/背景.png"
+          alt="Placeholder"
+          class="preview-placeholder"
+        />
+        <img src="/images/创建页/Mask group.png" alt="Mask" class="preview-mask" />
       </div>
 
-      <!-- Public Toggle - Moved outside preview-main-content for correct positioning -->
-      <div class="public-toggle-container">
-        <span class="public-label">Public: Others can read this book.</span>
-        <div class="toggle-switch" :class="{ active: isPublic }" @click="togglePublic">
-          <div class="toggle-knob"></div>
+      <!-- Input Section PNG (Question + Two Buttons) -->
+      <img src="/images/创建页/输入框1.png" alt="Input section" class="input-section-png" />
+
+      <!-- Clickable overlays for buttons -->
+      <div class="create-button-overlay" @click="handleConfirm"></div>
+      <div class="regenerate-button-overlay" @click="handleRegenerateCover"></div>
+
+      <!-- Public Toggle (主按钮) - Separate element with text and toggle -->
+      <div class="public-toggle-main">
+        <span class="public-toggle-label">Public: Others can read this book.</span>
+        <div class="public-toggle-switch" :class="{ active: isPublic }" @click="togglePublic">
+          <div class="public-toggle-knob"></div>
         </div>
       </div>
-
-      <!-- Create Book Button -->
-      <img src="/images/创建页/创建绘本.png" alt="Create book" class="create-book-button" @click="handleConfirm" />
-
-      <!-- Regenerate Preview Button -->
-      <img src="/images/创建页/重新预览.png" alt="Regenerate preview" class="regenerate-button" @click="handleRegenerateCover" />
 
       <!-- Home Indicator -->
       <div class="home-indicator"></div>
@@ -1289,22 +1284,29 @@ const updatePreviewImage = (imageSrc: string) => {
   position: relative;
 }
 
-/* Preview Main Content */
-.preview-main-content {
+/* Preview Image Container - According to CSS: top: 156px, left: 24px, height: 257px */
+.preview-image-container {
+  position: absolute;
+  left: 24px;
+  top: 156px;
+  width: 343px;
+  height: 257px;
+  background: #EAF6FF;
+  border: 1px solid rgba(105, 105, 105, 0.25);
+  border-radius: 16px;
+  overflow: hidden;
+}
+
+/* Preview Title - According to CSS: position absolute, top: 124px, left: 24px, height: 22px */
+.preview-title {
   position: absolute;
   left: 24px;
   top: 124px;
   width: 343px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* Preview Title */
-.preview-title {
+  height: 22px;
   display: block;
-  width: 343px;
-  height: auto;
+  object-fit: contain;
+  object-position: left;
 }
 
 /* Preview Image Container */
@@ -1334,21 +1336,46 @@ const updatePreviewImage = (imageSrc: string) => {
   pointer-events: none;
 }
 
-/* Preview Question */
-.preview-question {
-  display: block;
+/* Input Section PNG (Question + Two Buttons) - According to CSS: top: 553px, height: 182px */
+.input-section-png {
+  position: absolute;
+  left: 24px;
+  top: 553px;
   width: 343px;
-  height: auto;
-  margin-top: 16px;
+  height: 182px;
+  display: block;
+  object-fit: contain;
 }
 
-/* Public Toggle Container */
-.public-toggle-container {
+/* Create Button Overlay (Clickable Area) - Inside 输入框1 */
+.create-button-overlay {
   position: absolute;
-  width: 343px;
-  height: 68px;
+  left: 24px;
+  top: 607px;
+  width: 342px;
+  height: 56px;
+  cursor: pointer;
+  z-index: 20;
+}
+
+/* Regenerate Button Overlay (Clickable Area) - Inside 输入框1 */
+.regenerate-button-overlay {
+  position: absolute;
+  left: 24px;
+  top: 679px;
+  width: 342px;
+  height: 56px;
+  cursor: pointer;
+  z-index: 20;
+}
+
+/* Public Toggle Main (主按钮) - According to CSS: bottom: 327px, height: 68px */
+.public-toggle-main {
+  position: absolute;
   left: 23px;
   bottom: 327px;
+  width: 343px;
+  height: 68px;
   background: #FFFFFF;
   border: 1px solid rgba(105, 105, 105, 0.25);
   border-radius: 12px;
@@ -1360,8 +1387,12 @@ const updatePreviewImage = (imageSrc: string) => {
   box-sizing: border-box;
 }
 
-.public-label {
-  flex: 1;
+/* Public Toggle Label */
+.public-toggle-label {
+  flex: none;
+  order: 0;
+  width: 252px;
+  height: 20px;
   font-family: 'PingFang SC';
   font-style: normal;
   font-weight: 500;
@@ -1370,58 +1401,37 @@ const updatePreviewImage = (imageSrc: string) => {
   color: #FF9718;
 }
 
-.toggle-switch {
+/* Public Toggle Switch */
+.public-toggle-switch {
+  position: relative;
+  flex: none;
+  order: 1;
   width: 51px;
   height: 30px;
   background: #B4B4B4;
   border-radius: 100px;
-  position: relative;
   cursor: pointer;
   transition: background 0.3s ease;
-  flex-shrink: 0;
 }
 
-.toggle-switch.active {
+.public-toggle-switch.active {
   background: #4A90E2;
 }
 
-.toggle-knob {
+/* Public Toggle Knob */
+.public-toggle-knob {
   position: absolute;
   width: 26px;
   height: 26px;
-  right: 2px;
-  top: 2px;
+  right: 23px;
+  top: calc(50% - 26px/2);
   background: #FFFFFF;
-  border-radius: 100px;
   box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.04), 0px 3px 8px rgba(0, 0, 0, 0.15), 0px 3px 1px rgba(0, 0, 0, 0.06);
+  border-radius: 100px;
   transition: right 0.3s ease;
 }
 
-.toggle-switch.active .toggle-knob {
-  right: 23px;
-}
-
-/* Create Book Button */
-.create-book-button {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 646px;
-  width: 342px;
-  height: 56px;
-  cursor: pointer;
-  z-index: 10;
-}
-
-/* Regenerate Preview Button */
-.regenerate-button {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 718px;
-  width: 342px;
-  height: 56px;
-  cursor: pointer;
-  z-index: 10;
+.public-toggle-switch.active .public-toggle-knob {
+  right: 2px;
 }
 </style>
