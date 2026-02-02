@@ -1,0 +1,356 @@
+/* 底部栏 */
+
+position: absolute;
+width: 390px;
+height: 88px;
+left: 0px;
+bottom: 0px;
+
+
+
+/* bar */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 61.36%;
+bottom: 0%;
+
+
+
+/* 🌈bg */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 61.36%;
+bottom: 0%;
+
+
+
+/* 矩形 */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 61.36%;
+bottom: 0%;
+
+background: #FFFFFF;
+
+
+/* Rectangle 24 */
+
+position: absolute;
+left: 32.82%;
+right: 32.82%;
+top: 84.09%;
+bottom: 10.23%;
+
+background: #000000;
+border-radius: 100px;
+
+
+/* bak */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 38.64%;
+
+background: #FFFFFF;
+
+
+/* 分割线 */
+
+position: absolute;
+visibility: hidden;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 100%;
+
+/* 线 */
+border: 0.5px solid #E6E6E6;
+
+
+/* 图标 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 52px;
+
+position: absolute;
+width: 332px;
+height: 43px;
+left: calc(50% - 332px/2);
+top: calc(50% - 43px/2 - 12.5px);
+
+
+
+/* 01 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 4px;
+
+width: 44px;
+height: 43px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Frame */
+
+width: 24px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+width: 22px;
+height: 22px;
+left: calc(50% - 22px/2);
+top: calc(50% - 22px/2);
+
+/* 主色 */
+background: #1484FF;
+
+
+/* 首页 */
+
+width: 31px;
+height: 15px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 11px;
+line-height: 15px;
+text-align: center;
+
+/* 主色 */
+color: #1484FF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* 7 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 4px;
+
+width: 44px;
+height: 41px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* plus-circle
+
+plus, add, addition, calculate, mathematics, circle
+*/
+
+width: 24px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Icon */
+
+position: absolute;
+left: 8.33%;
+right: 8.33%;
+top: 8.33%;
+bottom: 8.33%;
+
+border: 2px solid #ADADB7;
+
+
+/* 首页 */
+
+width: 35px;
+height: 13px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 11px;
+line-height: 13px;
+text-align: center;
+
+/* 正文01 */
+color: #8E8E9D;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* 6 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 4px;
+
+width: 44px;
+height: 41px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* 底部Tab栏
+
+file, attachment, text, paper, pdf, report
+*/
+
+width: 24px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Icon */
+
+position: absolute;
+left: 16.67%;
+right: 16.67%;
+top: 8.33%;
+bottom: 8.33%;
+
+border: 2px solid #ADADB7;
+
+
+/* 首页 */
+
+width: 44px;
+height: 13px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 11px;
+line-height: 13px;
+text-align: center;
+
+/* 正文01 */
+color: #8E8E9D;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 5 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 4px;
+
+width: 44px;
+height: 41px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* 底部Tab栏 */
+
+width: 24px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Icon */
+
+position: absolute;
+left: 12.5%;
+right: 12.5%;
+top: 12.5%;
+bottom: 16.67%;
+
+border: 2px solid #ADADB7;
+
+
+/* 首页 */
+
+width: 40px;
+height: 13px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 11px;
+line-height: 13px;
+text-align: center;
+
+/* 正文01 */
+color: #8E8E9D;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;

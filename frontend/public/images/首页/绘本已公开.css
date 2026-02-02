@@ -1,0 +1,55 @@
+/* 绘本已公开 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 4px 12px;
+gap: 6px;
+
+position: absolute;
+width: 209px;
+height: 23px;
+left: 0px;
+top: 66px;
+
+background: linear-gradient(90deg, rgba(255, 251, 239, 0.6) -15.31%, #FFE27C 108.61%);
+border-radius: 0px 12px 12px 0px;
+
+
+/* alert-circle
+
+alert, circle, warning, error
+*/
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Shared with parental permission */
+
+width: 185px;
+height: 15px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+/* identical to box height */
+
+color: #222222;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;

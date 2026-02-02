@@ -1,64 +1,170 @@
 <template>
   <div class="home-container">
-    <div
-      class="mobile-wrapper"
-      @touchstart="handleTouchStart"
-      @touchmove="handleTouchMove"
-      @touchend="handleTouchEnd"
-    >
-      <!-- Slides Container - Vertical scroll -->
-      <div class="slides-wrapper" :style="{ transform: `translateY(-${currentSlide * 100}%)` }">
-        <div v-for="(image, index) in homeImages" :key="index" class="slide">
-          <img :src="image" :alt="`首页${index + 1}`" class="slide-full-image" />
-        </div>
+    <div class="mobile-wrapper" ref="wrapperRef">
+      <!-- Background Image - Changes based on current slide (3 backgrounds) -->
+      <img
+        :src="currentBackgroundImage"
+        alt="Home"
+        class="full-screen-image"
+        @load="onBgImageLoad"
+      />
+
+      <!-- Streak Days Banner - Only for users with brushing records, hidden when video plays -->
+      <div v-if="showStreakBanner && !shouldPlayVideo" class="streak-banner">
+        <span class="streak-count">{{ streakCount }} 天</span>
+        <span class="streak-message">连续刷牙</span>
       </div>
 
-      <!-- Dots Indicator (right side) -->
-      <div class="dots-indicator-vertical">
-        <span
-          v-for="(_, index) in homeImages"
-          :key="index"
-          class="dot"
-          :class="{ active: index === currentSlide }"
-          @click.stop="goToSlide(index)"
-        ></span>
+      <!-- Public Badge - Fixed at top left, hidden when video plays -->
+      <img
+        v-if="!shouldPlayVideo"
+        src="/images/首页/绘本已公开.png"
+        alt="Public"
+        class="public-badge"
+      />
+
+      <!-- Video Screen Interaction Area - Full background size for video playback -->
+      <div
+        class="story-card-area"
+        @touchstart="handleTouchStart"
+        @touchmove="handleTouchMove"
+        @touchend="handleTouchEnd"
+        @click="handleVideoClick"
+      >
+        <!-- Video player (shown when shouldPlayVideo is true) -->
+        <video
+          v-if="shouldPlayVideo && currentVideoUrl"
+          ref="videoPlayer"
+          :src="currentVideoUrl"
+          class="story-video"
+          loop
+          playsinline
+          @click.prevent
+        ></video>
+
+        <!-- Pause button - shown when video is paused -->
+        <img
+          v-if="shouldPlayVideo && isVideoPaused"
+          src="/images/首页/Vector.png"
+          alt="Pause"
+          class="pause-button"
+        />
       </div>
 
-      <!-- Bottom Menu Click Areas - 4 icons from UI -->
-      <div class="bottom-menu">
-        <div class="menu-click-area home-menu" @click.stop="goToHome"></div>
-        <div class="menu-click-area create-menu" @click.stop="goToCreate"></div>
-        <div class="menu-click-area stories-menu" @click.stop="goToStories"></div>
-        <div class="menu-click-area parents-menu" @click.stop="goToParents"></div>
+      <!-- Toast Message - Fixed above bottom nav, hidden when video plays -->
+      <img
+        v-if="!shouldPlayVideo"
+        src="/images/首页/提示信息.png"
+        alt="Toast"
+        class="toast-message"
+      />
+
+      <!-- Create Button - Blue L button, hidden when video plays -->
+      <img
+        v-if="!isPaidUser && !shouldPlayVideo"
+        src="/images/首页/L.png"
+        alt="Create"
+        class="create-button"
+        @click="goToCreate"
+      />
+
+      <!-- Bottom Navigation - Fixed at bottom -->
+      <img
+        src="/images/首页/底部栏.png"
+        alt="Bottom Nav"
+        class="bottom-nav"
+      />
+      <div class="bottom-nav-area">
+        <div class="nav-item home" @click="goToHome"></div>
+        <div class="nav-item create" @click="goToCreate"></div>
+        <div class="nav-item stories" @click="goToStories"></div>
+        <div class="nav-item parents" @click="goToParents"></div>
       </div>
-
-      <!-- Create button click area (for new user) -->
-      <div v-if="currentSlide === 0" class="create-button-area" @click.stop="goToCreate"></div>
-
-      <!-- Story card click areas -->
-      <div v-if="currentSlide === 0" class="story-card-area" @click.stop="viewStory"></div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed } from 'vue'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
 import { useRouter } from 'vue-router'
+import { useUserStore } from '../../stores/user'
 
 const router = useRouter()
+const userStore = useUserStore()
 
+const wrapperRef = ref<HTMLElement | null>(null)
 const currentSlide = ref(0)
+const disableTransition = ref(false)
 
-const homeImages = computed(() => {
-  return [
-    '/images/home-new-user-1.png',
-    '/images/home-new-user-2.png',
-    '/images/home-new-user-3.png'
-  ]
+// Auto-play video state
+const shouldPlayVideo = ref(false)
+const autoPlayTimer = ref<number | null>(null)
+const videoPlayer = ref<HTMLVideoElement | null>(null)
+const hasUserInteracted = ref(false)
+
+// Video pause state
+const isVideoPaused = ref(false)
+
+// New home backgrounds (3 backgrounds for sliding)
+const homeBackgrounds = [
+  '/images/首页/背景.png',
+  '/images/首页/背景2.png',
+  '/images/首页/背景3.png'
+]
+
+// Paid user background (old user)
+const paidUserBackground = '/SVG/home-old-user.svg'
+
+// Video paths corresponding to each background
+const newUserStoryVideos = [
+  '/images/home-new-user-1.mp4',
+  '/images/home-new-user-2.mp4',
+  '/images/home-new-user-3.mp4'
+]
+
+const paidUserStoryVideos = [
+  '/images/home-old-user.mp4'
+]
+
+// Total stories count based on user type
+const totalStories = computed(() => {
+  return isPaidUser.value ? 1 : 3
 })
 
+// Current background image based on user state and slide
+const currentBackgroundImage = computed(() => {
+  if (isPaidUser.value) {
+    return paidUserBackground
+  }
+  const index = ((currentSlide.value % 3) + 3) % 3
+  return homeBackgrounds[index] || homeBackgrounds[0]
+})
+
+const streakCount = computed(() => userStore.streakCount)
+const isPaidUser = computed(() => userStore.isPaidUser)
+
+// Check if user has brushing records (old user)
+const hasBrushingRecords = computed(() => userStore.brushingRecords.length > 0)
+
+// Show streak banner for users with brushing records
+const showStreakBanner = computed(() => hasBrushingRecords.value && streakCount.value > 0)
+
+// Get current video URL based on user state and current slide
+const currentVideoUrl = computed(() => {
+  const total = totalStories.value
+  const actualIndex = ((currentSlide.value % total) + total) % total
+  const videos = isPaidUser.value ? paidUserStoryVideos : newUserStoryVideos
+  return videos[actualIndex] || ''
+})
+
+// Navigation
 const goToHome = () => {
-  currentSlide.value = 0
+  const total = totalStories.value
+  disableTransition.value = true
+  currentSlide.value = total
+  setTimeout(() => {
+    disableTransition.value = false
+  }, 50)
 }
 
 const goToCreate = () => {
@@ -73,47 +179,211 @@ const goToParents = () => {
   router.push('/parents')
 }
 
-const viewStory = () => {
-  router.push('/stories')
+// Story card click handler
+const handleSlideClick = (index: number) => {
+  router.push({
+    path: '/brushing',
+    query: { source: 'home', storyIndex: index }
+  })
 }
 
-const goToSlide = (index: number) => {
-  currentSlide.value = index
+// Video click handler - toggle play/pause
+const handleVideoClick = () => {
+  // If it's a swipe, don't handle click
+  if (isSwipe.value) {
+    return
+  }
+
+  // If video is not playing yet, navigate to brushing page
+  if (!shouldPlayVideo.value) {
+    const total = totalStories.value
+    const actualIndex = ((currentSlide.value % total) + total) % total
+    handleSlideClick(actualIndex)
+    return
+  }
+
+  // Toggle video play/pause
+  if (videoPlayer.value) {
+    if (isVideoPaused.value) {
+      // Resume video
+      videoPlayer.value.play()
+      isVideoPaused.value = false
+    } else {
+      // Pause video
+      videoPlayer.value.pause()
+      isVideoPaused.value = true
+    }
+  }
 }
 
-// Touch swipe support for vertical scrolling
-let touchStartY = 0
-let touchCurrentY = 0
+// Background image load handler
+const onBgImageLoad = () => {
+  // Image loaded successfully, start auto-play timer
+  startAutoPlayTimer()
+}
+
+// Start 1.5-second auto-play timer
+const startAutoPlayTimer = () => {
+  // Clear any existing timer
+  stopAutoPlayTimer()
+
+  // Start new 1.5-second timer
+  autoPlayTimer.value = window.setTimeout(() => {
+    shouldPlayVideo.value = true
+    isVideoPaused.value = false
+    // Auto play video when it's ready
+    nextTick(() => {
+      if (videoPlayer.value) {
+        // Try to play with sound, if user has interacted
+        // Otherwise it will fail silently and user needs to click
+        videoPlayer.value.play().catch(err => {
+          console.log('Auto-play failed (expected if no user interaction yet):', err)
+          // If auto-play fails, video is still loaded and will play when user clicks
+        })
+      }
+    })
+  }, 1500)
+}
+
+// Stop auto-play timer
+const stopAutoPlayTimer = () => {
+  if (autoPlayTimer.value !== null) {
+    clearTimeout(autoPlayTimer.value)
+    autoPlayTimer.value = null
+  }
+  shouldPlayVideo.value = false
+  isVideoPaused.value = false
+
+  // Pause video if playing
+  if (videoPlayer.value) {
+    videoPlayer.value.pause()
+    videoPlayer.value.currentTime = 0
+  }
+}
+
+// Reset timer on user interaction
+const resetAutoPlayTimer = () => {
+  stopAutoPlayTimer()
+  startAutoPlayTimer()
+}
+
+// Touch and swipe handling with circular navigation
+const isSwipe = ref(false)
+const hasMoved = ref(false)
+const touchStartY = ref(0)
+const touchStartTime = ref(0)
+const touchStartX = ref(0)
 
 const handleTouchStart = (e: TouchEvent) => {
-  touchStartY = e.touches[0].clientY
+  touchStartY.value = e.touches[0].clientY
+  touchStartX.value = e.touches[0].clientX
+  touchStartTime.value = Date.now()
+  isSwipe.value = false
+  hasMoved.value = false
+
+  // Mark that user has interacted with the page
+  if (!hasUserInteracted.value) {
+    hasUserInteracted.value = true
+    console.log('User interacted, future videos can play with sound')
+  }
 }
 
 const handleTouchMove = (e: TouchEvent) => {
-  touchCurrentY = e.touches[0].clientY
-}
+  // Prevent default to avoid page scrolling
+  e.preventDefault()
 
-const handleTouchEnd = () => {
-  const swipeThreshold = 50
-  const diff = touchStartY - touchCurrentY
+  const currentY = e.touches[0].clientY
+  const currentX = e.touches[0].clientX
+  const deltaY = Math.abs(currentY - touchStartY.value)
+  const deltaX = Math.abs(currentX - touchStartX.value)
 
-  if (Math.abs(diff) > swipeThreshold) {
-    if (diff > 0) {
-      // Swipe up - next slide
-      if (currentSlide.value < homeImages.value.length - 1) {
-        currentSlide.value++
-      }
-    } else {
-      // Swipe down - previous slide
-      if (currentSlide.value > 0) {
-        currentSlide.value--
-      }
-    }
+  // If vertical movement is more than 5px, mark as moved
+  if (deltaY > 5 || deltaX > 5) {
+    hasMoved.value = true
   }
 
-  touchStartY = 0
-  touchCurrentY = 0
+  // If vertical movement is more than 20px, mark as potential swipe
+  if (deltaY > 20) {
+    isSwipe.value = true
+  }
 }
+
+const handleTouchEnd = (e: TouchEvent) => {
+  const touchDuration = Date.now() - touchStartTime.value
+  const touchEndY = e.changedTouches[0].clientY
+  const touchEndX = e.changedTouches[0].clientX
+  const diffY = touchStartY.value - touchEndY
+  const diffX = touchStartX.value - touchEndX
+  const absDiffY = Math.abs(diffY)
+  const absDiffX = Math.abs(diffX)
+
+  // Distinguish between tap and swipe
+  const SWIPE_THRESHOLD = 40
+  const TAP_MAX_DURATION = 300
+
+  if (absDiffY > SWIPE_THRESHOLD && absDiffY > absDiffX && touchDuration < 1000) {
+    // Vertical swipe - change slide with circular navigation (always smooth)
+    if (diffY > 0) {
+      // Swipe up - next slide
+      currentSlide.value++
+    } else if (diffY < 0) {
+      // Swipe down - previous slide
+      currentSlide.value--
+    }
+
+    // Reset position when we go too far (after animation completes)
+    // This keeps currentSlide in a reasonable range
+    setTimeout(() => {
+      const total = totalStories.value
+      if (currentSlide.value >= total * 2) {
+        disableTransition.value = true
+        currentSlide.value = currentSlide.value - total
+        setTimeout(() => {
+          disableTransition.value = false
+        }, 50)
+      } else if (currentSlide.value < -total) {
+        disableTransition.value = true
+        currentSlide.value = currentSlide.value + total
+        setTimeout(() => {
+          disableTransition.value = false
+        }, 50)
+      }
+    }, 350)
+  }
+
+  // Reset swipe state after a delay to prevent click from firing
+  if (isSwipe.value) {
+    // Keep isSwipe true for a bit to prevent click
+    setTimeout(() => {
+      isSwipe.value = false
+      hasMoved.value = false
+    }, 200)
+  } else {
+    // Immediately reset if no swipe
+    hasMoved.value = false
+  }
+}
+
+onMounted(() => {
+  // Load fresh user data
+  userStore.loadUserData()
+  // Initialize to middle position for smooth circular navigation
+  const total = totalStories.value
+  currentSlide.value = total
+
+  // Start auto-play timer manually (don't rely only on image load)
+  startAutoPlayTimer()
+})
+
+onUnmounted(() => {
+  // Cleanup timers
+  stopAutoPlayTimer()
+})
+
+// Watch for slide changes to reset timer
+watch(currentSlide, () => {
+  resetAutoPlayTimer()
+})
 </script>
 
 <style scoped>
@@ -122,7 +392,7 @@ const handleTouchEnd = () => {
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background: #FFF9F0;
+  background: #D9D9D9;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -130,107 +400,169 @@ const handleTouchEnd = () => {
 
 .mobile-wrapper {
   position: relative;
-  width: min(375px, 100vw, calc(100vh * 375 / 812));
-  aspect-ratio: 375 / 812;
-  height: min(100vh, calc(100vw * 812 / 375));
-  overflow: hidden; /* Hide overflow from slides */
+  width: 390px;
+  height: 844px;
+  overflow: hidden;
   background: white;
 }
 
-.slides-wrapper {
-  display: flex;
-  flex-direction: column;
+/* Full screen background image */
+.full-screen-image {
   width: 100%;
-  height: 100%; /* Match wrapper height */
-  transition: transform 0.3s ease;
-}
-
-.slide {
-  width: 100%;
-  height: 100%;
-  flex-shrink: 0;
-  position: relative;
-}
-
-.slide-full-image {
-  width: 100%;
-  height: 100%;
-  object-fit: contain; /* Contain to show full image without cropping */
-  display: block;
-}
-
-/* Dots Indicator - Right side, vertical */
-.dots-indicator-vertical {
-  position: absolute; /* Relative to mobile-wrapper */
-  right: 5%;
-  top: 50%;
-  transform: translateY(-50%);
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-  z-index: 20;
-}
-
-.dot {
-  width: 8px;
-  height: 8px;
-  border-radius: 50%;
-  background: rgba(0, 0, 0, 0.2);
-  transition: all 0.3s ease;
-  cursor: pointer;
-}
-
-.dot.active {
-  width: 8px;
-  height: 24px; /* Vertical active dot style */
-  border-radius: 4px;
-  background: rgba(255, 107, 107, 0.9);
-}
-
-/* Button click areas - Using percentage positioning */
-.create-button-area {
+  height: 756px;
   position: absolute;
-  bottom: 22%; /* Approx 180px / 812px */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 75%; /* 280px / 375px */
-  height: 7.5%; /* 60px / 812px */
-  z-index: 10;
-  cursor: pointer;
-  /* background: rgba(255, 0, 0, 0.2); Debug */
+  top: 0;
+  left: 0;
+  z-index: 1;
+  pointer-events: none;
+  object-fit: cover;
 }
 
+/* Streak Banner - for users with brushing records */
+.streak-banner {
+  position: absolute;
+  top: 5%;
+  left: 5%;
+  width: 90%;
+  height: 7%;
+  z-index: 10;
+  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  border-radius: 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 10px;
+  box-shadow: 0 4px 10px rgba(255, 165, 0, 0.3);
+  pointer-events: none;
+}
+
+.streak-count {
+  font-size: 28px;
+  font-weight: 800;
+  color: #fff;
+  text-shadow: 2px 2px 4px rgba(0, 0, 0, 0.2);
+}
+
+.streak-message {
+  font-size: 16px;
+  font-weight: 600;
+  color: #fff;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+}
+
+/* Public Badge - Top left yellow label */
+.public-badge {
+  position: absolute;
+  left: 0;
+  top: 66px;
+  width: 209px;
+  height: 23px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Story card click area - Match background image size */
 .story-card-area {
   position: absolute;
-  top: 22%; /* 180px / 812px */
-  left: 50%;
-  transform: translateX(-50%);
-  width: 85%; /* 320px / 375px */
-  height: 46%; /* 380px / 812px */
-  z-index: 10;
-  cursor: pointer;
-  /* background: rgba(0, 0, 255, 0.2); Debug */
-}
-
-/* Bottom Menu Click Areas */
-.bottom-menu {
-  position: absolute;
-  bottom: 0;
+  top: 0;
   left: 0;
   width: 100%;
-  height: 10%; /* Approx 80px / 812px */
-  display: flex;
-  z-index: 100;
-}
-
-.menu-click-area {
-  flex: 1;
-  height: 100%;
+  height: 756px;
+  z-index: 5;
   cursor: pointer;
-  background: transparent;
+  overflow: hidden;
 }
 
-.menu-click-area:active {
-  background: rgba(0, 0, 0, 0.05);
+.story-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  position: absolute;
+  top: 0;
+  left: 0;
+  pointer-events: none;
+}
+
+/* Pause button - Centered on video */
+.pause-button {
+  position: absolute;
+  left: calc(50% - 56px/2);
+  top: calc(50% - 56px/2);
+  width: 56px;
+  height: 56px;
+  z-index: 6;
+  pointer-events: none;
+}
+
+/* Toast Message - Above bottom nav */
+.toast-message {
+  position: absolute;
+  left: calc(50% - 295px/2 - 18.5px);
+  top: 638px;
+  width: 295px;
+  height: 38px;
+  z-index: 10;
+  pointer-events: none;
+}
+
+/* Create Button - Blue L button */
+.create-button {
+  position: absolute;
+  left: calc(50% - 342px/2);
+  top: 688px;
+  width: 342px;
+  height: 56px;
+  z-index: 10;
+  cursor: pointer;
+}
+
+/* Bottom Navigation Image */
+.bottom-nav {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 390px;
+  height: 88px;
+  z-index: 9;
+  pointer-events: none;
+}
+
+/* Bottom Navigation Click Areas (invisible, overlay) */
+.bottom-nav-area {
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: 100%;
+  height: 88px;
+  z-index: 10;
+}
+
+.nav-item {
+  position: absolute;
+  cursor: pointer;
+}
+
+.nav-item.home {
+  left: 5%;
+  width: 20%;
+  height: 100%;
+}
+
+.nav-item.create {
+  left: 30%;
+  width: 20%;
+  height: 100%;
+}
+
+.nav-item.stories {
+  left: 55%;
+  width: 20%;
+  height: 100%;
+}
+
+.nav-item.parents {
+  left: 80%;
+  width: 20%;
+  height: 100%;
 }
 </style>
