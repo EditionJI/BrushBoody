@@ -1,0 +1,863 @@
+/* Group 1321316082 */
+
+position: absolute;
+width: 390px;
+height: 844px;
+left: 2626px;
+top: 283px;
+
+
+
+/* Group 1321316080 */
+
+position: absolute;
+width: 390px;
+height: 844px;
+left: 2626px;
+top: 283px;
+
+
+
+/* 创建绘本（2/2） */
+
+position: absolute;
+width: 390px;
+height: 844px;
+left: 2626px;
+top: 283px;
+
+background: #FFFFFF;
+border: 4px solid #000000;
+border-radius: 24px;
+
+
+/* 顶部安全区 */
+
+position: absolute;
+width: 390px;
+height: 54px;
+left: 0px;
+top: 0px;
+
+
+
+/* Status Bar - iPhone */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+
+
+/* Time */
+
+position: absolute;
+height: 54px;
+left: 0%;
+right: 64.25%;
+top: calc(50% - 54px/2);
+
+
+
+/* Time */
+
+position: absolute;
+left: 38.39%;
+right: 37.94%;
+top: 33.96%;
+bottom: 25.3%;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 17px;
+line-height: 22px;
+/* identical to box height, or 129% */
+text-align: center;
+
+color: #000000;
+
+
+
+/* Levels */
+
+position: absolute;
+height: 54px;
+left: 64.25%;
+right: 0%;
+top: calc(50% - 54px/2);
+
+
+
+/* Battery */
+
+position: absolute;
+left: 58.09%;
+right: 22.31%;
+top: 42.59%;
+bottom: 33.33%;
+
+
+
+/* Border */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 25px;
+left: calc(50% - 25px/2 + 23.79px);
+top: 42.59%;
+bottom: 33.33%;
+
+mix-blend-mode: normal;
+opacity: 0.35;
+border: 1px solid #000000;
+border-radius: 4.3px;
+
+
+/* Cap */
+
+position: absolute;
+width: 1.33px;
+left: calc(50% - 1.33px/2 + 37.95px);
+top: 51.45%;
+bottom: 41.01%;
+
+background: #000000;
+mix-blend-mode: normal;
+opacity: 0.4;
+
+
+/* Capacity */
+
+position: absolute;
+width: 21px;
+left: calc(50% - 21px/2 + 23.79px);
+top: 46.3%;
+bottom: 37.04%;
+
+background: #000000;
+border-radius: 2.5px;
+
+
+/* Wifi */
+
+position: absolute;
+width: 17.14px;
+left: calc(50% - 17.14px/2 - 4.44px);
+top: 43.77%;
+bottom: 33.4%;
+
+background: #000000;
+
+
+/* Cellular Connection */
+
+position: absolute;
+width: 19.2px;
+left: calc(50% - 19.2px/2 - 30.11px);
+top: 43.58%;
+bottom: 33.77%;
+
+background: #000000;
+
+
+/* Rectangle 2 */
+
+position: absolute;
+visibility: hidden;
+left: 34.1%;
+right: 34.1%;
+top: 20.37%;
+bottom: 11.11%;
+
+background: #000000;
+border-radius: 100px;
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* 轮播 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 7px;
+
+position: absolute;
+visibility: hidden;
+width: 32px;
+height: 6px;
+left: 237px;
+top: 529px;
+
+
+
+/* Ellipse 2582 */
+
+width: 6px;
+height: 6px;
+
+background: #FFFFFF;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Ellipse 2583 */
+
+width: 6px;
+height: 6px;
+
+background: #D9D9D9;
+opacity: 0.5;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Ellipse 2584 */
+
+width: 6px;
+height: 6px;
+
+background: #D9D9D9;
+opacity: 0.5;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Frame 1000011905 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 6px;
+
+position: absolute;
+width: 88px;
+height: 117px;
+left: calc(50% - 88px/2 - 239px);
+top: calc(50% - 117px/2 + 0.5px);
+
+
+
+/* AI 机器人 */
+
+width: 88px;
+height: 88px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Ellipse 2593 */
+
+position: absolute;
+width: 88px;
+height: 88px;
+left: 0px;
+top: 0px;
+
+background: linear-gradient(170.91deg, #FFFFFF 6.9%, #B597DE 95.31%);
+box-shadow: inset 1.76px 1.76px 5.28px #FFFFFF;
+
+
+/* Ellipse 2594 */
+
+position: absolute;
+width: 88px;
+height: 88px;
+left: 0px;
+top: 0px;
+
+background: conic-gradient(from 166.43deg at 59.5% 57.5%, #A0C7FF 0deg, #FFFFFF 144.68deg, #A0C7FF 360deg);
+box-shadow: inset 1.76px 1.76px 5.28px #FFFFFF;
+
+
+/* Rectangle 3464941 */
+
+position: absolute;
+width: 66px;
+height: 42.24px;
+left: 10.56px;
+top: 22.88px;
+
+background: linear-gradient(150.64deg, #0C1015 0.56%, #0B0E14 75.87%);
+box-shadow: inset 0px 3.52px 1.76px #000000;
+border-radius: 24.64px;
+
+
+/* Group 1321315318 */
+
+position: absolute;
+width: 34.93px;
+height: 15.27px;
+left: calc(50% - 34.93px/2 - 0.13px);
+top: calc(50% - 15.27px/2 - 14.79px);
+
+
+
+/* Union */
+
+position: absolute;
+visibility: hidden;
+width: 10.93px;
+height: 14.89px;
+left: 50.87px;
+top: 36.26px;
+
+background: #F8FDF7;
+opacity: 0.6;
+
+
+/* Rectangle 3464943 */
+
+position: absolute;
+width: 7.92px;
+height: 12.32px;
+left: 49.28px;
+top: 34.63px;
+
+background: #F8FDF7;
+border-radius: 10.56px;
+transform: rotate(42.4deg);
+
+
+/* Rectangle 3464944 */
+
+position: absolute;
+width: 7.92px;
+height: 12.32px;
+left: 49.28px;
+top: 38.15px;
+
+background: #F8FDF7;
+border-radius: 10.56px;
+transform: rotate(-37.58deg);
+
+
+/* Union */
+
+position: absolute;
+width: 10.64px;
+height: 15.24px;
+left: 50.69px;
+top: 36.08px;
+
+background: #FFFFFF;
+
+
+/* Rectangle 3464943 */
+
+position: absolute;
+width: 7.04px;
+height: 12.32px;
+left: 49.28px;
+top: 34.63px;
+
+background: #F8FDF7;
+border-radius: 10.56px;
+transform: rotate(42.4deg);
+
+
+/* Rectangle 3464944 */
+
+position: absolute;
+width: 7.04px;
+height: 12.32px;
+left: 49.28px;
+top: 38.68px;
+
+background: #F8FDF7;
+border-radius: 10.56px;
+transform: rotate(-37.58deg);
+
+
+/* Rectangle 3464943 */
+
+position: absolute;
+visibility: hidden;
+width: 8.8px;
+height: 14.96px;
+left: 26.4px;
+top: 36.39px;
+
+background: #F8FDF7;
+opacity: 0.6;
+border-radius: 10.56px;
+
+
+/* Rectangle 3464942 */
+
+position: absolute;
+width: 8.8px;
+height: 14.96px;
+left: 26.4px;
+top: 36.39px;
+
+background: #FFFFFF;
+border-radius: 10.56px;
+
+
+/* 能帮你记录、解答、查询、思考 */
+
+width: 88px;
+height: 23px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 400;
+font-size: 15px;
+line-height: 23px;
+/* identical to box height, or 153% */
+text-align: center;
+
+color: #FFFFFF;
+
+opacity: 0.7;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Home Indicator */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 97.51%;
+bottom: 0%;
+
+
+
+/* Home Indicator */
+
+position: absolute;
+width: 139px;
+height: 5px;
+left: calc(50% - 139px/2 - 0.5px);
+bottom: 8px;
+
+background: #000000;
+border-radius: 100px;
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* 顶部导航 */
+
+position: absolute;
+width: 390px;
+height: 54px;
+left: 0px;
+top: 54px;
+
+
+
+/* bg */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+
+
+/* 返回
+
+arrow, narrow, left
+*/
+
+position: absolute;
+width: 28px;
+height: 28px;
+left: 16px;
+top: calc(50% - 28px/2);
+
+
+
+/* Icon */
+
+position: absolute;
+left: 16.67%;
+right: 16.67%;
+top: 25%;
+bottom: 25%;
+
+border: 2.33333px solid #000000;
+
+
+/* Create a story */
+
+position: absolute;
+width: 137px;
+height: 28px;
+left: calc(50% - 137px/2 - 0.5px);
+top: calc(50% - 28px/2);
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 20px;
+line-height: 28px;
+/* identical to box height */
+
+color: #111111;
+
+
+
+/* 1 */
+
+position: absolute;
+width: 343px;
+height: 324px;
+left: 24px;
+top: 124px;
+
+
+
+/* Previewing: page 1 */
+
+position: absolute;
+width: 343px;
+height: 22px;
+left: 24px;
+top: 124px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 22px;
+
+color: #222222;
+
+
+
+/* Group 1321316081 */
+
+position: absolute;
+width: 343px;
+height: 267px;
+left: 24px;
+top: 181px;
+
+
+
+/* 画面 */
+
+position: absolute;
+width: 343px;
+height: 267px;
+left: 24px;
+top: 181px;
+
+background: #EAF6FF;
+border: 1px solid rgba(105, 105, 105, 0.25);
+border-radius: 16px;
+
+
+/* 画面 */
+
+position: absolute;
+width: 343px;
+height: 239px;
+left: 24px;
+top: 181px;
+
+background: url(image.png);
+border-radius: 16px 16px 0px 0px;
+
+
+/* 输入框1 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 10px;
+
+position: absolute;
+width: 343px;
+height: 176px;
+left: 24px;
+top: 600px;
+
+
+
+/* Does the character and story style look correct? */
+
+width: 343px;
+height: 38px;
+
+font-family: 'PingFang SC';
+font-size: 16px;
+line-height: 19px;
+
+color: #222222;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Frame 1321315403 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 16px;
+
+width: 343px;
+height: 128px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* buttons/L */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 16px 20px;
+gap: 4px;
+
+width: 342px;
+height: 56px;
+
+background: url(.png), linear-gradient(180deg, #0073FF 0%, #0DA2FF 100%);
+background-blend-mode: plus-lighter, normal;
+box-shadow: inset 0px 1px 18px 2px #D2EAFF, inset 0px 1px 4px 2px #D2EAFF;
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Label */
+
+width: 171px;
+height: 22px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 22px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* buttons/L */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 14px 16px;
+gap: 8px;
+
+width: 342px;
+height: 56px;
+
+background: #FFFFFF;
+border: 1px solid rgba(105, 105, 105, 0.25);
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Label */
+
+width: 285px;
+height: 22px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 22px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #666666;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* 主按钮 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 14px 16px;
+gap: 8px;
+
+position: absolute;
+width: 343px;
+height: 68px;
+left: 23px;
+bottom: 280px;
+
+background: #FFFFFF;
+border: 1px solid rgba(105, 105, 105, 0.25);
+border-radius: 12px;
+
+
+/* Public: Others can read this book. */
+
+width: 252px;
+height: 20px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+
+color: #FF9718;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Toggle */
+
+width: 51px;
+height: 30px;
+
+background: #B4B4B4;
+border-radius: 100px;
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Knob */
+
+position: absolute;
+width: 26px;
+height: 26px;
+right: 23px;
+top: calc(50% - 26px/2);
+
+background: #FFFFFF;
+box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.04), 0px 3px 8px rgba(0, 0, 0, 0.15), 0px 3px 1px rgba(0, 0, 0, 0.06);
+border-radius: 100px;
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* Toggle */
+
+display: none;
+width: 51px;
+height: 30px;
+
+background: #1484FF;
+border-radius: 100px;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Knob */
+
+position: absolute;
+width: 26px;
+height: 26px;
+right: 2px;
+top: calc(50% - 26px/2);
+
+background: #FFFFFF;
+box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.04), 0px 3px 8px rgba(0, 0, 0, 0.15), 0px 3px 1px rgba(0, 0, 0, 0.06);
+border-radius: 100px;
+
+
+/* Back */
+
+display: none;
+width: 7.2px;
+height: 12px;
+
+transform: rotate(-90deg);
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* Path */
+
+position: absolute;
+left: 91.55%;
+right: 6.36%;
+top: 34.41%;
+bottom: 47.94%;
+
+background: #3A4750;
+transform: rotate(-90deg);

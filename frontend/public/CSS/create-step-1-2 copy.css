@@ -1,0 +1,878 @@
+/* Group 1321316079 */
+
+position: absolute;
+width: 390px;
+height: 844px;
+
+
+
+/* Home Indicator */
+
+position: absolute;
+width: 390px;
+height: 21px;
+
+
+
+/* Home Indicator */
+
+position: absolute;
+width: 139px;
+height: 5px;
+left: calc(50% - 139px/2 - 0.5px);
+bottom: 8px;
+
+background: #000000;
+border-radius: 100px;
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* buttons/L */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 16px 20px;
+gap: 4px;
+
+position: absolute;
+width: 342px;
+height: 48px;
+
+background: url(.png), linear-gradient(180deg, #0073FF 0%, #0DA2FF 100%);
+background-blend-mode: plus-lighter, normal;
+box-shadow: inset 0px 1px 18px 2px #D2EAFF, inset 0px 1px 4px 2px #D2EAFF;
+border-radius: 100px;
+
+
+/* Label */
+
+width: 95px;
+height: 22px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 22px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* 遮罩 */
+
+position: absolute;
+width: 390px;
+height: 844px;
+
+background: #000000;
+opacity: 0.4;
+
+
+/* 遮罩 */
+
+position: absolute;
+width: 390px;
+height: 625px;
+
+background: #FFFFFF;
+border-radius: 16px 16px 0px 0px;
+
+
+/* Home Indicator */
+
+position: absolute;
+width: 390px;
+height: 21px;
+
+
+
+/* Home Indicator */
+
+position: absolute;
+width: 139px;
+height: 5px;
+left: calc(50% - 139px/2 - 0.5px);
+bottom: 8px;
+
+background: #000000;
+border-radius: 100px;
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* 2 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 28px;
+
+position: absolute;
+width: 343px;
+height: 477px;
+
+
+
+/* 上传 */
+
+width: 342px;
+height: 135px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* 上传 */
+
+position: absolute;
+width: 80px;
+height: 80px;
+left: 0px;
+top: 55px;
+
+
+
+/* Rectangle 346241640 */
+
+position: absolute;
+width: 80px;
+height: 80px;
+left: calc(50% - 80px/2 - 131.5px);
+top: 55px;
+
+background: #FFFFFF;
+border: 1px solid rgba(105, 105, 105, 0.25);
+border-radius: 16px;
+
+
+/* plus
+
+plus, add, addition, calculate, mathematics
+*/
+
+position: absolute;
+width: 28px;
+height: 28px;
+left: 26px;
+top: 81px;
+
+opacity: 0.8;
+
+
+/* Icon */
+
+position: absolute;
+left: 20.83%;
+right: 20.83%;
+top: 20.83%;
+bottom: 20.83%;
+
+border: 2.33333px solid #101010;
+
+
+/* Frame 1321315402 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 4px;
+isolation: isolate;
+
+position: absolute;
+width: 342px;
+height: 43px;
+left: 0px;
+top: 0px;
+
+
+
+/* Upload your kid’s photo or favorite things. */
+
+width: 342px;
+height: 22px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+line-height: 22px;
+
+color: #222222;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+z-index: 0;
+
+
+/* We use this to make your child the main character! */
+
+width: 342px;
+height: 17px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 17px;
+/* identical to box height */
+
+color: #999999;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+z-index: 1;
+
+
+/* * */
+
+position: absolute;
+display: none;
+width: 8px;
+height: 21px;
+left: -11px;
+top: 2px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 15px;
+line-height: 21px;
+/* identical to box height */
+
+color: #FE4D4D;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+z-index: 2;
+
+
+/* * */
+
+position: absolute;
+display: none;
+width: 8px;
+height: 21px;
+left: -15px;
+top: 165px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 15px;
+line-height: 21px;
+/* identical to box height */
+
+color: #FE4D4D;
+
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+z-index: 3;
+
+
+/* 输入框1 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 10px;
+
+width: 343px;
+height: 86px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Your kid’s nickname */
+
+width: 343px;
+height: 22px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+line-height: 22px;
+
+color: #222222;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 主按钮 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 14px 16px;
+gap: 8px;
+
+width: 343px;
+height: 54px;
+
+background: #FFFFFF;
+border: 1px solid rgba(105, 105, 105, 0.25);
+border-radius: 12px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* e.g. Leo */
+
+width: 283px;
+height: 20px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+
+/* 正文01 */
+color: #8E8E9D;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* 输入框1 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 10px;
+
+display: none;
+width: 343px;
+height: 86px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Personality */
+
+width: 343px;
+height: 22px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+line-height: 22px;
+
+color: #222222;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 主按钮 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 14px 16px;
+gap: 8px;
+
+width: 343px;
+height: 54px;
+
+background: #F5F5F5;
+border: 1px solid rgba(105, 105, 105, 0.25);
+border-radius: 12px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* e.g. Curious, energetic, shy */
+
+width: 290px;
+height: 20px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+
+/* 正文01 */
+color: #8E8E9D;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Back */
+
+display: none;
+width: 7.2px;
+height: 12px;
+
+transform: rotate(-90deg);
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Path */
+
+position: absolute;
+left: 91.55%;
+right: 6.36%;
+top: 43.34%;
+bottom: 34.44%;
+
+background: #3A4750;
+transform: rotate(-90deg);
+
+
+/* 输入框1 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 10px;
+
+width: 343px;
+height: 86px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Gender */
+
+width: 343px;
+height: 22px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+line-height: 22px;
+
+color: #222222;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 主按钮 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 14px 16px;
+gap: 8px;
+
+width: 343px;
+height: 54px;
+
+background: #FFFFFF;
+border: 1px solid rgba(105, 105, 105, 0.25);
+border-radius: 12px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Unknown */
+
+width: 290px;
+height: 20px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+
+color: #333333;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Back */
+
+width: 7.2px;
+height: 12px;
+
+transform: rotate(-90deg);
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Path */
+
+position: absolute;
+left: 91.55%;
+right: 6.36%;
+top: 43.34%;
+bottom: 34.44%;
+
+background: #3A4750;
+transform: rotate(-90deg);
+
+
+/* 输入框1 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 10px;
+
+width: 343px;
+height: 86px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 4;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Age */
+
+width: 343px;
+height: 22px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+line-height: 22px;
+
+color: #222222;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 主按钮 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 14px 16px;
+gap: 8px;
+
+width: 343px;
+height: 54px;
+
+background: #FFFFFF;
+border: 1px solid rgba(105, 105, 105, 0.25);
+border-radius: 12px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 3 years old */
+
+width: 290px;
+height: 20px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+
+color: #333333;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Back */
+
+width: 7.2px;
+height: 12px;
+
+transform: rotate(-90deg);
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Path */
+
+position: absolute;
+left: 91.55%;
+right: 6.36%;
+top: 43.34%;
+bottom: 34.44%;
+
+background: #3A4750;
+transform: rotate(-90deg);
+
+
+/* 输入框1 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 10px;
+
+display: none;
+width: 343px;
+height: 86px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 5;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Length */
+
+width: 343px;
+height: 22px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 16px;
+line-height: 22px;
+
+color: #222222;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 主按钮 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 14px 16px;
+gap: 8px;
+
+width: 343px;
+height: 54px;
+
+background: #F5F5F5;
+border: 1px solid rgba(105, 105, 105, 0.25);
+border-radius: 12px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 8 Pages */
+
+width: 290px;
+height: 20px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height, or 143% */
+
+color: #333333;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Back */
+
+width: 7.2px;
+height: 12px;
+
+transform: rotate(-90deg);
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Path */
+
+position: absolute;
+left: 91.55%;
+right: 6.36%;
+top: 43.34%;
+bottom: 34.44%;
+
+background: #3A4750;
+transform: rotate(-90deg);
+
+
+/* buttons/L */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 16px 20px;
+gap: 4px;
+
+position: absolute;
+width: 342px;
+height: 48px;
+
+background: url(.png), linear-gradient(180deg, #0073FF 0%, #0DA2FF 100%);
+background-blend-mode: plus-lighter, normal;
+box-shadow: inset 0px 1px 18px 2px #D2EAFF, inset 0px 1px 4px 2px #D2EAFF;
+border-radius: 100px;
+
+
+/* Label */
+
+width: 95px;
+height: 22px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 22px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;

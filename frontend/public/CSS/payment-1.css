@@ -1,0 +1,1103 @@
+/* Group 1321316072 */
+
+position: absolute;
+width: 390px;
+height: 844px;
+left: 206px;
+top: 304px;
+
+
+
+/* 付费引导页（1/3） */
+
+position: absolute;
+width: 390px;
+height: 844px;
+left: 206px;
+top: 304px;
+
+background: #FFFFFF;
+border: 4px solid #000000;
+border-radius: 24px;
+
+
+/* bg */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+background: #F6EFDD;
+
+
+/* img_v3_02ta_f388a9c6-ccf8-4949-9f1c-4e788879741g 1 */
+
+position: absolute;
+width: 270px;
+height: 237px;
+left: 60px;
+top: 107px;
+
+background: url(img_v3_02ta_f388a9c6-ccf8-4949-9f1c-4e788879741g.png);
+
+
+/* bruce-mars-gJtDg6WfMlQ-unsplash 1 */
+
+position: absolute;
+width: 390px;
+height: 306px;
+left: calc(50% - 390px/2);
+bottom: 1px;
+
+background: #FFFFFF;
+box-shadow: 0px -4px 16px rgba(215, 205, 163, 0.2);
+border-radius: 32px 32px 0px 0px;
+
+
+/* 顶部安全区 */
+
+position: absolute;
+width: 390px;
+height: 54px;
+left: 0px;
+top: 0px;
+
+
+
+/* Status Bar - iPhone */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+
+
+/* Time */
+
+position: absolute;
+height: 54px;
+left: 0%;
+right: 64.25%;
+top: calc(50% - 54px/2);
+
+
+
+/* Time */
+
+position: absolute;
+left: 38.39%;
+right: 37.94%;
+top: 33.96%;
+bottom: 25.3%;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 17px;
+line-height: 22px;
+/* identical to box height, or 129% */
+text-align: center;
+
+color: #000000;
+
+
+
+/* Levels */
+
+position: absolute;
+height: 54px;
+left: 64.25%;
+right: 0%;
+top: calc(50% - 54px/2);
+
+
+
+/* Battery */
+
+position: absolute;
+left: 58.09%;
+right: 22.31%;
+top: 42.59%;
+bottom: 33.33%;
+
+
+
+/* Border */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 25px;
+left: calc(50% - 25px/2 + 23.79px);
+top: 42.59%;
+bottom: 33.33%;
+
+mix-blend-mode: normal;
+opacity: 0.35;
+border: 1px solid #000000;
+border-radius: 4.3px;
+
+
+/* Cap */
+
+position: absolute;
+width: 1.33px;
+left: calc(50% - 1.33px/2 + 37.95px);
+top: 51.45%;
+bottom: 41.01%;
+
+background: #000000;
+mix-blend-mode: normal;
+opacity: 0.4;
+
+
+/* Capacity */
+
+position: absolute;
+width: 21px;
+left: calc(50% - 21px/2 + 23.79px);
+top: 46.3%;
+bottom: 37.04%;
+
+background: #000000;
+border-radius: 2.5px;
+
+
+/* Wifi */
+
+position: absolute;
+width: 17.14px;
+left: calc(50% - 17.14px/2 - 4.44px);
+top: 43.77%;
+bottom: 33.4%;
+
+background: #000000;
+
+
+/* Cellular Connection */
+
+position: absolute;
+width: 19.2px;
+left: calc(50% - 19.2px/2 - 30.11px);
+top: 43.58%;
+bottom: 33.77%;
+
+background: #000000;
+
+
+/* Rectangle 2 */
+
+position: absolute;
+visibility: hidden;
+left: 34.1%;
+right: 34.1%;
+top: 20.37%;
+bottom: 11.11%;
+
+background: #000000;
+border-radius: 100px;
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* 轮播 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 7px;
+
+position: absolute;
+visibility: hidden;
+width: 32px;
+height: 6px;
+left: 237px;
+top: 529px;
+
+
+
+/* Ellipse 2582 */
+
+width: 6px;
+height: 6px;
+
+background: #FFFFFF;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Ellipse 2583 */
+
+width: 6px;
+height: 6px;
+
+background: #D9D9D9;
+opacity: 0.5;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Ellipse 2584 */
+
+width: 6px;
+height: 6px;
+
+background: #D9D9D9;
+opacity: 0.5;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Frame 1000011905 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 6px;
+
+position: absolute;
+width: 88px;
+height: 117px;
+left: calc(50% - 88px/2 - 239px);
+top: calc(50% - 117px/2 + 0.5px);
+
+
+
+/* AI 机器人 */
+
+width: 88px;
+height: 88px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Ellipse 2593 */
+
+position: absolute;
+width: 88px;
+height: 88px;
+left: 0px;
+top: 0px;
+
+background: linear-gradient(170.91deg, #FFFFFF 6.9%, #B597DE 95.31%);
+box-shadow: inset 1.76px 1.76px 5.28px #FFFFFF;
+
+
+/* Ellipse 2594 */
+
+position: absolute;
+width: 88px;
+height: 88px;
+left: 0px;
+top: 0px;
+
+background: conic-gradient(from 166.43deg at 59.5% 57.5%, #A0C7FF 0deg, #FFFFFF 144.68deg, #A0C7FF 360deg);
+box-shadow: inset 1.76px 1.76px 5.28px #FFFFFF;
+
+
+/* Rectangle 3464941 */
+
+position: absolute;
+width: 66px;
+height: 42.24px;
+left: 10.56px;
+top: 22.88px;
+
+background: linear-gradient(150.64deg, #0C1015 0.56%, #0B0E14 75.87%);
+box-shadow: inset 0px 3.52px 1.76px #000000;
+border-radius: 24.64px;
+
+
+/* Group 1321315318 */
+
+position: absolute;
+width: 34.93px;
+height: 15.27px;
+left: calc(50% - 34.93px/2 - 0.13px);
+top: calc(50% - 15.27px/2 - 14.79px);
+
+
+
+/* Union */
+
+position: absolute;
+visibility: hidden;
+width: 10.93px;
+height: 14.89px;
+left: 50.87px;
+top: 36.26px;
+
+background: #F8FDF7;
+opacity: 0.6;
+
+
+/* Rectangle 3464943 */
+
+position: absolute;
+width: 7.92px;
+height: 12.32px;
+left: 49.28px;
+top: 34.63px;
+
+background: #F8FDF7;
+border-radius: 10.56px;
+transform: rotate(42.4deg);
+
+
+/* Rectangle 3464944 */
+
+position: absolute;
+width: 7.92px;
+height: 12.32px;
+left: 49.28px;
+top: 38.15px;
+
+background: #F8FDF7;
+border-radius: 10.56px;
+transform: rotate(-37.58deg);
+
+
+/* Union */
+
+position: absolute;
+width: 10.64px;
+height: 15.24px;
+left: 50.69px;
+top: 36.08px;
+
+background: #FFFFFF;
+
+
+/* Rectangle 3464943 */
+
+position: absolute;
+width: 7.04px;
+height: 12.32px;
+left: 49.28px;
+top: 34.63px;
+
+background: #F8FDF7;
+border-radius: 10.56px;
+transform: rotate(42.4deg);
+
+
+/* Rectangle 3464944 */
+
+position: absolute;
+width: 7.04px;
+height: 12.32px;
+left: 49.28px;
+top: 38.68px;
+
+background: #F8FDF7;
+border-radius: 10.56px;
+transform: rotate(-37.58deg);
+
+
+/* Rectangle 3464943 */
+
+position: absolute;
+visibility: hidden;
+width: 8.8px;
+height: 14.96px;
+left: 26.4px;
+top: 36.39px;
+
+background: #F8FDF7;
+opacity: 0.6;
+border-radius: 10.56px;
+
+
+/* Rectangle 3464942 */
+
+position: absolute;
+width: 8.8px;
+height: 14.96px;
+left: 26.4px;
+top: 36.39px;
+
+background: #FFFFFF;
+border-radius: 10.56px;
+
+
+/* 能帮你记录、解答、查询、思考 */
+
+width: 88px;
+height: 23px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 400;
+font-size: 15px;
+line-height: 23px;
+/* identical to box height, or 153% */
+text-align: center;
+
+color: #FFFFFF;
+
+opacity: 0.7;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* Home Indicator */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 97.51%;
+bottom: 0%;
+
+
+
+/* Home Indicator */
+
+position: absolute;
+width: 139px;
+height: 5px;
+left: calc(50% - 139px/2 - 0.5px);
+bottom: 8px;
+
+background: #000000;
+border-radius: 100px;
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* buttons/L */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 16px 20px;
+gap: 4px;
+
+position: absolute;
+width: 342px;
+height: 48px;
+left: calc(50% - 342px/2);
+top: 749px;
+
+background: url(.png), linear-gradient(180deg, #0073FF 0%, #0DA2FF 100%);
+background-blend-mode: plus-lighter, normal;
+box-shadow: inset 0px 1px 18px 2px #D2EAFF, inset 0px 1px 4px 2px #D2EAFF;
+border-radius: 100px;
+
+
+/* Label */
+
+width: 160px;
+height: 22px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 16px;
+line-height: 22px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* 顶部导航 */
+
+position: absolute;
+width: 390px;
+height: 54px;
+left: 0px;
+top: 54px;
+
+
+
+/* bg */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+
+
+/* 返回
+
+arrow, narrow, left
+*/
+
+position: absolute;
+width: 28px;
+height: 28px;
+left: 16px;
+top: calc(50% - 28px/2);
+
+
+
+/* Icon */
+
+position: absolute;
+left: 16.67%;
+right: 16.67%;
+top: 25%;
+bottom: 25%;
+
+border: 2.33333px solid #000000;
+
+
+/* 92% Parents Find Brushing Easier */
+
+position: absolute;
+width: 342px;
+height: 40px;
+left: calc(50% - 342px/2);
+top: 370px;
+
+font-family: 'Cherry Bomb';
+font-style: normal;
+font-weight: 400;
+font-size: 20px;
+line-height: 40px;
+/* identical to box height, or 200% */
+text-align: center;
+
+/* 主色 */
+color: #1484FF;
+
+
+
+/* Calmer routines, fewer struggles, kids actually asking to brush. */
+
+position: absolute;
+width: 342px;
+height: 40px;
+left: calc(50% - 342px/2);
+top: 414px;
+
+font-family: 'BM Jua';
+font-style: normal;
+font-weight: 400;
+font-size: 14px;
+line-height: 20px;
+/* or 143% */
+text-align: center;
+
+/* 正文 */
+color: #616C7A;
+
+
+
+/* Frame 1321315404 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 9px;
+
+position: absolute;
+width: 342px;
+height: 152px;
+left: calc(50% - 342px/2);
+top: 567px;
+
+
+
+/* standerd-plan */
+
+width: 108px;
+height: 152px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Path 1318 */
+
+position: absolute;
+left: 0%;
+right: 68.42%;
+top: 21.05%;
+bottom: 0%;
+
+background: #F5F5F5;
+
+
+/* Rectangle 466 */
+
+position: absolute;
+left: 0%;
+right: 68.42%;
+top: 0%;
+bottom: 78.95%;
+
+background: #68B1FF;
+opacity: 0.3;
+transform: rotate(180deg);
+
+
+/* 文本 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 7px;
+
+position: absolute;
+width: 49px;
+height: 42px;
+left: calc(50% - 49px/2 - 117.5px);
+top: 71px;
+
+
+
+/* $7.99 */
+
+width: 44px;
+height: 20px;
+
+font-family: 'Montserrat';
+font-style: normal;
+font-weight: 700;
+font-size: 16px;
+line-height: 20px;
+/* identical to box height */
+text-align: center;
+
+color: #191919;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* 1 month */
+
+width: 49px;
+height: 15px;
+
+font-family: 'Montserrat';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 15px;
+/* identical to box height */
+text-align: center;
+
+color: #3A4750;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Standard */
+
+position: absolute;
+width: 57px;
+left: calc(50% - 57px/2 - 117.5px);
+top: 5.92%;
+bottom: 84.21%;
+
+font-family: 'Montserrat';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+/* identical to box height */
+text-align: center;
+
+color: #191919;
+
+
+
+/* standerd-plan */
+
+width: 108px;
+height: 152px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Path 1318 */
+
+box-sizing: border-box;
+
+position: absolute;
+left: 34.21%;
+right: 34.21%;
+top: 21.05%;
+bottom: 0%;
+
+background: #E5F2FF;
+border: 1px solid #1484FF;
+
+
+/* Rectangle 466 */
+
+position: absolute;
+left: 34.21%;
+right: 34.21%;
+top: 0%;
+bottom: 78.95%;
+
+background: #1484FF;
+transform: rotate(180deg);
+
+
+/* 文本 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 7px;
+
+position: absolute;
+width: 52px;
+height: 42px;
+left: calc(50% - 52px/2 - 0.5px);
+top: 71px;
+
+
+
+/* $19.99 */
+
+width: 51px;
+height: 20px;
+
+font-family: 'Montserrat';
+font-style: normal;
+font-weight: 700;
+font-size: 16px;
+line-height: 20px;
+/* identical to box height */
+text-align: center;
+
+color: #191919;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* 3 month */
+
+width: 52px;
+height: 15px;
+
+font-family: 'Montserrat';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 15px;
+/* identical to box height */
+text-align: center;
+
+color: #3A4750;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Popular */
+
+position: absolute;
+width: 48px;
+left: calc(50% - 48px/2 - 1px);
+top: 5.92%;
+bottom: 84.21%;
+
+font-family: 'Montserrat';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+/* identical to box height */
+text-align: center;
+
+color: #FFFFFF;
+
+
+
+/* 勾选数字 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 5px 10px;
+gap: 4px;
+
+position: absolute;
+width: 44px;
+height: 24px;
+right: 117px;
+bottom: 0px;
+
+background: #FF9718;
+border: 1px solid #FFFFFF;
+border-radius: 12px 0px;
+
+
+/* 提醒数字 */
+
+width: 26px;
+height: 13px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 600;
+font-size: 12px;
+line-height: 13px;
+/* identical to box height, or 108% */
+text-align: center;
+text-transform: capitalize;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* standerd-plan */
+
+width: 108px;
+height: 152px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Path 1318 */
+
+position: absolute;
+left: 68.42%;
+right: 0%;
+top: 21.05%;
+bottom: 0%;
+
+background: #F5F5F5;
+
+
+/* Rectangle 466 */
+
+position: absolute;
+left: 68.42%;
+right: 0%;
+top: 0%;
+bottom: 78.95%;
+
+background: #68B1FF;
+opacity: 0.3;
+transform: rotate(180deg);
+
+
+/* 文本 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 7px;
+
+position: absolute;
+width: 55px;
+height: 42px;
+left: calc(50% - 55px/2 + 116.5px);
+top: 71px;
+
+
+
+/* $59.99 */
+
+width: 55px;
+height: 20px;
+
+font-family: 'Montserrat';
+font-style: normal;
+font-weight: 700;
+font-size: 16px;
+line-height: 20px;
+/* identical to box height */
+text-align: center;
+
+color: #191919;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* 1 year */
+
+width: 36px;
+height: 15px;
+
+font-family: 'Montserrat';
+font-style: normal;
+font-weight: 400;
+font-size: 12px;
+line-height: 15px;
+/* identical to box height */
+text-align: center;
+
+color: #3A4750;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Premium */
+
+position: absolute;
+width: 58px;
+left: calc(50% - 58px/2 + 116px);
+top: 5.92%;
+bottom: 84.21%;
+
+font-family: 'Montserrat';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+/* identical to box height */
+text-align: center;
+
+color: #191919;
+
+
+
+/* Group 1000011760 */
+
+position: absolute;
+width: 28px;
+height: 4px;
+left: calc(50% - 28px/2);
+top: 478px;
+
+
+
+/* Frame 1000012403 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 4px;
+
+position: absolute;
+width: 28px;
+height: 4px;
+left: calc(50% - 28px/2);
+top: 478px;
+
+
+
+/* Rectangle 3464966 */
+
+width: 12px;
+height: 4px;
+
+/* 输入框描边 */
+background: #595969;
+border-radius: 6px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Rectangle 3464967 */
+
+width: 4px;
+height: 4px;
+
+background: rgba(0, 0, 0, 0.1);
+border-radius: 6px;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Rectangle 3464968 */
+
+width: 4px;
+height: 4px;
+
+background: rgba(0, 0, 0, 0.1);
+border-radius: 6px;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
