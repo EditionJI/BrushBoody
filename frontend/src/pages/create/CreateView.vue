@@ -192,7 +192,7 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
 import { useRouter } from 'vue-router'
-import { generateCharacter, generateStory } from '../../api/backend'
+import { uploadPhoto, composeStory } from '../../api/backend'
 import { useUserStore } from '../../stores/user'
 
 const router = useRouter()
@@ -212,7 +212,9 @@ let newStep2SvgDoc: Document | null = null
 let previewSvgDoc: Document | null = null
 
 // Form data
-const uploadedPhoto = ref<string | null>(null)
+const uploadedPhoto = ref<string | null>(null)  // Local base64 for preview
+const uploadedPhotoFile = ref<File | null>(null)  // Original file for upload
+const uploadedPhotoUrl = ref<string | null>(null)  // OSS URL after upload
 const nickname = ref('')
 const childGender = ref<'male' | 'female' | 'prefer_not_to_say'>('prefer_not_to_say')
 const childAge = ref(3)
@@ -267,9 +269,26 @@ const validateStep1 = () => {
   return true
 }
 
-const handleNextStep1 = () => {
+const handleNextStep1 = async () => {
   if (validateStep1()) {
-    goToStep(2)
+    // Upload photo to OSS before proceeding to step 2
+    if (uploadedPhotoFile.value) {
+      try {
+        isLoading.value = true
+        loadingMessage.value = 'Uploading photo...'
+        const ossUrl = await uploadPhoto(uploadedPhotoFile.value)
+        uploadedPhotoUrl.value = ossUrl
+        console.log('✅ Photo uploaded to OSS:', ossUrl)
+        goToStep(2)
+      } catch (error) {
+        console.error('❌ Photo upload failed:', error)
+        triggerToast('Photo upload failed, please try again')
+      } finally {
+        isLoading.value = false
+      }
+    } else {
+      goToStep(2)
+    }
   }
 }
 
@@ -689,6 +708,9 @@ const handleFileUpload = (event: Event) => {
       return
     }
 
+    // Save the original file for upload
+    uploadedPhotoFile.value = file
+
     const reader = new FileReader()
 
     reader.onload = (e) => {
@@ -703,6 +725,7 @@ const handleFileUpload = (event: Event) => {
 
 const deletePhoto = () => {
   uploadedPhoto.value = null
+  uploadedPhotoFile.value = null
   localStorage.removeItem('savedPhoto')
   saveData()
 }
@@ -733,6 +756,22 @@ const getThemeName = (id: number) => {
   return themes[id - 1] || 'Space Adventure'
 }
 
+// Theme mapping for Chinese API
+const getThemeNameChinese = (id: number) => {
+  const themes = ['太空冒险', '森林冒险', '海洋探险', '超级英雄']
+  return themes[id - 1] || '森林冒险'
+}
+
+// Gender mapping for Chinese API
+const getGenderChinese = (gender: string) => {
+  const mapping = {
+    'male': '男',
+    'female': '女',
+    'prefer_not_to_say': '保密'
+  }
+  return mapping[gender as keyof typeof mapping] || '保密'
+}
+
 const handleConfirm = async () => {
   if (userStoryCount.value >= 3) {
     console.log('User has generated 3+ stories, redirecting to payment')
@@ -740,26 +779,41 @@ const handleConfirm = async () => {
     return
   }
 
+  // Check if photo was uploaded
+  if (!uploadedPhotoUrl.value) {
+    triggerToast('请先上传照片')
+    return
+  }
+
   isLoading.value = true
   loadingMessage.value = 'Creating your story...'
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 3000))
+    // Call compose API to generate story
+    const response = await composeStory({
+      child_name: nickname.value || 'Hero',
+      gender: getGenderChinese(childGender.value),
+      age: childAge.value,
+      theme: getThemeNameChinese(selectedTheme.value || 2),
+      img_url: uploadedPhotoUrl.value
+    })
+
+    console.log('✅ Story generated:', response)
 
     userStoryCount.value++
     localStorage.setItem('userStoryCount', userStoryCount.value.toString())
 
     userStore.addStory({
-      title: `${nickname.value || 'Hero'}'s ${getThemeName(selectedTheme.value || 1)} Story`,
+      title: `${nickname.value || 'Hero'}'s ${getThemeName(selectedTheme.value || 2)} Story`,
       characterName: nickname.value || 'Hero',
-      coverImage: uploadedPhoto.value || '/images/preview-placeholder.png',
-      theme: getThemeName(selectedTheme.value || 1),
+      coverImage: uploadedPhotoUrl.value,
+      theme: getThemeName(selectedTheme.value || 2),
       isPublic: isPublic.value
     })
 
     router.push('/brushing')
   } catch (error) {
-    console.error(error)
+    console.error('Story generation error:', error)
     triggerToast('Failed to generate story. Please try again.')
   } finally {
     isLoading.value = false

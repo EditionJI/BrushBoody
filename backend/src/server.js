@@ -2,15 +2,37 @@
  * BrushBuddy Backend Server
  * Express server with Gemini AI integration
  * Payment gateway integration (PayPal & Apple IAP)
+ * Alibaba Cloud OSS integration for uploadPhotoToOSS uploads
  */
 
 require('dotenv').config()
 const express = require('express')
 const cors = require('cors')
 const { GoogleGenerativeAI } = require('@google/generative-ai')
+const OSS = require('ali-oss')
+const { v4: uuidv4 } = require('uuid')
+const fs = require('fs')
+const path = require('path')
+const multer = require('multer')
 
 const app = express()
 const PORT = process.env.PORT || 3000
+
+// Configure multer for memory storage (files stored as Buffer)
+const upload = multer({
+  storage: multer.memoryStorage(),
+  limits: {
+    fileSize: 10 * 1024 * 1024 // 10MB limit
+  },
+  fileFilter: (req, file, cb) => {
+    // Accept only image files
+    if (file.mimetype.startsWith('image/')) {
+      cb(null, true)
+    } else {
+      cb(new Error('Only image files are allowed'), false)
+    }
+  }
+})
 
 // Middleware
 app.use(cors())
@@ -21,6 +43,20 @@ app.use(express.urlencoded({ extended: true }))
 let genAI = null
 if (process.env.GEMINI_API_KEY) {
   genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY)
+}
+
+// Initialize OSS client
+let ossClient = null
+if (process.env.OSS_ACCESS_KEY_ID && process.env.OSS_ACCESS_KEY_SECRET) {
+  ossClient = new OSS({
+    region: process.env.OSS_REGION,
+    accessKeyId: process.env.OSS_ACCESS_KEY_ID,
+    accessKeySecret: process.env.OSS_ACCESS_KEY_SECRET,
+    bucket: process.env.OSS_BUCKET_NAME
+  })
+  console.log('✅ OSS client initialized')
+} else {
+  console.log('⚠️  OSS configuration missing')
 }
 
 // Health check
@@ -43,6 +79,140 @@ app.get('/test-env', (req, res) => {
     genAI: !!genAI,
     genAIType: typeof genAI
   })
+})
+
+// =============================================================================
+// Upload Routes (OSS Photo Upload)
+// =============================================================================
+
+/**
+ * Upload photo to Alibaba Cloud OSS
+ * @param {Buffer} buffer - Image buffer
+ * @param {string} extension - File extension (default: .jpg)
+ * @returns {Promise<string>} Public URL of uploaded file
+ */
+async function uploadPhotoToOSS(buffer, extension = '.jpg') {
+  try {
+    if (!ossClient) {
+      throw new Error('OSS client not initialized')
+    }
+
+    // Generate unique filename
+    const filename = `${uuidv4()}${extension}`
+    const ossKey = `images/${filename}`
+
+    // Upload to OSS
+    const result = await ossClient.put(ossKey, buffer)
+    console.log(`✅ Photo uploaded to OSS: ${ossKey}`)
+
+    // Return public URL
+    const publicUrl = `https://${process.env.OSS_BUCKET_NAME}.${process.env.OSS_ENDPOINT}/${ossKey}`
+    return publicUrl
+
+  } catch (error) {
+    console.error('❌ OSS upload error:', error)
+    throw error
+  }
+}
+
+/**
+ * POST /api/upload-photo
+ * Upload photo to OSS and return public URL
+ *
+ * Request (multipart/form-data):
+ *   photo: File (image file)
+ *
+ * Response:
+ * {
+ *   "success": true,
+ *   "img_url": "https://zhouw-tts.oss-cn-beijing.aliyuncs.com/images/xxx.jpg"
+ * }
+ */
+app.post('/api/upload-photo', upload.single('photo'), async (req, res) => {
+  try {
+    if (!req.file) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing photo file'
+      })
+    }
+
+    // Determine file extension from mimetype
+    let extension = '.jpg'
+    const mime = req.file.mimetype
+    if (mime === 'image/jpeg') extension = '.jpg'
+    else if (mime === 'image/png') extension = '.png'
+    else if (mime === 'image/webp') extension = '.webp'
+    else if (mime === 'image/gif') extension = '.gif'
+
+    // Upload to OSS (req.file.buffer contains the file data)
+    const publicUrl = await uploadPhotoToOSS(req.file.buffer, extension)
+
+    res.json({
+      success: true,
+      img_url: publicUrl
+    })
+
+  } catch (error) {
+    console.error('Photo upload error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
+/**
+ * POST /api/compose
+ * Main API for generating a storybook
+ * Receives child info and photo URL, generates story
+ *
+ * Request body:
+ * {
+ *   "child_name": "Leo",
+ *   "gender": "男",
+ *   "age": 5,
+ *   "theme": "森林冒险",
+ *   "img_url": "https://oss-url/photo.jpg"
+ * }
+ */
+app.post('/api/compose', async (req, res) => {
+  try {
+    const { child_name, gender, age, theme, img_url } = req.body
+
+    console.log('📝 Received compose request:', { child_name, gender, age, theme, img_url })
+
+    // Validate required fields
+    if (!child_name || !img_url) {
+      return res.status(400).json({
+        success: false,
+        error: 'Missing required fields: child_name, img_url'
+      })
+    }
+
+    // For now, return a mock response
+    // TODO: Integrate with actual story generation API
+    res.json({
+      success: true,
+      message: 'Story generation started',
+      story_id: uuidv4(),
+      data: {
+        child_name,
+        gender,
+        age: age || 5,
+        theme,
+        img_url,
+        status: 'processing'
+      }
+    })
+
+  } catch (error) {
+    console.error('Compose error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
 })
 
 // =============================================================================
