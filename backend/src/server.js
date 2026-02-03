@@ -3,6 +3,7 @@
  * Express server with Gemini AI integration
  * Payment gateway integration (PayPal & Apple IAP)
  * Alibaba Cloud OSS integration for uploadPhotoToOSS uploads
+ * PostgreSQL database for user authentication
  */
 
 require('dotenv').config()
@@ -14,9 +15,76 @@ const { v4: uuidv4 } = require('uuid')
 const fs = require('fs')
 const path = require('path')
 const multer = require('multer')
+const { Pool } = require('pg')
 
 const app = express()
 const PORT = process.env.PORT || 3000
+
+// =============================================================================
+// PostgreSQL Database Connection
+// =============================================================================
+
+const pool = new Pool({
+  host: process.env.DB_HOST || '192.168.243.88',
+  port: process.env.DB_PORT || 5432,
+  database: process.env.DB_NAME || 'childrens_book',
+  user: process.env.DB_USER || 'postgres',
+  password: process.env.DB_PASSWORD || 'postgres',
+  max: 20,
+  idleTimeoutMillis: 30000,
+  connectionTimeoutMillis: 2000,
+})
+
+// Test database connection and create tables
+pool.on('connect', () => {
+  console.log('✅ PostgreSQL database connected')
+})
+
+pool.on('error', (err) => {
+  console.error('❌ PostgreSQL client error:', err)
+})
+
+// Initialize database tables
+async function initializeDatabase() {
+  const client = await pool.connect()
+  try {
+    // Create users table if not exists
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS users (
+        id UUID PRIMARY KEY DEFAULT gen_random_uuid(),
+        email VARCHAR(255) UNIQUE NOT NULL,
+        password_hash VARCHAR(255) NOT NULL,
+        subscription_status VARCHAR(20) DEFAULT 'free',
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `)
+
+    // Create refresh_tokens table if not exists
+    await client.query(`
+      CREATE TABLE IF NOT EXISTS refresh_tokens (
+        token VARCHAR(255) PRIMARY KEY,
+        user_id UUID NOT NULL REFERENCES users(id) ON DELETE CASCADE,
+        expires_at BIGINT NOT NULL,
+        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+      )
+    `)
+
+    // Create index on email for faster lookups
+    await client.query(`
+      CREATE INDEX IF NOT EXISTS idx_users_email ON users(email)
+    `)
+
+    console.log('✅ Database tables initialized')
+  } catch (error) {
+    console.error('❌ Database initialization error:', error)
+  } finally {
+    client.release()
+  }
+}
+
+// Call initialization when server starts
+initializeDatabase()
 
 // Configure multer for memory storage (files stored as Buffer)
 const upload = multer({
@@ -65,10 +133,6 @@ if (process.env.OSS_ACCESS_KEY_ID && process.env.OSS_ACCESS_KEY_SECRET) {
 
 const crypto = require('crypto')
 
-// In-memory user storage (DEMO ONLY - replace with database in production)
-const users = new Map()
-const refreshTokens = new Map() // Store refresh tokens: token -> userId
-
 /**
  * Hash password using SHA256 (DEMO - use bcrypt in production)
  */
@@ -79,39 +143,55 @@ function hashPassword(password) {
 /**
  * Generate access and refresh tokens
  */
-function generateTokens(userId) {
-  const accessToken = crypto.randomBytes(32).toString('hex')
-  const refreshToken = crypto.randomBytes(32).toString('hex')
-  const accessTokenExpires = Date.now() + 60 * 60 * 1000 // 1 hour
-  const refreshTokenExpires = Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
+async function generateTokens(userId) {
+  const client = await pool.connect()
+  try {
+    const accessToken = crypto.randomBytes(32).toString('hex')
+    const refreshToken = crypto.randomBytes(32).toString('hex')
+    const accessTokenExpires = Date.now() + 60 * 60 * 1000 // 1 hour
+    const refreshTokenExpires = Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
 
-  // Store refresh token
-  refreshTokens.set(refreshToken, {
-    userId,
-    expiresAt: refreshTokenExpires
-  })
+    // Store refresh token in database
+    await client.query(
+      'INSERT INTO refresh_tokens (token, user_id, expires_at) VALUES ($1, $2, $3)',
+      [refreshToken, userId, refreshTokenExpires]
+    )
 
-  return {
-    accessToken,
-    refreshToken,
-    expiresIn: accessTokenExpires
+    return {
+      accessToken,
+      refreshToken,
+      expiresIn: accessTokenExpires
+    }
+  } finally {
+    client.release()
   }
 }
 
 /**
  * Verify refresh token and return userId
  */
-function verifyRefreshToken(refreshToken) {
-  const tokenData = refreshTokens.get(refreshToken)
-  if (!tokenData) return null
+async function verifyRefreshToken(refreshToken) {
+  const client = await pool.connect()
+  try {
+    const result = await client.query(
+      'SELECT user_id, expires_at FROM refresh_tokens WHERE token = $1',
+      [refreshToken]
+    )
 
-  // Check if expired
-  if (Date.now() > tokenData.expiresAt) {
-    refreshTokens.delete(refreshToken)
-    return null
+    if (result.rows.length === 0) return null
+
+    const tokenData = result.rows[0]
+
+    // Check if expired
+    if (Date.now() > tokenData.expires_at) {
+      await client.query('DELETE FROM refresh_tokens WHERE token = $1', [refreshToken])
+      return null
+    }
+
+    return tokenData.user_id
+  } finally {
+    client.release()
   }
-
-  return tokenData.userId
 }
 
 /**
@@ -142,6 +222,7 @@ function verifyRefreshToken(refreshToken) {
  * }
  */
 app.post('/api/auth/login-or-register', async (req, res) => {
+  const client = await pool.connect()
   try {
     const { email, password } = req.body
 
@@ -173,11 +254,16 @@ app.post('/api/auth/login-or-register', async (req, res) => {
     const passwordHash = hashPassword(password)
 
     // Check if user exists
-    let user = users.get(email)
+    const result = await client.query(
+      'SELECT id, email, password_hash, subscription_status FROM users WHERE email = $1',
+      [email]
+    )
 
-    if (user) {
+    if (result.rows.length > 0) {
       // Login: verify password
-      if (user.passwordHash !== passwordHash) {
+      const user = result.rows[0]
+
+      if (user.password_hash !== passwordHash) {
         return res.status(401).json({
           success: false,
           error: 'Invalid email or password'
@@ -185,7 +271,7 @@ app.post('/api/auth/login-or-register', async (req, res) => {
       }
 
       // Generate tokens
-      const tokens = generateTokens(user.id)
+      const tokens = await generateTokens(user.id)
 
       return res.json({
         success: true,
@@ -197,25 +283,23 @@ app.post('/api/auth/login-or-register', async (req, res) => {
           user: {
             id: user.id,
             email: user.email,
-            subscriptionStatus: user.subscriptionStatus || 'free'
+            subscriptionStatus: user.subscription_status || 'free'
           }
         }
       })
     } else {
       // Register: create new user
-      const newUser = {
-        id: uuidv4(),
-        email,
-        passwordHash,
-        subscriptionStatus: 'free',
-        createdAt: new Date().toISOString()
-      }
+      const userId = uuidv4()
 
-      users.set(email, newUser)
+      await client.query(
+        'INSERT INTO users (id, email, password_hash, subscription_status) VALUES ($1, $2, $3, $4)',
+        [userId, email, passwordHash, 'free']
+      )
+
       console.log(`✅ New user registered: ${email}`)
 
       // Generate tokens
-      const tokens = generateTokens(newUser.id)
+      const tokens = await generateTokens(userId)
 
       return res.json({
         success: true,
@@ -225,9 +309,9 @@ app.post('/api/auth/login-or-register', async (req, res) => {
           refreshToken: tokens.refreshToken,
           expiresIn: tokens.expiresIn,
           user: {
-            id: newUser.id,
-            email: newUser.email,
-            subscriptionStatus: newUser.subscriptionStatus
+            id: userId,
+            email: email,
+            subscriptionStatus: 'free'
           }
         }
       })
@@ -238,6 +322,8 @@ app.post('/api/auth/login-or-register', async (req, res) => {
       success: false,
       error: error.message
     })
+  } finally {
+    client.release()
   }
 })
 
@@ -251,6 +337,7 @@ app.post('/api/auth/login-or-register', async (req, res) => {
  * }
  */
 app.post('/api/auth/logout', async (req, res) => {
+  const client = await pool.connect()
   try {
     const { refreshToken } = req.body
 
@@ -261,8 +348,8 @@ app.post('/api/auth/logout', async (req, res) => {
       })
     }
 
-    // Remove refresh token
-    refreshTokens.delete(refreshToken)
+    // Remove refresh token from database
+    await client.query('DELETE FROM refresh_tokens WHERE token = $1', [refreshToken])
 
     res.json({
       success: true
@@ -273,6 +360,8 @@ app.post('/api/auth/logout', async (req, res) => {
       success: false,
       error: error.message
     })
+  } finally {
+    client.release()
   }
 })
 
@@ -288,6 +377,7 @@ app.post('/api/auth/logout', async (req, res) => {
  * }
  */
 app.post('/api/auth/change-password', async (req, res) => {
+  const client = await pool.connect()
   try {
     const { email, oldPassword, newPassword } = req.body
 
@@ -308,17 +398,23 @@ app.post('/api/auth/change-password', async (req, res) => {
     }
 
     // Find user
-    const user = users.get(email)
-    if (!user) {
+    const result = await client.query(
+      'SELECT id, email, password_hash FROM users WHERE email = $1',
+      [email]
+    )
+
+    if (result.rows.length === 0) {
       return res.status(404).json({
         success: false,
         error: 'User not found'
       })
     }
 
+    const user = result.rows[0]
+
     // Verify old password
     const oldPasswordHash = hashPassword(oldPassword)
-    if (user.passwordHash !== oldPasswordHash) {
+    if (user.password_hash !== oldPasswordHash) {
       return res.status(401).json({
         success: false,
         error: 'Incorrect old password'
@@ -326,8 +422,11 @@ app.post('/api/auth/change-password', async (req, res) => {
     }
 
     // Update password
-    user.passwordHash = hashPassword(newPassword)
-    users.set(email, user)
+    const newPasswordHash = hashPassword(newPassword)
+    await client.query(
+      'UPDATE users SET password_hash = $1, updated_at = CURRENT_TIMESTAMP WHERE email = $2',
+      [newPasswordHash, email]
+    )
 
     console.log(`✅ Password changed for: ${email}`)
 
@@ -341,6 +440,8 @@ app.post('/api/auth/change-password', async (req, res) => {
       success: false,
       error: error.message
     })
+  } finally {
+    client.release()
   }
 })
 
