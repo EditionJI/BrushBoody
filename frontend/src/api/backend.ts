@@ -47,6 +47,101 @@ export interface UploadPhotoResponse {
 }
 
 /**
+ * Login/Register request (combined)
+ */
+export interface LoginOrRegisterRequest {
+  email: string;
+  password: string;
+}
+
+/**
+ * Login/Register response
+ */
+export interface LoginOrRegisterResponse {
+  success: boolean;
+  action?: 'login' | 'register'; // 'login' if user existed, 'register' if new user
+  data?: {
+    accessToken: string;
+    refreshToken: string;
+    expiresIn: number;
+    user?: {
+      id: string;
+      email: string;
+      subscriptionStatus: 'free' | 'paid';
+    }
+  };
+  error?: string;
+}
+
+/**
+ * Login or Register (combined endpoint)
+ * Backend automatically detects if email exists and logs in or registers
+ */
+export async function loginOrRegister(request: LoginOrRegisterRequest): Promise<LoginOrRegisterResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/login-or-register`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify(request),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Server error: ${response.status}`);
+    }
+
+    const data: LoginOrRegisterResponse = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Login/Register failed:", error);
+    throw error;
+  }
+}
+
+/**
+ * Logout request
+ */
+export interface LogoutRequest {
+  refreshToken: string;
+}
+
+/**
+ * Logout response
+ */
+export interface LogoutResponse {
+  success: boolean;
+  error?: string;
+}
+
+/**
+ * Logout endpoint
+ */
+export async function logout(refreshToken: string): Promise<LogoutResponse> {
+  try {
+    const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ refreshToken }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      throw new Error(errorData.error || `Server error: ${response.status}`);
+    }
+
+    const data: LogoutResponse = await response.json();
+    return data;
+  } catch (error) {
+    console.error("Logout failed:", error);
+    throw error;
+  }
+}
+
+/**
  * Compose story request
  */
 export interface ComposeRequest {

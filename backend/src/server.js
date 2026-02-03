@@ -59,6 +59,291 @@ if (process.env.OSS_ACCESS_KEY_ID && process.env.OSS_ACCESS_KEY_SECRET) {
   console.log('⚠️  OSS configuration missing')
 }
 
+// =============================================================================
+// Authentication Routes (Login/Register/Logout/Change Password)
+// =============================================================================
+
+const crypto = require('crypto')
+
+// In-memory user storage (DEMO ONLY - replace with database in production)
+const users = new Map()
+const refreshTokens = new Map() // Store refresh tokens: token -> userId
+
+/**
+ * Hash password using SHA256 (DEMO - use bcrypt in production)
+ */
+function hashPassword(password) {
+  return crypto.createHash('sha256').update(password).digest('hex')
+}
+
+/**
+ * Generate access and refresh tokens
+ */
+function generateTokens(userId) {
+  const accessToken = crypto.randomBytes(32).toString('hex')
+  const refreshToken = crypto.randomBytes(32).toString('hex')
+  const accessTokenExpires = Date.now() + 60 * 60 * 1000 // 1 hour
+  const refreshTokenExpires = Date.now() + 7 * 24 * 60 * 60 * 1000 // 7 days
+
+  // Store refresh token
+  refreshTokens.set(refreshToken, {
+    userId,
+    expiresAt: refreshTokenExpires
+  })
+
+  return {
+    accessToken,
+    refreshToken,
+    expiresIn: accessTokenExpires
+  }
+}
+
+/**
+ * Verify refresh token and return userId
+ */
+function verifyRefreshToken(refreshToken) {
+  const tokenData = refreshTokens.get(refreshToken)
+  if (!tokenData) return null
+
+  // Check if expired
+  if (Date.now() > tokenData.expiresAt) {
+    refreshTokens.delete(refreshToken)
+    return null
+  }
+
+  return tokenData.userId
+}
+
+/**
+ * POST /api/auth/login-or-register
+ * Combined login/register endpoint
+ * Auto-detects if email exists and returns appropriate action
+ *
+ * Request body:
+ * {
+ *   "email": "user@example.com",
+ *   "password": "password123"
+ * }
+ *
+ * Response:
+ * {
+ *   "success": true,
+ *   "action": "login" | "register",
+ *   "data": {
+ *     "accessToken": "...",
+ *     "refreshToken": "...",
+ *     "expiresIn": 1234567890,
+ *     "user": {
+ *       "id": "...",
+ *       "email": "user@example.com",
+ *       "subscriptionStatus": "free"
+ *     }
+ *   }
+ * }
+ */
+app.post('/api/auth/login-or-register', async (req, res) => {
+  try {
+    const { email, password } = req.body
+
+    // Validate input
+    if (!email || !password) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email and password are required'
+      })
+    }
+
+    // Email format validation
+    const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+    if (!emailRegex.test(email)) {
+      return res.status(400).json({
+        success: false,
+        error: 'Invalid email format'
+      })
+    }
+
+    // Password validation (minimum 6 characters)
+    if (password.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: 'Password must be at least 6 characters'
+      })
+    }
+
+    const passwordHash = hashPassword(password)
+
+    // Check if user exists
+    let user = users.get(email)
+
+    if (user) {
+      // Login: verify password
+      if (user.passwordHash !== passwordHash) {
+        return res.status(401).json({
+          success: false,
+          error: 'Invalid email or password'
+        })
+      }
+
+      // Generate tokens
+      const tokens = generateTokens(user.id)
+
+      return res.json({
+        success: true,
+        action: 'login',
+        data: {
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+          expiresIn: tokens.expiresIn,
+          user: {
+            id: user.id,
+            email: user.email,
+            subscriptionStatus: user.subscriptionStatus || 'free'
+          }
+        }
+      })
+    } else {
+      // Register: create new user
+      const newUser = {
+        id: uuidv4(),
+        email,
+        passwordHash,
+        subscriptionStatus: 'free',
+        createdAt: new Date().toISOString()
+      }
+
+      users.set(email, newUser)
+      console.log(`✅ New user registered: ${email}`)
+
+      // Generate tokens
+      const tokens = generateTokens(newUser.id)
+
+      return res.json({
+        success: true,
+        action: 'register',
+        data: {
+          accessToken: tokens.accessToken,
+          refreshToken: tokens.refreshToken,
+          expiresIn: tokens.expiresIn,
+          user: {
+            id: newUser.id,
+            email: newUser.email,
+            subscriptionStatus: newUser.subscriptionStatus
+          }
+        }
+      })
+    }
+  } catch (error) {
+    console.error('Auth error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
+/**
+ * POST /api/auth/logout
+ * Logout user by invalidating refresh token
+ *
+ * Request body:
+ * {
+ *   "refreshToken": "..."
+ * }
+ */
+app.post('/api/auth/logout', async (req, res) => {
+  try {
+    const { refreshToken } = req.body
+
+    if (!refreshToken) {
+      return res.status(400).json({
+        success: false,
+        error: 'Refresh token is required'
+      })
+    }
+
+    // Remove refresh token
+    refreshTokens.delete(refreshToken)
+
+    res.json({
+      success: true
+    })
+  } catch (error) {
+    console.error('Logout error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
+/**
+ * POST /api/auth/change-password
+ * Change user password
+ *
+ * Request body:
+ * {
+ *   "email": "user@example.com",
+ *   "oldPassword": "oldpass123",
+ *   "newPassword": "newpass123"
+ * }
+ */
+app.post('/api/auth/change-password', async (req, res) => {
+  try {
+    const { email, oldPassword, newPassword } = req.body
+
+    // Validate input
+    if (!email || !oldPassword || !newPassword) {
+      return res.status(400).json({
+        success: false,
+        error: 'Email, old password, and new password are required'
+      })
+    }
+
+    // Password validation (minimum 6 characters)
+    if (newPassword.length < 6) {
+      return res.status(400).json({
+        success: false,
+        error: 'New password must be at least 6 characters'
+      })
+    }
+
+    // Find user
+    const user = users.get(email)
+    if (!user) {
+      return res.status(404).json({
+        success: false,
+        error: 'User not found'
+      })
+    }
+
+    // Verify old password
+    const oldPasswordHash = hashPassword(oldPassword)
+    if (user.passwordHash !== oldPasswordHash) {
+      return res.status(401).json({
+        success: false,
+        error: 'Incorrect old password'
+      })
+    }
+
+    // Update password
+    user.passwordHash = hashPassword(newPassword)
+    users.set(email, user)
+
+    console.log(`✅ Password changed for: ${email}`)
+
+    res.json({
+      success: true,
+      message: 'Password changed successfully'
+    })
+  } catch (error) {
+    console.error('Change password error:', error)
+    res.status(500).json({
+      success: false,
+      error: error.message
+    })
+  }
+})
+
 // Health check
 app.get('/health', (req, res) => {
   res.json({
