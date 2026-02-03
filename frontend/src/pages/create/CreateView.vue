@@ -262,7 +262,7 @@ const handleNextStep1 = async () => {
       try {
         isLoading.value = true;
         loadingMessage.value = "Uploading photo...";
-        const ossUrl = await uploadPhoto(uploadedPhotoFile.value);
+        const { data: ossUrl } = await uploadPhoto({ flie: uploadedPhotoFile.value });
         uploadedPhotoUrl.value = ossUrl;
         console.log("✅ Photo uploaded to OSS:", ossUrl);
         goToStep(2);
@@ -416,18 +416,7 @@ const onNewStep2SvgLoad = () => {
 
         goToStep(3);
         // todo
-        const obj = {
-          photo: uploadedPhotoUrl.value,
-          childName: nickname.value,
-          childAge: childAge.value,
-          theme: selectedTheme.value + "",
-          gender: childGender.value, // '男' | '女'
-        };
-        const testImgUrl = "https://sfile.chatglm.cn/test/20240109173207-6d4e9a2c-7a9f-4e9c-9e3c-4f8a0d5c7f8e.png";
-        const imageUrl = await generateCharacter(obj).catch((err) => {
-          resImgUrl.value = testImgUrl;
-        });
-        // resImgUrl.value = imageUrl;
+        handleRegenerateCover();
       });
       console.log("✅ Added click to next button rect");
     }
@@ -469,183 +458,6 @@ const updateThemeSelection = (svgDoc: Document, svgRoot: SVGSVGElement, selected
   radioGroup.appendChild(circle);
   radioGroup.appendChild(innerCircle);
   svgRoot.appendChild(radioGroup);
-};
-
-// ========== SVG INTERACTIONS - Step 3 (Preview) ==========
-const onPreviewSvgLoad = () => {
-  console.log("=== create-preview.svg loaded ===");
-
-  const objectEl = document.querySelector(".step-preview-svg") as HTMLObjectElement;
-  if (!objectEl) {
-    console.error("SVG object element not found for preview");
-    return;
-  }
-
-  previewSvgDoc = objectEl.contentDocument;
-  if (!previewSvgDoc) {
-    console.error("Cannot access SVG document for preview");
-    return;
-  }
-
-  console.log("SVG loaded, setting up interactions for preview...");
-
-  const svgRoot = previewSvgDoc.querySelector("svg");
-  if (!svgRoot) {
-    console.error("SVG root not found");
-    return;
-  }
-
-  // 1. 返回按钮
-  const backButton = previewSvgDoc.getElementById("back-button");
-  if (backButton) {
-    console.log("✅ Found back-button");
-    backButton.style.cursor = "pointer";
-    backButton.style.pointerEvents = "auto";
-    backButton.addEventListener("click", (e) => {
-      e.stopPropagation();
-      console.log("🔙 Back button clicked (preview)");
-      goToPreviewBack();
-    });
-  }
-
-  // 2. Public toggle
-  const publicToggle = previewSvgDoc.getElementById("public-toggle");
-  if (publicToggle) {
-    console.log("✅ Found public-toggle");
-    publicToggle.style.cursor = "pointer";
-    publicToggle.style.pointerEvents = "auto";
-    publicToggle.addEventListener("click", (e) => {
-      e.stopPropagation();
-      console.log("🔘 Public toggle clicked");
-      togglePublic();
-    });
-
-    updatePublicToggleDisplay(previewSvgDoc, svgRoot);
-  }
-
-  watch(isPublic, (newValue) => {
-    if (previewSvgDoc && svgRoot) {
-      updatePublicToggleDisplay(previewSvgDoc, svgRoot);
-    }
-  });
-
-  // 3. Yes 按钮
-  const yesButton = previewSvgDoc.getElementById("yes-button");
-  if (yesButton) {
-    console.log("✅ Found yes-button");
-    yesButton.style.cursor = "pointer";
-    yesButton.style.pointerEvents = "auto";
-    yesButton.addEventListener("click", (e) => {
-      e.stopPropagation();
-      console.log("✅ Yes button clicked");
-      handleConfirm();
-    });
-
-    const allRects = previewSvgDoc.querySelectorAll("rect");
-    allRects.forEach((rect) => {
-      const x = parseFloat(rect.getAttribute("x") || "0");
-      const y = parseFloat(rect.getAttribute("y") || "0");
-      const width = parseFloat(rect.getAttribute("width") || "0");
-      const height = parseFloat(rect.getAttribute("height") || "0");
-
-      if (
-        !rect.getAttribute("id") &&
-        Math.abs(x - 28) < 1 &&
-        Math.abs(y - 652) < 2 &&
-        width >= 340 &&
-        width <= 344 &&
-        height >= 54 &&
-        height <= 58
-      ) {
-        rect.style.cursor = "pointer";
-        rect.style.pointerEvents = "auto";
-        rect.addEventListener("click", (e) => {
-          e.stopPropagation();
-          console.log("✅ Yes button clicked (shadow)");
-          handleConfirm();
-        });
-      }
-    });
-  }
-
-  // 4. No 按钮
-  const noButton = previewSvgDoc.getElementById("no-button");
-  if (noButton) {
-    console.log("✅ Found no-button");
-    noButton.style.cursor = "pointer";
-    noButton.style.pointerEvents = "auto";
-    noButton.addEventListener("click", (e) => {
-      e.stopPropagation();
-      console.log("❌ No button clicked");
-      handleRegenerateCover();
-    });
-
-    const allRects = previewSvgDoc.querySelectorAll("rect");
-    allRects.forEach((rect) => {
-      const x = parseFloat(rect.getAttribute("x") || "0");
-      const y = parseFloat(rect.getAttribute("y") || "0");
-      const width = parseFloat(rect.getAttribute("width") || "0");
-      const height = parseFloat(rect.getAttribute("height") || "0");
-
-      if (
-        !rect.getAttribute("id") &&
-        Math.abs(x - 28) < 1 &&
-        Math.abs(y - 724) < 2 &&
-        width >= 340 &&
-        width <= 344 &&
-        height >= 54 &&
-        height <= 58
-      ) {
-        rect.style.cursor = "pointer";
-        rect.style.pointerEvents = "auto";
-        rect.addEventListener("click", (e) => {
-          e.stopPropagation();
-          console.log("❌ No button clicked (border)");
-          handleRegenerateCover();
-        });
-      }
-    });
-  }
-
-  if (uploadedPhoto.value) {
-    updatePreviewImage(uploadedPhoto.value);
-  }
-
-  console.log("create-preview.svg interactions setup complete");
-};
-
-const updatePublicToggleDisplay = (svgDoc: Document, svgRoot: SVGSVGElement) => {
-  const publicToggle = svgDoc.getElementById("public-toggle") as SVGRectElement;
-  if (!publicToggle) return;
-
-  const x = parseFloat(publicToggle.getAttribute("x") || "0");
-  const y = parseFloat(publicToggle.getAttribute("y") || "0");
-  const width = parseFloat(publicToggle.getAttribute("width") || "0");
-
-  const oldToggleIndicator = svgDoc.getElementById("toggle-indicator");
-  oldToggleIndicator?.remove();
-
-  const toggleGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  toggleGroup.setAttribute("id", "toggle-indicator");
-
-  const toggleBg = document.createElementNS("http://www.w3.org/2000/svg", "rect");
-  toggleBg.setAttribute("x", (x + width - 60).toString());
-  toggleBg.setAttribute("y", (y + 19).toString());
-  toggleBg.setAttribute("width", "50");
-  toggleBg.setAttribute("height", "28");
-  toggleBg.setAttribute("rx", "14");
-  toggleBg.setAttribute("fill", isPublic.value ? "#4A90E2" : "#ccc");
-  toggleGroup.appendChild(toggleBg);
-
-  const toggleSlider = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  toggleSlider.setAttribute("cx", isPublic.value ? (x + width - 20).toString() : (x + width - 50).toString());
-  toggleSlider.setAttribute("cy", (y + 33).toString());
-  toggleSlider.setAttribute("r", "12");
-  toggleSlider.setAttribute("fill", "white");
-  toggleSlider.setAttribute("filter", "drop-shadow(0 2px 4px rgba(0,0,0,0.2))");
-  toggleGroup.appendChild(toggleSlider);
-
-  svgRoot.appendChild(toggleGroup);
 };
 
 onMounted(() => {
@@ -797,7 +609,7 @@ const handleConfirm = async () => {
   // Check if photo was uploaded
   if (!uploadedPhotoUrl.value) {
     triggerToast("请先上传照片");
-    return;
+    // return;
   }
 
   isLoading.value = true;
@@ -863,9 +675,7 @@ const handleRegenerateCover = async () => {
   try {
     await new Promise((resolve) => setTimeout(resolve, 3000));
 
-    if (uploadedPhoto.value) {
-      updatePreviewImage(uploadedPhoto.value);
-    }
+    await updatePreviewImage();
 
     dailyRegenCount.value++;
     localStorage.setItem("dailyRegenCount", dailyRegenCount.value.toString());
@@ -880,39 +690,18 @@ const handleRegenerateCover = async () => {
   }
 };
 
-const updatePreviewImage = (imageSrc: string) => {
-  if (!previewSvgDoc) return;
-
-  const pattern0 = previewSvgDoc.getElementById("pattern0_1183_631");
-  if (!pattern0) {
-    console.error("pattern0_1183_631 not found");
-    return;
-  }
-
-  let image0 = previewSvgDoc.getElementById("image0_1183_631") as SVGImageElement;
-  if (!image0) {
-    const svgRoot = previewSvgDoc.querySelector("svg");
-    if (!svgRoot) return;
-
-    image0 = document.createElementNS("http://www.w3.org/2000/svg", "image");
-    image0.setAttribute("id", "image0_1183_631");
-    image0.setAttribute("width", "343");
-    image0.setAttribute("height", "267");
-    svgRoot.appendChild(image0);
-    console.log("Created image0_1183_631 element");
-  }
-
-  image0.setAttribute("href", imageSrc);
-  image0.setAttributeNS("http://www.w3.org/1999/xlink", "href", imageSrc);
-  image0.setAttribute("preserveAspectRatio", "xMidYMid slice");
-
-  const useElement = pattern0.querySelector("use");
-  if (useElement) {
-    useElement.setAttribute("transform", "scale(343, 267)");
-    console.log("Updated pattern0 use transform to: scale(343, 267)");
-  }
-
-  console.log("Preview image updated successfully");
+const updatePreviewImage = async () => {
+  const obj = {
+    img_url: uploadedPhotoUrl.value,
+    child_name: nickname.value,
+    age: childAge.value,
+    theme: getThemeNameChinese(selectedTheme.value),
+    gender: getGenderChinese(childGender.value), // '男' | '女'
+  };
+  const testImgUrl = "https://q7.itc.cn/q_70/images03/20241204/9442f197bdc94c05a32e7ed8b719dd59.jpeg";
+  resImgUrl.value = testImgUrl;
+  const { data: imageUrl } = await generateCharacter(obj);
+  resImgUrl.value = imageUrl;
 };
 </script>
 

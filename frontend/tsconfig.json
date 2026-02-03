@@ -1,7 +1,16 @@
 {
-  "files": [],
-  "references": [
-    { "path": "./tsconfig.app.json" },
-    { "path": "./tsconfig.node.json" }
-  ]
+  "compilerOptions": {
+    "sourceMap": true,
+    "module": "ESNext",
+    /* Bundler mode */
+    "moduleResolution": "Bundler",
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["./src/*"]
+    },
+    "lib": ["esnext", "dom"],
+    "types": ["node", "vite/client"]
+  },
+  "include": ["src/**/*.ts", "src/**/*.tsx", "src/**/*.vue", "types/*.d.ts", "src/pages/**/*.{ts,tsx,js,jsx}"], //src/pages/**/*.{ts,tsx,js,jsx}
+  "exclude": ["dist", "**/*.js", "node_modules"]
 }
