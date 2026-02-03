@@ -5,12 +5,35 @@
 
       <div class="hotspot-layer" :style="hotspotLayerStyle">
         <div class="back-button-area" @click="goBack"></div>
-        <div class="settings-button-area" @click="goToSettings"></div>
+        <div class="settings-button-area" @click="showSettingsMenu = true"></div>
         <div class="stats-area-1" @click="viewStats"></div>
         <div class="stats-area-2" @click="viewStats"></div>
         <div class="stats-area-3" @click="viewStats"></div>
       </div>
     </div>
+
+    <!-- Settings Menu Modal -->
+    <transition name="fade">
+      <div v-if="showSettingsMenu" class="modal-overlay" @click="showSettingsMenu = false">
+        <div class="settings-modal" @click.stop>
+          <div class="modal-header">
+            <h3>Settings</h3>
+            <button class="close-button" @click="showSettingsMenu = false">✕</button>
+          </div>
+          <div class="modal-body">
+            <div class="menu-item" @click="goToChangePassword">
+              <span class="menu-icon">🔐</span>
+              <span class="menu-text">Change Password</span>
+            </div>
+            <div class="menu-divider"></div>
+            <div class="menu-item danger" @click="handleLogout">
+              <span class="menu-icon">🚪</span>
+              <span class="menu-text">Log Out</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </transition>
 
     <!-- Bottom Menu Click Areas -->
     <div class="bottom-menu">
@@ -25,6 +48,7 @@
 <script setup lang="ts">
 import { computed, onMounted, onUnmounted, ref } from 'vue'
 import { useRouter } from 'vue-router'
+import { logout } from '../../api/backend'
 
 const router = useRouter()
 
@@ -34,6 +58,7 @@ const bgNaturalHeight = ref<number | null>(null)
 const overlayOffsetX = ref(0)
 const overlayOffsetY = ref(0)
 const overlayScale = ref(1)
+const showSettingsMenu = ref(false)
 let resizeObserver: ResizeObserver | null = null
 
 const hotspotLayerStyle = computed(() => {
@@ -91,11 +116,6 @@ const goBack = () => {
   else router.push('/')
 }
 
-const goToSettings = () => {
-  // Navigate to settings page (to be implemented)
-  console.log('Navigate to settings')
-}
-
 const goToHome = () => {
   router.push('/')
 }
@@ -115,6 +135,32 @@ const stayHere = () => {
 const viewStats = () => {
   // Show detailed statistics (to be implemented)
   console.log('View detailed statistics')
+}
+
+const goToChangePassword = () => {
+  showSettingsMenu.value = false
+  router.push('/change-password')
+}
+
+const handleLogout = async () => {
+  showSettingsMenu.value = false
+
+  try {
+    // Get refresh token from localStorage
+    const authTokens = localStorage.getItem('auth_tokens')
+    if (authTokens) {
+      const tokens = JSON.parse(authTokens)
+      await logout(tokens.refreshToken)
+    }
+  } catch (error) {
+    console.error('Logout error:', error)
+  } finally {
+    // Clear local storage regardless of API call result
+    localStorage.removeItem('auth_tokens')
+    localStorage.removeItem('user_email')
+    localStorage.removeItem('hasSeenOnboarding')
+    router.push('/login')
+  }
 }
 </script>
 
@@ -234,5 +280,112 @@ const viewStats = () => {
 
 .menu-click-area:active {
   background: rgba(0, 0, 0, 0.05);
+}
+
+/* Settings Modal */
+.modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background: rgba(0, 0, 0, 0.5);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+}
+
+.settings-modal {
+  background: white;
+  border-radius: 16px;
+  width: 280px;
+  max-width: 90%;
+  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
+  overflow: hidden;
+}
+
+.modal-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 16px 20px;
+  border-bottom: 1px solid #f0f0f0;
+}
+
+.modal-header h3 {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.close-button {
+  background: none;
+  border: none;
+  font-size: 24px;
+  color: #999;
+  cursor: pointer;
+  padding: 0;
+  width: 24px;
+  height: 24px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.close-button:hover {
+  color: #333;
+}
+
+.modal-body {
+  padding: 8px 0;
+}
+
+.menu-item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 12px 20px;
+  cursor: pointer;
+  transition: background 0.2s;
+}
+
+.menu-item:hover {
+  background: #f5f5f5;
+}
+
+.menu-item.danger {
+  color: #e74c3c;
+}
+
+.menu-item.danger:hover {
+  background: #fee;
+}
+
+.menu-icon {
+  font-size: 20px;
+}
+
+.menu-text {
+  font-size: 16px;
+  font-weight: 500;
+}
+
+.menu-divider {
+  height: 1px;
+  background: #f0f0f0;
+  margin: 4px 0;
+}
+
+/* Fade transition for modal */
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.2s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

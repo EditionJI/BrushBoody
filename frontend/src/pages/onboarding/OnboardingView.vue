@@ -114,7 +114,7 @@ const prevSlide = () => {
 
 const completeOnboarding = () => {
   appStore.completeOnboarding()
-  router.push('/')
+  router.push('/login')
 }
 
 // Touch swipe support
