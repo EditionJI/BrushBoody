@@ -81,8 +81,8 @@ service.interceptors.response.use(
 );
 
 // 创建请求函数
-const request = async <T, R = undefined>(config: AxiosRequestConfig): Promise<ApiResponse<T, R>> => {
-  return service.request(config) as Promise<ApiResponse<T, R>>;
+const request = async <T>(config: AxiosRequestConfig): Promise<ApiResponse<T>> => {
+  return service.request(config) as Promise<ApiResponse<T>>;
 };
 
 export default request;

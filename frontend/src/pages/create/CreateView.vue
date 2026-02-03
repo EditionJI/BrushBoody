@@ -176,8 +176,17 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
-import { uploadPhoto, composeStory, generateCharacter } from "../../api/backend";
+import {
+  uploadPhoto,
+  composeStory,
+  createVideoTasks,
+  generateCover,
+  queryVideoTasksStatus,
+  TaskStatus,
+  QueryTaskStatusResponse,
+} from "@/api/backend";
 import { useUserStore } from "../../stores/user";
+import { pollUntilTrue } from "@/utils";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -200,6 +209,8 @@ const uploadedPhoto = ref<string | null>(null); // Local base64 for preview
 const uploadedPhotoFile = ref<File | null>(null); // Original file for upload
 const uploadedPhotoUrl = ref<string | null>(null); // OSS URL after upload
 
+const task_id = ref<string | null>(null);
+const task_status = ref<TaskStatus | null>(null);
 const resImgUrl = ref<string | null>(null);
 const nickname = ref("");
 const childGender = ref<"male" | "female" | "prefer_not_to_say">("prefer_not_to_say");
@@ -262,9 +273,9 @@ const handleNextStep1 = async () => {
       try {
         isLoading.value = true;
         loadingMessage.value = "Uploading photo...";
-        const { data: ossUrl } = await uploadPhoto({ flie: uploadedPhotoFile.value });
-        uploadedPhotoUrl.value = ossUrl;
-        console.log("✅ Photo uploaded to OSS:", ossUrl);
+        const { data } = await uploadPhoto({ file: uploadedPhotoFile.value });
+        uploadedPhotoUrl.value = data.url;
+        console.log("✅ Photo uploaded to OSS:", data.url);
         goToStep(2);
       } catch (error) {
         console.error("❌ Photo upload failed:", error);
@@ -414,9 +425,11 @@ const onNewStep2SvgLoad = () => {
           return;
         }
 
-        goToStep(3);
         // todo
-        handleRegenerateCover();
+        await createVideoTasksAPI();
+        goToStep(3);
+        await pollUntilTrue_getTaskStatusAPI();
+        await updatePreviewImage();
       });
       console.log("✅ Added click to next button rect");
     }
@@ -669,39 +682,84 @@ const handleRegenerateCover = async () => {
     return;
   }
 
-  isLoading.value = true;
-  loadingMessage.value = "Regenerating cover...";
+  await updatePreviewImage(true);
+  dailyRegenCount.value++;
+  localStorage.setItem("dailyRegenCount", dailyRegenCount.value.toString());
+  localStorage.setItem("regenDate", new Date().toDateString());
+};
 
+const createVideoTasksAPI = async () => {
   try {
-    await new Promise((resolve) => setTimeout(resolve, 3000));
-
-    await updatePreviewImage();
-
-    dailyRegenCount.value++;
-    localStorage.setItem("dailyRegenCount", dailyRegenCount.value.toString());
-    localStorage.setItem("regenDate", new Date().toDateString());
-
-    console.log("Cover regenerated, daily count:", dailyRegenCount.value);
-  } catch (error) {
-    console.error(error);
-    triggerToast("生成失败，请重新尝试");
+    isLoading.value = true;
+    loadingMessage.value = "Creating task...";
+    loadingMessage.value = "Saving form...";
+    const obj = {
+      img_url: uploadedPhotoUrl.value,
+      child_name: nickname.value,
+      age: childAge.value,
+      theme: getThemeNameChinese(selectedTheme.value),
+      gender: getGenderChinese(childGender.value), // '男' | '女'
+    };
+    const testImgUrl = "https://q7.itc.cn/q_70/images03/20241204/9442f197bdc94c05a32e7ed8b719dd59.jpeg";
+    resImgUrl.value = testImgUrl;
+    const { data } = await createVideoTasks(obj);
+    task_id.value = data.task_id;
+  } catch (e) {
+    console.log(e);
+    throw e;
   } finally {
     isLoading.value = false;
   }
 };
 
-const updatePreviewImage = async () => {
+// 轮询获取任务状态
+const successMap = ["story_generated", "cover_ready", "completed"];
+const errorMap = ["failed", "cancelled"];
+const getTaskStatusAPI = async () => {
   const obj = {
-    img_url: uploadedPhotoUrl.value,
-    child_name: nickname.value,
-    age: childAge.value,
-    theme: getThemeNameChinese(selectedTheme.value),
-    gender: getGenderChinese(childGender.value), // '男' | '女'
+    task_id: task_id.value,
   };
-  const testImgUrl = "https://q7.itc.cn/q_70/images03/20241204/9442f197bdc94c05a32e7ed8b719dd59.jpeg";
-  resImgUrl.value = testImgUrl;
-  const { data: imageUrl } = await generateCharacter(obj);
-  resImgUrl.value = imageUrl;
+  const { data } = await queryVideoTasksStatus(obj);
+  const status = data.status;
+  task_status.value = status;
+  if (successMap.includes(status)) {
+    return { status: "success", data };
+  }
+  if (errorMap.includes(status)) {
+    return { status: "error", data };
+  }
+  return { status: "pending", data };
+};
+const pollUntilTrue_getTaskStatusAPI = async () => {
+  try {
+    isLoading.value = true;
+    loadingMessage.value = "Processing...";
+    const { status } = await pollUntilTrue<QueryTaskStatusResponse>(getTaskStatusAPI, 3000, 999);
+  } catch (e) {
+    console.log(e);
+    triggerToast("任务状态超时，请重新尝试");
+    throw e;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const updatePreviewImage = async (regenerate = false) => {
+  try {
+    isLoading.value = true;
+    loadingMessage.value = "Regenerating cover...";
+    const obj = {
+      regenerate,
+      task_id: task_id.value,
+    };
+    const { data } = await generateCover(obj);
+    resImgUrl.value = data.cover_image_url;
+  } catch (e) {
+    triggerToast("生成失败，请重新尝试");
+    throw e;
+  } finally {
+    isLoading.value = false;
+  }
 };
 </script>
 

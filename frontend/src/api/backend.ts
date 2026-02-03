@@ -5,17 +5,6 @@ import request from "@/utils/request";
  */
 
 // Types from backend/src/server.js
-export interface GenerateCharacterRequest {
-  img_url: string; // base64 string
-  child_name: string;
-  age: number;
-  theme: string;
-  gender: string; // '男' | '女'
-}
-
-export interface GenerateCharacterResponse {
-  imageUrl: string;
-}
 
 export interface GenerateStoryRequest {
   characterName: string;
@@ -35,110 +24,6 @@ export interface StoryResponse {
  * Note: Now using FormData with multipart/form-data instead of JSON
  * Form field name: 'photo' (File object)
  */
-
-/**
- * Upload photo response
- */
-export interface UploadPhotoResponse {
-  success: boolean;
-  img_url?: string;
-  error?: string;
-}
-
-/**
- * Login/Register request (combined)
- */
-export interface LoginOrRegisterRequest {
-  email: string;
-  password: string;
-}
-
-/**
- * Login/Register response
- */
-export interface LoginOrRegisterResponse {
-  success: boolean;
-  action?: 'login' | 'register'; // 'login' if user existed, 'register' if new user
-  data?: {
-    accessToken: string;
-    refreshToken: string;
-    expiresIn: number;
-    user?: {
-      id: string;
-      email: string;
-      subscriptionStatus: 'free' | 'paid';
-    }
-  };
-  error?: string;
-}
-
-/**
- * Login or Register (combined endpoint)
- * Backend automatically detects if email exists and logs in or registers
- */
-export async function loginOrRegister(request: LoginOrRegisterRequest): Promise<LoginOrRegisterResponse> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/login-or-register`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify(request),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `Server error: ${response.status}`);
-    }
-
-    const data: LoginOrRegisterResponse = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Login/Register failed:", error);
-    throw error;
-  }
-}
-
-/**
- * Logout request
- */
-export interface LogoutRequest {
-  refreshToken: string;
-}
-
-/**
- * Logout response
- */
-export interface LogoutResponse {
-  success: boolean;
-  error?: string;
-}
-
-/**
- * Logout endpoint
- */
-export async function logout(refreshToken: string): Promise<LogoutResponse> {
-  try {
-    const response = await fetch(`${API_BASE_URL}/api/auth/logout`, {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-      },
-      body: JSON.stringify({ refreshToken }),
-    });
-
-    if (!response.ok) {
-      const errorData = await response.json();
-      throw new Error(errorData.error || `Server error: ${response.status}`);
-    }
-
-    const data: LogoutResponse = await response.json();
-    return data;
-  } catch (error) {
-    console.error("Logout failed:", error);
-    throw error;
-  }
-}
 
 /**
  * Compose story request
@@ -173,13 +58,22 @@ export interface ComposeResponse {
  * Upload photo to backend (uploads to OSS and returns URL)
  * Uses multipart/form-data to upload the file directly
  */
+export type UploadPhotoRequest = {
+  file: File;
+};
+export type UploadPhotoResponse = {
+  url: string;
+  object_key?: string;
+  filename: string;
+};
+export function uploadPhoto(data: UploadPhotoRequest) {
+  const formData = new FormData();
+  formData.append("file", data.file);
 
-// 登录方法
-export function uploadPhoto(data: { flie: File }) {
-  return request<string>({
+  return request<UploadPhotoResponse>({
     url: "/upload",
     method: "POST",
-    data,
+    data: formData,
     headers: {
       "Content-Type": "multipart/form-data",
     },
@@ -197,11 +91,62 @@ export async function composeStory(data: ComposeRequest) {
 }
 
 /**
- * Generate a cartoon character via Backend
+ * 创建任务
  */
-export async function generateCharacter(data: GenerateCharacterRequest) {
-  return request<string>({
+
+export type CreateTaskRequest = {
+  img_url: string; // base64 string
+  child_name: string;
+  age: number;
+  theme: string;
+  gender: string; // '男' | '女'
+};
+export type CreateTaskResponse = {
+  task_id: string;
+  status: TaskStatus;
+  message: string;
+};
+export async function createVideoTasks(data: CreateTaskRequest) {
+  return request<CreateTaskResponse>({
     url: "/video/tasks",
+    method: "POST",
+    data,
+  });
+}
+
+/**
+ * 轮询查询任务状态
+ */
+export type TaskStatus = "pending" | "cover_ready" | "completed" | "failed" | "cancelled" | "cover_generating";
+type QueryTaskStatusRequest = {
+  task_id: string;
+};
+export type QueryTaskStatusResponse = {
+  status: TaskStatus;
+  message: string;
+};
+export async function queryVideoTasksStatus(data: QueryTaskStatusRequest) {
+  return request<QueryTaskStatusResponse>({
+    url: `video/tasks/${data.task_id}`,
+  });
+}
+
+/**
+ * 生成封面图
+ */
+export type GenerateCoverRequest = {
+  task_id: string;
+  regenerate: boolean;
+};
+export type GenerateCoverResponse = {
+  task_id: string;
+  status: TaskStatus;
+  cover_image_url: string;
+  message: string;
+};
+export async function generateCover(data: GenerateCoverRequest) {
+  return request<GenerateCoverResponse>({
+    url: `video/tasks/${data.task_id}/cover`,
     method: "POST",
     data,
   });

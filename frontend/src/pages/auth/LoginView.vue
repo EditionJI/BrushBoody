@@ -52,16 +52,14 @@
               autocomplete="current-password"
             />
             <span class="toggle-password" @click="togglePassword">
-              {{ showPassword ? '👁️' : '👁️‍🗨️' }}
+              {{ showPassword ? "👁️" : "👁️‍🗨️" }}
             </span>
           </div>
           <p class="password-hint">At least 6 characters</p>
         </div>
 
         <!-- Continue Button -->
-        <div class="continue-button" @click="handleSubmit">
-          Continue
-        </div>
+        <div class="continue-button" @click="handleSubmit">Continue</div>
       </div>
 
       <!-- Home Indicator -->
@@ -86,108 +84,111 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { loginOrRegister } from '../../api/backend'
+import { ref, computed, onMounted } from "vue";
+import { useRouter } from "vue-router";
+import { loginOrRegister } from "@/api/login";
 
-const router = useRouter()
+const router = useRouter();
 
 // State
-const isLoading = ref(false)
-const loadingMessage = ref('Creating magic...')
-const email = ref('')
-const password = ref('')
-const showPassword = ref(false)
-const pageTitle = ref('Sign Up')
-const showToast = ref(false)
-const toastMessage = ref('')
+const isLoading = ref(false);
+const loadingMessage = ref("Creating magic...");
+const email = ref("");
+const password = ref("");
+const showPassword = ref(false);
+const pageTitle = ref("Sign Up");
+const showToast = ref(false);
+const toastMessage = ref("");
 
-const emailInputRef = ref<HTMLInputElement | null>(null)
-const passwordInputRef = ref<HTMLInputElement | null>(null)
+const emailInputRef = ref<HTMLInputElement | null>(null);
+const passwordInputRef = ref<HTMLInputElement | null>(null);
 
 const goBack = () => {
-  router.push('/onboarding')
-}
+  router.push("/onboarding");
+};
 
 const togglePassword = () => {
-  showPassword.value = !showPassword.value
-}
+  showPassword.value = !showPassword.value;
+};
 
 const focusPassword = () => {
-  passwordInputRef.value?.focus()
-}
+  passwordInputRef.value?.focus();
+};
 
 const triggerToast = (msg: string) => {
-  toastMessage.value = msg
-  showToast.value = true
+  toastMessage.value = msg;
+  showToast.value = true;
   setTimeout(() => {
-    showToast.value = false
-  }, 3000)
-}
+    showToast.value = false;
+  }, 3000);
+};
 
 const validateForm = () => {
   // Email validation
-  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/
+  const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
   if (!email.value || !emailRegex.test(email.value)) {
-    triggerToast('Please enter a valid email address')
-    return false
+    triggerToast("Please enter a valid email address");
+    return false;
   }
 
   // Password validation
   if (!password.value || password.value.length < 6) {
-    triggerToast('Password must be at least 6 characters')
-    return false
+    triggerToast("Password must be at least 6 characters");
+    return false;
   }
 
-  return true
-}
+  return true;
+};
 
 const handleSubmit = async () => {
   if (!validateForm()) {
-    return
+    return;
   }
 
-  isLoading.value = true
-  loadingMessage.value = 'Processing...'
+  isLoading.value = true;
+  loadingMessage.value = "Processing...";
 
   try {
     const response = await loginOrRegister({
       email: email.value,
-      password: password.value
-    })
+      password: password.value,
+    });
 
     if (response.success) {
       // Save auth data to localStorage
-      localStorage.setItem('auth_tokens', JSON.stringify({
-        accessToken: response.data.accessToken,
-        refreshToken: response.data.refreshToken,
-        expiresIn: response.data.expiresIn
-      }))
-      localStorage.setItem('user_email', email.value)
+      localStorage.setItem(
+        "auth_tokens",
+        JSON.stringify({
+          accessToken: response.data.accessToken,
+          refreshToken: response.data.refreshToken,
+          expiresIn: response.data.expiresIn,
+        }),
+      );
+      localStorage.setItem("user_email", email.value);
 
       // Update page title based on login/register action
-      if (response.action === 'register') {
-        triggerToast('Account created successfully!')
-        pageTitle.value = 'Welcome back!'
+      if (response.action === "register") {
+        triggerToast("Account created successfully!");
+        pageTitle.value = "Welcome back!";
       }
 
       setTimeout(() => {
-        router.push('/')
-      }, 500)
+        router.push("/");
+      }, 500);
     } else {
-      triggerToast(response.error || 'Authentication failed')
+      triggerToast(response.error || "Authentication failed");
     }
   } catch (error: any) {
-    console.error('Auth error:', error)
-    triggerToast(error.message || 'Network error. Please check your connection')
+    console.error("Auth error:", error);
+    triggerToast(error.message || "Network error. Please check your connection");
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
 
 onMounted(() => {
-  emailInputRef.value?.focus()
-})
+  emailInputRef.value?.focus();
+});
 </script>
 
 <style scoped>
@@ -196,7 +197,7 @@ onMounted(() => {
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background: #FFFFFF;
+  background: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -207,7 +208,7 @@ onMounted(() => {
   width: 390px;
   height: 844px;
   overflow: hidden;
-  background: #FFFFFF;
+  background: #ffffff;
 }
 
 /* Status Bar */
@@ -225,7 +226,7 @@ onMounted(() => {
 }
 
 .time {
-  font-family: 'PingFang SC';
+  font-family: "PingFang SC";
   font-weight: 600;
   font-size: 17px;
   color: #000000;
@@ -260,7 +261,7 @@ onMounted(() => {
 }
 
 .battery::after {
-  content: '';
+  content: "";
   position: absolute;
   right: -2px;
   top: 3px;
@@ -316,7 +317,7 @@ onMounted(() => {
 }
 
 .title {
-  font-family: 'PingFang SC';
+  font-family: "PingFang SC";
   font-weight: 600;
   font-size: 28px;
   color: #101010;
@@ -330,16 +331,16 @@ onMounted(() => {
 }
 
 .input-label {
-  font-family: 'PingFang SC';
+  font-family: "PingFang SC";
   font-weight: 500;
   font-size: 14px;
-  color: #3A4750;
+  color: #3a4750;
 }
 
 .input-box {
   width: 343px;
   height: 54px;
-  background: #FFFFFF;
+  background: #ffffff;
   border: 1px solid rgba(105, 105, 105, 0.25);
   border-radius: 12px;
   display: flex;
@@ -363,7 +364,7 @@ onMounted(() => {
 }
 
 .text-input::placeholder {
-  color: #8E8E9D;
+  color: #8e8e9d;
 }
 
 .toggle-password {
@@ -373,9 +374,9 @@ onMounted(() => {
 }
 
 .password-hint {
-  font-family: 'PingFang SC';
+  font-family: "PingFang SC";
   font-size: 12px;
-  color: #8E8E9D;
+  color: #8e8e9d;
   margin: 0;
   padding-left: 4px;
 }
@@ -383,18 +384,20 @@ onMounted(() => {
 .continue-button {
   width: 343px;
   height: 54px;
-  background: linear-gradient(135deg, #4A90E2 0%, #357ABD 100%);
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
   border-radius: 12px;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-family: 'PingFang SC';
+  font-family: "PingFang SC";
   font-weight: 600;
   font-size: 16px;
-  color: #FFFFFF;
+  color: #ffffff;
   cursor: pointer;
   box-shadow: 0 4px 12px rgba(74, 144, 226, 0.3);
-  transition: transform 0.2s, box-shadow 0.2s;
+  transition:
+    transform 0.2s,
+    box-shadow 0.2s;
 }
 
 .continue-button:hover {
@@ -440,15 +443,19 @@ onMounted(() => {
   width: 50px;
   height: 50px;
   border: 5px solid #f3f3f3;
-  border-top: 5px solid #4A90E2;
+  border-top: 5px solid #4a90e2;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 20px;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* Toast Notification */

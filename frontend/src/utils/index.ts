@@ -249,3 +249,60 @@ export function getNormalPath(p) {
 export function blobValidate(data) {
   return data.type !== "application/json";
 }
+
+/**
+ * 轮询工具函数
+ * @param predicate 需要轮询执行的异步方法，返回 Promise<boolean>
+ * @param interval 轮询间隔时间（毫秒），默认 2000ms
+ * @param maxAttempts 最大尝试次数，默认 20 次
+ * @returns Promise<{status: TaskStatus; data?: any}> when success, return data, otherwise return undefined, and throw error
+ */
+export type pollUntilTrueStatus = "pending" | "processing" | "success" | "error";
+export async function pollUntilTrue<T>(
+  predicate: () => Promise<{ status: string | pollUntilTrueStatus; data: T }>,
+  interval: number = 2000,
+  maxAttempts: number = 20,
+  signal?: AbortSignal, // 新增参数
+): Promise<T> {
+  // 检查是否已取消
+  if (signal?.aborted) {
+    throw new DOMException("Aborted", "AbortError");
+  }
+
+  let attempts = 0;
+
+  while (attempts < maxAttempts) {
+    // 每次循环开始前检查
+    if (signal?.aborted) {
+      throw new DOMException("Aborted", "AbortError");
+    }
+
+    attempts++;
+    try {
+      const { status, data } = await predicate();
+      if (status === "success") {
+        return data;
+      } else if (status === "error") {
+        throw new Error("任务执行失败 (Business Error)");
+      }
+    } catch (error) {
+      // 如果是 AbortError，直接抛出不要吞掉
+      console.error(`轮询第 ${attempts} 次发生错误:`, error);
+      if (error instanceof DOMException && error.name === "AbortError") {
+        throw error;
+      }
+    }
+
+    if (attempts < maxAttempts) {
+      // 使用 Promise.race 实现可中断的等待
+      await Promise.race([
+        new Promise((resolve) => setTimeout(resolve, interval)),
+        new Promise((_, reject) => {
+          signal?.addEventListener("abort", () => reject(new DOMException("Aborted", "AbortError")));
+        }),
+      ]);
+    }
+  }
+
+  throw new Error(`轮询超时，未在 ${maxAttempts} 次尝试内完成`);
+}
