@@ -9,12 +9,6 @@ const routes = [
     meta: { hideBottomNav: true },
   },
   {
-    path: "/login",
-    name: "login",
-    component: () => import("../pages/auth/LoginView.vue"),
-    meta: { hideBottomNav: true, public: true },
-  },
-  {
     path: "/",
     name: "home",
     component: () => import("../pages/home/HomeView.vue"),
@@ -47,12 +41,6 @@ const routes = [
     component: () => import("../pages/payment/PaymentView.vue"),
     meta: { hideBottomNav: true },
   },
-  {
-    path: "/change-password",
-    name: "change-password",
-    component: () => import("../pages/auth/ChangePasswordView.vue"),
-    meta: { hideBottomNav: true },
-  },
 ];
 
 const router = createRouter({
@@ -60,61 +48,21 @@ const router = createRouter({
   routes,
 });
 
-// Check if user is authenticated
-function isAuthenticated(): boolean {
-  const authTokens = localStorage.getItem("auth_tokens");
-  if (!authTokens) return false;
-
-  try {
-    const tokens = JSON.parse(authTokens);
-    // Check if access token is still valid (not expired)
-    // Simple check: if exists, we can try to use it
-    return !!tokens.accessToken;
-  } catch {
-    return false;
-  }
-}
-
-// Navigation guard for authentication
-router.beforeEach(async (to, from, next) => {
-  return next(); // TODO: Implement authentication
-  const isPublicRoute = to.meta.public === true;
-
-  // Allow public routes without authentication
-  if (isPublicRoute) {
-    next();
-    return;
-  }
-
-  // Check if user is authenticated
-  if (isAuthenticated()) {
-    // If trying to access login page while authenticated, redirect to home
-    if (to.path === "/login") {
-      next("/");
-      return;
-    }
-    next();
-    return;
-  }
-
-  // User is not authenticated
-
-  // Check onboarding status
+// Navigation guard for onboarding
+router.beforeEach((to, from, next) => {
+  // Directly check localStorage to avoid Pinia store initialization issues
   const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding") === "true";
 
-  // Redirect to login if not authenticated
-  if (!isAuthenticated()) {
-    // If trying to access home and hasn't seen onboarding, redirect to onboarding first
-    if (to.path === "/" && !hasSeenOnboarding) {
-      next("/onboarding");
-      return;
-    }
+  // If trying to access home and hasn't seen onboarding, redirect to onboarding
+  if (to.path === "/" && !hasSeenOnboarding) {
+    next("/onboarding");
+    return;
+  }
 
-    // For all other protected routes, redirect to login
-    if (to.path !== "/onboarding") {
-      next("/login");
-      return;
-    }
+  // If onboarding is done and trying to access onboarding page, redirect to home
+  if (to.path === "/onboarding" && hasSeenOnboarding) {
+    next("/");
+    return;
   }
 
   next();

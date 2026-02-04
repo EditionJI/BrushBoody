@@ -176,15 +176,8 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
-import {
-  uploadPhoto,
-  composeStory,
-  createVideoTasks,
-  generateCover,
-  queryVideoTasksStatus,
-  TaskStatus,
-  QueryTaskStatusResponse,
-} from "@/api/backend";
+import { uploadPhoto, createVideoTasks, queryVideoTasksStatus, generateCover, videoTasksConfirm } from "@/api/backend";
+import type { TaskStatus, QueryTaskStatusResponse } from "@/api/backend";
 import { useUserStore } from "../../stores/user";
 import { pollUntilTrue } from "@/utils";
 
@@ -630,7 +623,7 @@ const handleConfirm = async () => {
 
   try {
     // Call compose API to generate story
-    const response = await composeStory({
+    const response = await uploadPhoto({
       child_name: nickname.value || "Hero",
       gender: getGenderChinese(childGender.value),
       age: childAge.value,

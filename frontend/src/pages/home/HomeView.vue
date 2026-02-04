@@ -2,12 +2,7 @@
   <div class="home-container">
     <div class="mobile-wrapper" ref="wrapperRef">
       <!-- Background Image - Changes based on current slide (3 backgrounds) -->
-      <img
-        :src="currentBackgroundImage"
-        alt="Home"
-        class="full-screen-image"
-        @load="onBgImageLoad"
-      />
+      <img :src="currentBackgroundImage" alt="Home" class="full-screen-image" @load="onBgImageLoad" />
 
       <!-- Streak Days Banner - Only for users with brushing records, hidden when video plays -->
       <div v-if="showStreakBanner && !shouldPlayVideo" class="streak-banner">
@@ -16,12 +11,7 @@
       </div>
 
       <!-- Public Badge - Fixed at top left, hidden when video plays -->
-      <img
-        v-if="!shouldPlayVideo"
-        src="/images/首页/绘本已公开.png"
-        alt="Public"
-        class="public-badge"
-      />
+      <img v-if="!shouldPlayVideo" src="/images/首页/绘本已公开.png" alt="Public" class="public-badge" />
 
       <!-- Video Screen Interaction Area - Full background size for video playback -->
       <div
@@ -43,21 +33,11 @@
         ></video>
 
         <!-- Pause button - shown when video is paused -->
-        <img
-          v-if="shouldPlayVideo && isVideoPaused"
-          src="/images/首页/Vector.png"
-          alt="Pause"
-          class="pause-button"
-        />
+        <img v-if="shouldPlayVideo && isVideoPaused" src="/images/首页/Vector.png" alt="Pause" class="pause-button" />
       </div>
 
       <!-- Toast Message - Fixed above bottom nav, hidden when video plays -->
-      <img
-        v-if="!shouldPlayVideo"
-        src="/images/首页/提示信息.png"
-        alt="Toast"
-        class="toast-message"
-      />
+      <img v-if="!shouldPlayVideo" src="/images/首页/提示信息.png" alt="Toast" class="toast-message" />
 
       <!-- Create Button - Blue L button, hidden when video plays -->
       <img
@@ -69,11 +49,7 @@
       />
 
       <!-- Bottom Navigation - Fixed at bottom -->
-      <img
-        src="/images/首页/底部栏.png"
-        alt="Bottom Nav"
-        class="bottom-nav"
-      />
+      <img src="/images/首页/底部栏.png" alt="Bottom Nav" class="bottom-nav" />
       <div class="bottom-nav-area">
         <div class="nav-item home" @click="goToHome"></div>
         <div class="nav-item create" @click="goToCreate"></div>
@@ -85,305 +61,299 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick, watch } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '../../stores/user'
+import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
+import { useRouter } from "vue-router";
+import { useUserStore } from "../../stores/user";
 
-const router = useRouter()
-const userStore = useUserStore()
+const router = useRouter();
+const userStore = useUserStore();
 
-const wrapperRef = ref<HTMLElement | null>(null)
-const currentSlide = ref(0)
-const disableTransition = ref(false)
+const wrapperRef = ref<HTMLElement | null>(null);
+const currentSlide = ref(0);
+const disableTransition = ref(false);
 
 // Auto-play video state
-const shouldPlayVideo = ref(false)
-const autoPlayTimer = ref<number | null>(null)
-const videoPlayer = ref<HTMLVideoElement | null>(null)
-const hasUserInteracted = ref(false)
+const shouldPlayVideo = ref(false);
+const autoPlayTimer = ref<number | null>(null);
+const videoPlayer = ref<HTMLVideoElement | null>(null);
+const hasUserInteracted = ref(false);
 
 // Video pause state
-const isVideoPaused = ref(false)
+const isVideoPaused = ref(false);
 
 // New home backgrounds (3 backgrounds for sliding)
-const homeBackgrounds = [
-  '/images/首页/背景.png',
-  '/images/首页/背景2.png',
-  '/images/首页/背景3.png'
-]
+const homeBackgrounds = ["/images/首页/背景.png", "/images/首页/背景2.png", "/images/首页/背景3.png"];
 
 // Paid user background (old user)
-const paidUserBackground = '/SVG/home-old-user.svg'
+const paidUserBackground = "/SVG/home-old-user.svg";
 
 // Video paths corresponding to each background
 const newUserStoryVideos = [
-  '/images/home-new-user-1.mp4',
-  '/images/home-new-user-2.mp4',
-  '/images/home-new-user-3.mp4'
-]
+  "/images/home-new-user-1.mp4",
+  "/images/home-new-user-2.mp4",
+  "/images/home-new-user-3.mp4",
+];
 
-const paidUserStoryVideos = [
-  '/images/home-old-user.mp4'
-]
+const paidUserStoryVideos = ["/images/home-old-user.mp4"];
 
 // Total stories count based on user type
 const totalStories = computed(() => {
-  return isPaidUser.value ? 1 : 3
-})
+  return isPaidUser.value ? 1 : 3;
+});
 
 // Current background image based on user state and slide
 const currentBackgroundImage = computed(() => {
   if (isPaidUser.value) {
-    return paidUserBackground
+    return paidUserBackground;
   }
-  const index = ((currentSlide.value % 3) + 3) % 3
-  return homeBackgrounds[index] || homeBackgrounds[0]
-})
+  const index = ((currentSlide.value % 3) + 3) % 3;
+  return homeBackgrounds[index] || homeBackgrounds[0];
+});
 
-const streakCount = computed(() => userStore.streakCount)
-const isPaidUser = computed(() => userStore.isPaidUser)
+const streakCount = computed(() => userStore.streakCount);
+const isPaidUser = computed(() => userStore.isPaidUser);
 
 // Check if user has brushing records (old user)
-const hasBrushingRecords = computed(() => userStore.brushingRecords.length > 0)
+const hasBrushingRecords = computed(() => userStore.brushingRecords.length > 0);
 
 // Show streak banner for users with brushing records
-const showStreakBanner = computed(() => hasBrushingRecords.value && streakCount.value > 0)
+const showStreakBanner = computed(() => hasBrushingRecords.value && streakCount.value > 0);
 
 // Get current video URL based on user state and current slide
 const currentVideoUrl = computed(() => {
-  const total = totalStories.value
-  const actualIndex = ((currentSlide.value % total) + total) % total
-  const videos = isPaidUser.value ? paidUserStoryVideos : newUserStoryVideos
-  return videos[actualIndex] || ''
-})
+  const total = totalStories.value;
+  const actualIndex = ((currentSlide.value % total) + total) % total;
+  const videos = isPaidUser.value ? paidUserStoryVideos : newUserStoryVideos;
+  return videos[actualIndex] || "";
+});
 
 // Navigation
 const goToHome = () => {
-  const total = totalStories.value
-  disableTransition.value = true
-  currentSlide.value = total
+  const total = totalStories.value;
+  disableTransition.value = true;
+  currentSlide.value = total;
   setTimeout(() => {
-    disableTransition.value = false
-  }, 50)
-}
+    disableTransition.value = false;
+  }, 50);
+};
 
 const goToCreate = () => {
-  router.push('/create')
-}
+  router.push("/create");
+};
 
 const goToStories = () => {
-  router.push('/stories')
-}
+  router.push("/stories");
+};
 
 const goToParents = () => {
-  router.push('/parents')
-}
+  router.push("/parents");
+};
 
 // Story card click handler
 const handleSlideClick = (index: number) => {
   router.push({
-    path: '/brushing',
-    query: { source: 'home', storyIndex: index }
-  })
-}
+    path: "/brushing",
+    query: { source: "home", storyIndex: index },
+  });
+};
 
 // Video click handler - toggle play/pause
 const handleVideoClick = () => {
   // If it's a swipe, don't handle click
   if (isSwipe.value) {
-    return
+    return;
   }
 
   // If video is not playing yet, navigate to brushing page
   if (!shouldPlayVideo.value) {
-    const total = totalStories.value
-    const actualIndex = ((currentSlide.value % total) + total) % total
-    handleSlideClick(actualIndex)
-    return
+    const total = totalStories.value;
+    const actualIndex = ((currentSlide.value % total) + total) % total;
+    handleSlideClick(actualIndex);
+    return;
   }
 
   // Toggle video play/pause
   if (videoPlayer.value) {
     if (isVideoPaused.value) {
       // Resume video
-      videoPlayer.value.play()
-      isVideoPaused.value = false
+      videoPlayer.value.play();
+      isVideoPaused.value = false;
     } else {
       // Pause video
-      videoPlayer.value.pause()
-      isVideoPaused.value = true
+      videoPlayer.value.pause();
+      isVideoPaused.value = true;
     }
   }
-}
+};
 
 // Background image load handler
 const onBgImageLoad = () => {
   // Image loaded successfully, start auto-play timer
-  startAutoPlayTimer()
-}
+  startAutoPlayTimer();
+};
 
 // Start 1.5-second auto-play timer
 const startAutoPlayTimer = () => {
   // Clear any existing timer
-  stopAutoPlayTimer()
+  stopAutoPlayTimer();
 
   // Start new 1.5-second timer
   autoPlayTimer.value = window.setTimeout(() => {
-    shouldPlayVideo.value = true
-    isVideoPaused.value = false
+    shouldPlayVideo.value = true;
+    isVideoPaused.value = false;
     // Auto play video when it's ready
     nextTick(() => {
       if (videoPlayer.value) {
         // Try to play with sound, if user has interacted
         // Otherwise it will fail silently and user needs to click
-        videoPlayer.value.play().catch(err => {
-          console.log('Auto-play failed (expected if no user interaction yet):', err)
+        videoPlayer.value.play().catch((err) => {
+          console.log("Auto-play failed (expected if no user interaction yet):", err);
           // If auto-play fails, video is still loaded and will play when user clicks
-        })
+        });
       }
-    })
-  }, 1500)
-}
+    });
+  }, 1500);
+};
 
 // Stop auto-play timer
 const stopAutoPlayTimer = () => {
   if (autoPlayTimer.value !== null) {
-    clearTimeout(autoPlayTimer.value)
-    autoPlayTimer.value = null
+    clearTimeout(autoPlayTimer.value);
+    autoPlayTimer.value = null;
   }
-  shouldPlayVideo.value = false
-  isVideoPaused.value = false
+  shouldPlayVideo.value = false;
+  isVideoPaused.value = false;
 
   // Pause video if playing
   if (videoPlayer.value) {
-    videoPlayer.value.pause()
-    videoPlayer.value.currentTime = 0
+    videoPlayer.value.pause();
+    videoPlayer.value.currentTime = 0;
   }
-}
+};
 
 // Reset timer on user interaction
 const resetAutoPlayTimer = () => {
-  stopAutoPlayTimer()
-  startAutoPlayTimer()
-}
+  stopAutoPlayTimer();
+  startAutoPlayTimer();
+};
 
 // Touch and swipe handling with circular navigation
-const isSwipe = ref(false)
-const hasMoved = ref(false)
-const touchStartY = ref(0)
-const touchStartTime = ref(0)
-const touchStartX = ref(0)
+const isSwipe = ref(false);
+const hasMoved = ref(false);
+const touchStartY = ref(0);
+const touchStartTime = ref(0);
+const touchStartX = ref(0);
 
 const handleTouchStart = (e: TouchEvent) => {
-  touchStartY.value = e.touches[0].clientY
-  touchStartX.value = e.touches[0].clientX
-  touchStartTime.value = Date.now()
-  isSwipe.value = false
-  hasMoved.value = false
+  touchStartY.value = e.touches[0].clientY;
+  touchStartX.value = e.touches[0].clientX;
+  touchStartTime.value = Date.now();
+  isSwipe.value = false;
+  hasMoved.value = false;
 
   // Mark that user has interacted with the page
   if (!hasUserInteracted.value) {
-    hasUserInteracted.value = true
-    console.log('User interacted, future videos can play with sound')
+    hasUserInteracted.value = true;
+    console.log("User interacted, future videos can play with sound");
   }
-}
+};
 
 const handleTouchMove = (e: TouchEvent) => {
   // Prevent default to avoid page scrolling
-  e.preventDefault()
+  e.preventDefault();
 
-  const currentY = e.touches[0].clientY
-  const currentX = e.touches[0].clientX
-  const deltaY = Math.abs(currentY - touchStartY.value)
-  const deltaX = Math.abs(currentX - touchStartX.value)
+  const currentY = e.touches[0].clientY;
+  const currentX = e.touches[0].clientX;
+  const deltaY = Math.abs(currentY - touchStartY.value);
+  const deltaX = Math.abs(currentX - touchStartX.value);
 
   // If vertical movement is more than 5px, mark as moved
   if (deltaY > 5 || deltaX > 5) {
-    hasMoved.value = true
+    hasMoved.value = true;
   }
 
   // If vertical movement is more than 20px, mark as potential swipe
   if (deltaY > 20) {
-    isSwipe.value = true
+    isSwipe.value = true;
   }
-}
+};
 
 const handleTouchEnd = (e: TouchEvent) => {
-  const touchDuration = Date.now() - touchStartTime.value
-  const touchEndY = e.changedTouches[0].clientY
-  const touchEndX = e.changedTouches[0].clientX
-  const diffY = touchStartY.value - touchEndY
-  const diffX = touchStartX.value - touchEndX
-  const absDiffY = Math.abs(diffY)
-  const absDiffX = Math.abs(diffX)
+  const touchDuration = Date.now() - touchStartTime.value;
+  const touchEndY = e.changedTouches[0].clientY;
+  const touchEndX = e.changedTouches[0].clientX;
+  const diffY = touchStartY.value - touchEndY;
+  const diffX = touchStartX.value - touchEndX;
+  const absDiffY = Math.abs(diffY);
+  const absDiffX = Math.abs(diffX);
 
   // Distinguish between tap and swipe
-  const SWIPE_THRESHOLD = 40
-  const TAP_MAX_DURATION = 300
+  const SWIPE_THRESHOLD = 40;
+  const TAP_MAX_DURATION = 300;
 
   if (absDiffY > SWIPE_THRESHOLD && absDiffY > absDiffX && touchDuration < 1000) {
     // Vertical swipe - change slide with circular navigation (always smooth)
     if (diffY > 0) {
       // Swipe up - next slide
-      currentSlide.value++
+      currentSlide.value++;
     } else if (diffY < 0) {
       // Swipe down - previous slide
-      currentSlide.value--
+      currentSlide.value--;
     }
 
     // Reset position when we go too far (after animation completes)
     // This keeps currentSlide in a reasonable range
     setTimeout(() => {
-      const total = totalStories.value
+      const total = totalStories.value;
       if (currentSlide.value >= total * 2) {
-        disableTransition.value = true
-        currentSlide.value = currentSlide.value - total
+        disableTransition.value = true;
+        currentSlide.value = currentSlide.value - total;
         setTimeout(() => {
-          disableTransition.value = false
-        }, 50)
+          disableTransition.value = false;
+        }, 50);
       } else if (currentSlide.value < -total) {
-        disableTransition.value = true
-        currentSlide.value = currentSlide.value + total
+        disableTransition.value = true;
+        currentSlide.value = currentSlide.value + total;
         setTimeout(() => {
-          disableTransition.value = false
-        }, 50)
+          disableTransition.value = false;
+        }, 50);
       }
-    }, 350)
+    }, 350);
   }
 
   // Reset swipe state after a delay to prevent click from firing
   if (isSwipe.value) {
     // Keep isSwipe true for a bit to prevent click
     setTimeout(() => {
-      isSwipe.value = false
-      hasMoved.value = false
-    }, 200)
+      isSwipe.value = false;
+      hasMoved.value = false;
+    }, 200);
   } else {
     // Immediately reset if no swipe
-    hasMoved.value = false
+    hasMoved.value = false;
   }
-}
+};
 
 onMounted(() => {
   // Load fresh user data
-  userStore.loadUserData()
+  userStore.loadUserData();
   // Initialize to middle position for smooth circular navigation
-  const total = totalStories.value
-  currentSlide.value = total
+  const total = totalStories.value;
+  currentSlide.value = total;
 
   // Start auto-play timer manually (don't rely only on image load)
-  startAutoPlayTimer()
-})
+  startAutoPlayTimer();
+});
 
 onUnmounted(() => {
   // Cleanup timers
-  stopAutoPlayTimer()
-})
+  stopAutoPlayTimer();
+});
 
 // Watch for slide changes to reset timer
 watch(currentSlide, () => {
-  resetAutoPlayTimer()
-})
+  resetAutoPlayTimer();
+});
 </script>
 
 <style scoped>
@@ -392,7 +362,7 @@ watch(currentSlide, () => {
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background: #D9D9D9;
+  background: #d9d9d9;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -426,7 +396,7 @@ watch(currentSlide, () => {
   width: 90%;
   height: 7%;
   z-index: 10;
-  background: linear-gradient(135deg, #FFD700 0%, #FFA500 100%);
+  background: linear-gradient(135deg, #ffd700 0%, #ffa500 100%);
   border-radius: 20px;
   display: flex;
   align-items: center;
@@ -486,8 +456,8 @@ watch(currentSlide, () => {
 /* Pause button - Centered on video */
 .pause-button {
   position: absolute;
-  left: calc(50% - 56px/2);
-  top: calc(50% - 56px/2);
+  left: calc(50% - 56px / 2);
+  top: calc(50% - 56px / 2);
   width: 56px;
   height: 56px;
   z-index: 6;
@@ -497,7 +467,7 @@ watch(currentSlide, () => {
 /* Toast Message - Above bottom nav */
 .toast-message {
   position: absolute;
-  left: calc(50% - 295px/2 - 18.5px);
+  left: calc(50% - 295px / 2 - 18.5px);
   top: 638px;
   width: 295px;
   height: 38px;
@@ -508,7 +478,7 @@ watch(currentSlide, () => {
 /* Create Button - Blue L button */
 .create-button {
   position: absolute;
-  left: calc(50% - 342px/2);
+  left: calc(50% - 342px / 2);
   top: 688px;
   width: 342px;
   height: 56px;

@@ -5,35 +5,12 @@
 
       <div class="hotspot-layer" :style="hotspotLayerStyle">
         <div class="back-button-area" @click="goBack"></div>
-        <div class="settings-button-area" @click="showSettingsMenu = true"></div>
+        <div class="settings-button-area" @click="goToSettings"></div>
         <div class="stats-area-1" @click="viewStats"></div>
         <div class="stats-area-2" @click="viewStats"></div>
         <div class="stats-area-3" @click="viewStats"></div>
       </div>
     </div>
-
-    <!-- Settings Menu Modal -->
-    <transition name="fade">
-      <div v-if="showSettingsMenu" class="modal-overlay" @click="showSettingsMenu = false">
-        <div class="settings-modal" @click.stop>
-          <div class="modal-header">
-            <h3>Settings</h3>
-            <button class="close-button" @click="showSettingsMenu = false">✕</button>
-          </div>
-          <div class="modal-body">
-            <div class="menu-item" @click="goToChangePassword">
-              <span class="menu-icon">🔐</span>
-              <span class="menu-text">Change Password</span>
-            </div>
-            <div class="menu-divider"></div>
-            <div class="menu-item danger" @click="handleLogout">
-              <span class="menu-icon">🚪</span>
-              <span class="menu-text">Log Out</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    </transition>
 
     <!-- Bottom Menu Click Areas -->
     <div class="bottom-menu">
@@ -46,122 +23,99 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
-import { logout } from '../../api/backend'
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
-const router = useRouter()
+const router = useRouter();
 
-const wrapperRef = ref<HTMLElement | null>(null)
-const bgNaturalWidth = ref<number | null>(null)
-const bgNaturalHeight = ref<number | null>(null)
-const overlayOffsetX = ref(0)
-const overlayOffsetY = ref(0)
-const overlayScale = ref(1)
-const showSettingsMenu = ref(false)
-let resizeObserver: ResizeObserver | null = null
+const wrapperRef = ref<HTMLElement | null>(null);
+const bgNaturalWidth = ref<number | null>(null);
+const bgNaturalHeight = ref<number | null>(null);
+const overlayOffsetX = ref(0);
+const overlayOffsetY = ref(0);
+const overlayScale = ref(1);
+let resizeObserver: ResizeObserver | null = null;
 
 const hotspotLayerStyle = computed(() => {
-  const w = bgNaturalWidth.value
-  const h = bgNaturalHeight.value
-  if (!w || !h) return { display: 'none' }
+  const w = bgNaturalWidth.value;
+  const h = bgNaturalHeight.value;
+  if (!w || !h) return { display: "none" };
 
   return {
-    position: 'absolute',
-    top: '0',
-    left: '0',
+    position: "absolute",
+    top: "0",
+    left: "0",
     width: `${w}px`,
     height: `${h}px`,
     transform: `translate(${overlayOffsetX.value}px, ${overlayOffsetY.value}px) scale(${overlayScale.value})`,
-    transformOrigin: 'top left',
-    zIndex: '10'
-  }
-})
+    transformOrigin: "top left",
+    zIndex: "10",
+  };
+});
 
 const recomputeOverlay = () => {
-  const w = bgNaturalWidth.value
-  const h = bgNaturalHeight.value
-  const wrapper = wrapperRef.value
-  if (!w || !h || !wrapper) return
+  const w = bgNaturalWidth.value;
+  const h = bgNaturalHeight.value;
+  const wrapper = wrapperRef.value;
+  if (!w || !h || !wrapper) return;
 
-  const containerW = wrapper.clientWidth
-  const containerH = wrapper.clientHeight
-  const scale = Math.min(containerW / w, containerH / h)
-  overlayScale.value = scale
-  overlayOffsetX.value = (containerW - w * scale) / 2
-  overlayOffsetY.value = (containerH - h * scale) / 2
-}
+  const containerW = wrapper.clientWidth;
+  const containerH = wrapper.clientHeight;
+  const scale = Math.min(containerW / w, containerH / h);
+  overlayScale.value = scale;
+  overlayOffsetX.value = (containerW - w * scale) / 2;
+  overlayOffsetY.value = (containerH - h * scale) / 2;
+};
 
 const onBgImageLoad = (event: Event) => {
-  const img = event.target as HTMLImageElement
-  bgNaturalWidth.value = img.naturalWidth
-  bgNaturalHeight.value = img.naturalHeight
-  recomputeOverlay()
-}
+  const img = event.target as HTMLImageElement;
+  bgNaturalWidth.value = img.naturalWidth;
+  bgNaturalHeight.value = img.naturalHeight;
+  recomputeOverlay();
+};
 
 onMounted(() => {
   if (wrapperRef.value) {
-    resizeObserver = new ResizeObserver(() => recomputeOverlay())
-    resizeObserver.observe(wrapperRef.value)
+    resizeObserver = new ResizeObserver(() => recomputeOverlay());
+    resizeObserver.observe(wrapperRef.value);
   }
-})
+});
 
 onUnmounted(() => {
-  resizeObserver?.disconnect()
-  resizeObserver = null
-})
+  resizeObserver?.disconnect();
+  resizeObserver = null;
+});
 
 const goBack = () => {
-  if (window.history.length > 1) router.back()
-  else router.push('/')
-}
+  if (window.history.length > 1) router.back();
+  else router.push("/");
+};
+
+const goToSettings = () => {
+  // Navigate to settings page (to be implemented)
+  console.log("Navigate to settings");
+};
 
 const goToHome = () => {
-  router.push('/')
-}
+  router.push("/");
+};
 
 const goToCreate = () => {
-  router.push('/create')
-}
+  router.push("/create");
+};
 
 const goToStories = () => {
-  router.push('/stories')
-}
+  router.push("/stories");
+};
 
 const stayHere = () => {
   // Already on parents page, do nothing
-}
+};
 
 const viewStats = () => {
   // Show detailed statistics (to be implemented)
-  console.log('View detailed statistics')
-}
-
-const goToChangePassword = () => {
-  showSettingsMenu.value = false
-  router.push('/change-password')
-}
-
-const handleLogout = async () => {
-  showSettingsMenu.value = false
-
-  try {
-    // Get refresh token from localStorage
-    const authTokens = localStorage.getItem('auth_tokens')
-    if (authTokens) {
-      const tokens = JSON.parse(authTokens)
-      await logout(tokens.refreshToken)
-    }
-  } catch (error) {
-    console.error('Logout error:', error)
-  } finally {
-    // Clear local storage regardless of API call result
-    localStorage.removeItem('auth_tokens')
-    localStorage.removeItem('user_email')
-    localStorage.removeItem('hasSeenOnboarding')
-    router.push('/login')
-  }
-}
+  console.log("View detailed statistics");
+};
 </script>
 
 <style scoped>
@@ -170,7 +124,7 @@ const handleLogout = async () => {
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background: #FFF9F0;
+  background: #fff9f0;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -280,112 +234,5 @@ const handleLogout = async () => {
 
 .menu-click-area:active {
   background: rgba(0, 0, 0, 0.05);
-}
-
-/* Settings Modal */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.5);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.settings-modal {
-  background: white;
-  border-radius: 16px;
-  width: 280px;
-  max-width: 90%;
-  box-shadow: 0 10px 40px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-}
-
-.modal-header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 16px 20px;
-  border-bottom: 1px solid #f0f0f0;
-}
-
-.modal-header h3 {
-  margin: 0;
-  font-size: 18px;
-  font-weight: 600;
-  color: #333;
-}
-
-.close-button {
-  background: none;
-  border: none;
-  font-size: 24px;
-  color: #999;
-  cursor: pointer;
-  padding: 0;
-  width: 24px;
-  height: 24px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.close-button:hover {
-  color: #333;
-}
-
-.modal-body {
-  padding: 8px 0;
-}
-
-.menu-item {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-  padding: 12px 20px;
-  cursor: pointer;
-  transition: background 0.2s;
-}
-
-.menu-item:hover {
-  background: #f5f5f5;
-}
-
-.menu-item.danger {
-  color: #e74c3c;
-}
-
-.menu-item.danger:hover {
-  background: #fee;
-}
-
-.menu-icon {
-  font-size: 20px;
-}
-
-.menu-text {
-  font-size: 16px;
-  font-weight: 500;
-}
-
-.menu-divider {
-  height: 1px;
-  background: #f0f0f0;
-  margin: 4px 0;
-}
-
-/* Fade transition for modal */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 0.2s ease;
-}
-
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
 }
 </style>

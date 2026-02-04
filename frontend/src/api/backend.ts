@@ -1,60 +1,5 @@
 import request from "@/utils/request";
 /**
- * Backend API Service
- * Connects to the Node.js backend for AI generation
- */
-
-// Types from backend/src/server.js
-
-export interface GenerateStoryRequest {
-  characterName: string;
-  childAge: number;
-  theme: string;
-  preferences?: string;
-}
-
-export interface StoryResponse {
-  title: string;
-  content: string;
-  sections: string[];
-}
-
-/**
- * Upload photo request
- * Note: Now using FormData with multipart/form-data instead of JSON
- * Form field name: 'photo' (File object)
- */
-
-/**
- * Compose story request
- */
-export interface ComposeRequest {
-  child_name: string;
-  gender: string; // '男' | '女'
-  age?: number;
-  theme: string; // '森林冒险' | '太空冒险' | '海洋探险' | '超级英雄'
-  img_url: string;
-}
-
-/**
- * Compose story response
- */
-export interface ComposeResponse {
-  success: boolean;
-  message?: string;
-  story_id?: string;
-  data?: {
-    child_name: string;
-    gender: string;
-    age?: number;
-    theme: string;
-    img_url: string;
-    status: string;
-  };
-  error?: string;
-}
-
-/**
  * Upload photo to backend (uploads to OSS and returns URL)
  * Uses multipart/form-data to upload the file directly
  */
@@ -77,16 +22,6 @@ export function uploadPhoto(data: UploadPhotoRequest) {
     headers: {
       "Content-Type": "multipart/form-data",
     },
-  });
-}
-/**
- * Compose/generate a storybook
- */
-export async function composeStory(data: ComposeRequest) {
-  return request<ComposeResponse>({
-    url: "/compose",
-    method: "POST",
-    data,
   });
 }
 
@@ -153,11 +88,21 @@ export async function generateCover(data: GenerateCoverRequest) {
 }
 
 /**
- * Generate a brushing story via Backend
+ * 确认封面（触发视频生成）
  */
-export async function generateStory(data: GenerateStoryRequest) {
-  return request<StoryResponse>({
-    url: "/stories/generate-story",
+export type VideoTasksConfirmRequest = {
+  task_id: string;
+  confirmed: boolean;
+};
+export type VideoTasksConfirmResponse = {
+  task_id: string;
+  status: TaskStatus;
+  cover_image_url: string;
+  message: string;
+};
+export async function videoTasksConfirm(data: VideoTasksConfirmRequest) {
+  return request<VideoTasksConfirmResponse>({
+    url: `video/tasks/${data.task_id}/confirm`,
     method: "POST",
     data,
   });
