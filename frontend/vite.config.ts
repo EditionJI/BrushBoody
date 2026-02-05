@@ -25,7 +25,7 @@ export default defineConfig(({ mode, command }) => {
       host: true,
       open: true,
       proxy: {
-        "/api": {
+        "/api/v1": {
           target: "http://163.177.65.65:8082",
           changeOrigin: true,
         },

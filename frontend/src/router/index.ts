@@ -1,45 +1,55 @@
 import { createRouter, createWebHistory } from "vue-router";
 import { useAppStore } from "../stores/app";
+import { getToken } from "@/utils/storage";
 
 const routes = [
+  {
+    path: "/login",
+    name: "login",
+    component: () => import("../pages/auth/LoginView.vue"),
+    meta: { hideBottomNav: true, public: true },
+  },
   {
     path: "/onboarding",
     name: "onboarding",
     component: () => import("../pages/onboarding/OnboardingView.vue"),
-    meta: { hideBottomNav: true },
+    meta: { hideBottomNav: true, public: true },
   },
   {
     path: "/",
     name: "home",
     component: () => import("../pages/home/HomeView.vue"),
+    meta: { requiresAuth: true },
   },
   {
     path: "/create",
     name: "create",
     component: () => import("../pages/create/CreateView.vue"),
-    meta: { hideBottomNav: true },
+    meta: { hideBottomNav: true, requiresAuth: true },
   },
   {
     path: "/stories",
     name: "stories",
     component: () => import("../pages/stories/StoriesView.vue"),
+    meta: { requiresAuth: true },
   },
   {
     path: "/parents",
     name: "parents",
     component: () => import("../pages/parents/ParentsView.vue"),
+    meta: { requiresAuth: true },
   },
   {
     path: "/brushing",
     name: "brushing",
     component: () => import("../pages/brushing/BrushingView.vue"),
-    meta: { hideBottomNav: true },
+    meta: { hideBottomNav: true, requiresAuth: true },
   },
   {
     path: "/payment",
     name: "payment",
     component: () => import("../pages/payment/PaymentView.vue"),
-    meta: { hideBottomNav: true },
+    meta: { hideBottomNav: true, requiresAuth: true },
   },
 ];
 
@@ -48,9 +58,26 @@ const router = createRouter({
   routes,
 });
 
-// Navigation guard for onboarding
+// Navigation guard for authentication and onboarding
 router.beforeEach((to, from, next) => {
-  // Directly check localStorage to avoid Pinia store initialization issues
+  const token = getToken();
+
+  // Check if route requires authentication
+  const requiresAuth = to.meta.requiresAuth !== false && to.meta.public !== true;
+
+  // If route requires auth and no token, redirect to login
+  if (requiresAuth && !token) {
+    next("/login");
+    return;
+  }
+
+  // If logged in and trying to access login page, redirect to home
+  if (to.path === "/login" && token) {
+    next("/");
+    return;
+  }
+
+  // Onboarding check
   const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding") === "true";
 
   // If trying to access home and hasn't seen onboarding, redirect to onboarding
