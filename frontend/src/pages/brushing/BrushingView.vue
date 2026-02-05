@@ -1,475 +1,429 @@
 <template>
   <div class="brushing-container">
-    <!-- Status Bar -->
-    <div class="status-bar">
-      <span class="time">{{ currentTime }}</span>
-      <div class="status-icons">
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M8 2C4.69 2 2 4.69 2 8s2.69 6 6 6 6-2.69 6-6-2.69-6-6-6zm0 10c-2.21 0-4-1.79-4-4s1.79-4 4-4 4 1.79 4 4-1.79 4-4 4z"/>
-        </svg>
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="currentColor">
-          <path d="M4 2h8c1.1 0 2 .9 2 2v8c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V4c0-1.1.9-2 2-2zm0 1v10h8V3H4z"/>
-        </svg>
-      </div>
-    </div>
+    <div class="mobile-wrapper">
+      <!-- Video Player Area - Full Screen -->
+      <div class="video-player-area">
+        <video
+          v-if="videoUrl"
+          ref="videoPlayer"
+          :src="videoUrl"
+          class="story-video"
+          playsinline
+          @ended="onVideoEnded"
+        ></video>
 
-    <!-- Timer Display -->
-    <div class="timer-section">
-      <div class="timer-circle">
-        <svg class="timer-svg" viewBox="0 0 200 200">
-          <circle
-            class="timer-bg"
-            cx="100"
-            cy="100"
-            r="90"
-            fill="none"
-            stroke="#E2E8F0"
-            stroke-width="8"
-          />
-          <circle
-            class="timer-progress"
-            cx="100"
-            cy="100"
-            r="90"
-            fill="none"
-            stroke="currentColor"
-            stroke-width="8"
-            :stroke-dasharray="progressCircumference"
-            :stroke-dashoffset="progressOffset"
-            transform="rotate(-90 100 100)"
-          />
-        </svg>
-        <div class="timer-text">
-          <span class="time-display">{{ formattedTime }}</span>
-          <span class="time-label">minutes</span>
+        <!-- Loading state -->
+        <div v-if="isLoading" class="loading-state">
+          <div class="loading-spinner"></div>
+          <p>视频生成中，请稍候...</p>
+        </div>
+
+        <!-- Error state -->
+        <div v-else-if="!videoUrl && !isLoading" class="error-state">
+          <p>视频生成失败</p>
+          <button class="retry-button" @click="goBack(false)">返回</button>
         </div>
       </div>
-    </div>
 
-    <!-- Current Zone Display -->
-    <div class="zone-section">
-      <div class="zone-card" :style="{ borderColor: currentZone.color }">
-        <div class="zone-icon" :style="{ background: currentZone.color }">
-          <span class="zone-emoji">{{ currentZone.emoji }}</span>
-        </div>
-        <div class="zone-info">
-          <h3 class="zone-title">{{ currentZone.label }}</h3>
-          <p class="zone-instruction">{{ currentZone.instruction }}</p>
-        </div>
+      <!-- Top Area -->
+      <!-- Yellow banner (only for shared stories) -->
+      <div v-if="isOtherStory" class="top-banner">
+        <span class="banner-text">Shared with parental permission</span>
       </div>
-    </div>
 
-    <!-- Character Animation -->
-    <div class="character-section">
-      <img :src="characterImage" alt="Character" class="character-image" />
-      <div class="speech-bubble">
-        <p>{{ encouragementMessage }}</p>
-      </div>
-    </div>
-
-    <!-- Play/Pause Button -->
-    <div class="controls">
-      <button @click="togglePlayPause" class="play-pause-button" :class="{ paused: isPaused }">
-        <svg v-if="!isPaused" width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
-          <rect x="6" y="4" width="4" height="16"/>
-          <rect x="14" y="4" width="4" height="16"/>
-        </svg>
-        <svg v-else width="40" height="40" viewBox="0 0 24 24" fill="currentColor">
-          <path d="M8 5v14l11-7z"/>
-        </svg>
+      <!-- Close button -->
+      <button class="close-button" @click="goBack(false)">
+        <img src="/images/播放器页/x-close.png" alt="close" class="close-icon" />
       </button>
-    </div>
 
-    <!-- Completion State -->
-    <div v-if="isCompleted" class="completion-overlay">
-      <div class="completion-content">
-        <div class="celebration-animation">🎉</div>
-        <h2>Great Job!</h2>
-        <p>You brushed for 2 minutes!</p>
-        <button @click="goHome" class="home-button">Back to Home</button>
+      <!-- Brushing Guide Card (shown during video playback) -->
+      <div v-if="!isCompleted && videoUrl" class="guide-card">
+        <img src="/images/播放器页/刷牙指导.png" alt="brushing guide" class="guide-image" />
+      </div>
+
+      <!-- Completion Screen -->
+      <div v-if="isCompleted" class="completion-screen">
+        <div class="reward-card">
+          <img src="/images/播放器页/奖励.png" alt="reward" class="reward-image" />
+        </div>
+        <button class="tap-it-button" @click="onTapIt">
+          <img src="/images/播放器页/Tap it.png" alt="Tap it" class="tap-it-image" />
+        </button>
+      </div>
+
+      <!-- Bottom hint text -->
+      <div v-if="!isCompleted && videoUrl" class="bottom-hint">
+        <p class="hint-text">
+          Wow-wow {{ userName || 'Friend' }}! You're a brushing champion! Look! A rainbow space rock in your rocket! Tap it, see what's the surprise~
+        </p>
       </div>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted } from 'vue'
-import { useRouter } from 'vue-router'
-import { useUserStore } from '../../stores/user'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { useRouter, useRoute } from 'vue-router'
+import { getTaskStatus } from '@/api/video'
 
 const router = useRouter()
-const userStore = useUserStore()
+const route = useRoute()
 
-// State
-const totalTime = 120 // 2 minutes in seconds
-const currentTimeLeft = ref(totalTime)
-const isPaused = ref(false)
+const videoPlayer = ref<HTMLVideoElement | null>(null)
+const isLoading = ref(true)
+const taskId = ref(route.query.taskId as string | null)
+const videoUrl = ref<string | null>(null)
 const isCompleted = ref(false)
-const currentTime = ref('')
 
-// Computed Character Image
-const characterImage = computed(() => {
-  if (userStore.latestStory && userStore.latestStory.coverImage) {
-    return userStore.latestStory.coverImage
+// Source tracking: home | create | stories_square | shared
+const source = ref((route.query.source as string) || 'home')
+const isOtherStory = ref(route.query.isOtherStory === 'true')
+
+// User name (should come from user store or route param)
+const userName = ref((route.query.userName as string) || '')
+
+// Poll for video generation
+const pollForVideo = async () => {
+  if (!taskId.value) {
+    isLoading.value = false
+    return
   }
-  return '/images/character-brushing.png'
-})
 
-// Brushing zones - 每30秒切换
-const baseZones = [
-  {
-    timeRange: [0, 30],
-    label: 'Top Left Teeth',
-    instruction: 'Brush the top left teeth in circles',
-    emoji: '↖️',
-    color: '#FF6B6B'
-  },
-  {
-    timeRange: [30, 60],
-    label: 'Top Right Teeth',
-    instruction: 'Now the top right teeth!',
-    emoji: '↗️',
-    color: '#4ECDC4'
-  },
-  {
-    timeRange: [60, 90],
-    label: 'Bottom Left Teeth',
-    instruction: 'Let\'s do the bottom left teeth',
-    emoji: '↙️',
-    color: '#45B7D1'
-  },
-  {
-    timeRange: [90, 120],
-    label: 'Bottom Right Teeth',
-    instruction: 'Finally, the bottom right teeth!',
-    emoji: '↘️',
-    color: '#96CEB4'
-  }
-]
+  console.log('开始轮询视频生成, task_id:', taskId.value)
 
-const zones = computed(() => {
-  const story = userStore.latestStory
-  // @ts-ignore - sections might exist on the story object
-  if (story && story.sections && Array.isArray(story.sections)) {
-    return baseZones.map((zone, index) => ({
-      ...zone,
-      // @ts-ignore
-      instruction: story.sections[index] || zone.instruction
-    }))
-  }
-  return baseZones
-})
+  // Poll for up to 10 minutes (600 seconds)
+  const maxAttempts = 120 // 120 * 5 seconds = 10 minutes
+  const interval = 5000 // 5 seconds
 
-const encouragementMessages = [
-  "You're doing great!",
-  "Keep it up!",
-  "Almost there!",
-  "Nice circular motions!",
-  "Don't forget the back teeth!",
-  "You're a brushing superstar!"
-]
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      const response = await getTaskStatus(taskId.value)
+      console.log(`轮询 ${i + 1}: status = ${response.status}, video_url = ${response.video_url || 'null'}`)
 
-// Computed
-const currentZone = computed(() => {
-  const elapsed = totalTime - currentTimeLeft.value
-  return zones.find(z => elapsed >= z.timeRange[0] && elapsed < z.timeRange[1]) || zones[0]
-})
-
-const formattedTime = computed(() => {
-  const minutes = Math.floor(currentTimeLeft.value / 60)
-  const seconds = currentTimeLeft.value % 60
-  return `${minutes}:${seconds.toString().padStart(2, '0')}`
-})
-
-const progressCircumference = 2 * Math.PI * 90
-const progressOffset = computed(() => {
-  const progress = (totalTime - currentTimeLeft.value) / totalTime
-  return progressCircumference * (1 - progress)
-})
-
-const encouragementMessage = computed(() => {
-  return encouragementMessages[Math.floor(Math.random() * encouragementMessages.length)]
-})
-
-// Timer
-let timer: number | null = null
-
-const startTimer = () => {
-  timer = window.setInterval(() => {
-    if (!isPaused.value && currentTimeLeft.value > 0) {
-      currentTimeLeft.value--
-      if (currentTimeLeft.value === 0) {
-        completeBrushing()
+      if (response.status === 'completed' && response.video_url) {
+        videoUrl.value = response.video_url
+        isLoading.value = false
+        console.log('视频生成成功:', videoUrl.value)
+        nextTick(() => {
+          autoPlayVideo()
+        })
+        return
       }
+
+      if (response.status === 'failed') {
+        isLoading.value = false
+        console.error('视频生成失败:', response.error_message)
+        return
+      }
+
+    } catch (error) {
+      console.error('轮询出错:', error)
     }
-  }, 1000)
+
+    // Wait before next poll
+    await new Promise(resolve => setTimeout(resolve, interval))
+  }
+
+  // Timeout
+  isLoading.value = false
+  console.warn('视频生成超时')
 }
 
-const togglePlayPause = () => {
-  isPaused.value = !isPaused.value
+// Auto-play video
+const autoPlayVideo = () => {
+  if (videoPlayer.value && videoUrl.value) {
+    videoPlayer.value.play().then(() => {
+      console.log('视频自动播放成功')
+    }).catch(err => {
+      console.log('Auto-play failed, user needs to interact:', err)
+    })
+  }
 }
 
-const completeBrushing = () => {
+// Video ended handler - show completion screen
+const onVideoEnded = () => {
   isCompleted.value = true
-  if (timer) {
-    clearInterval(timer)
+  console.log('Video playback ended')
+}
+
+// Go back to previous page
+// completed: whether the brushing was completed (true) or exited early (false)
+const goBack = (completed: boolean) => {
+  if (videoPlayer.value) {
+    videoPlayer.value.pause()
   }
 
-  // Save brushing record
-  const record = {
-    id: Date.now(),
-    startTime: new Date(Date.now() - totalTime * 1000).toISOString(),
-    endTime: new Date().toISOString(),
-    duration: totalTime
+  // If exited early, just go back without recording
+  if (!completed) {
+    router.back()
+    return
   }
 
-  const existingRecords = JSON.parse(localStorage.getItem('brushingRecords') || '[]')
-  existingRecords.push(record)
-  localStorage.setItem('brushingRecords', JSON.stringify(existingRecords))
+  // TODO: Call API to record completion + increment streak
+  console.log('Recording brushing completion for user:', userName.value)
+
+  // Navigate based on source
+  switch (source.value) {
+    case 'home':
+    case 'shared':
+      router.push({ name: 'Home' })
+      break
+    case 'create':
+    case 'stories_square':
+      router.push({ name: 'StoriesSquare' })
+      break
+    default:
+      router.back()
+  }
 }
 
-const goHome = () => {
-  router.push('/')
+// Tap it button handler
+const onTapIt = () => {
+  console.log('Tap it clicked - recording completion')
+  goBack(true)
 }
-
-const updateClock = () => {
-  const now = new Date()
-  currentTime.value = now.toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit', hour12: false })
-}
-
-// Lifecycle
-let clockTimer: number | null = null
 
 onMounted(() => {
-  startTimer()
-  updateClock()
-  clockTimer = setInterval(updateClock, 1000) as unknown as number
+  pollForVideo()
 })
 
 onUnmounted(() => {
-  if (timer) clearInterval(timer)
-  if (clockTimer) clearInterval(clockTimer)
+  if (videoPlayer.value) {
+    videoPlayer.value.pause()
+  }
 })
 </script>
 
 <style scoped>
 .brushing-container {
-  min-height: 100vh;
-  background: linear-gradient(180deg, #FFF9F0 0%, #FFF5E6 100%);
-  padding: 20px;
-  padding-bottom: 100px;
-}
-
-.status-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 30px;
-  font-size: 14px;
-  color: #4A5568;
-}
-
-.status-icons {
-  display: flex;
-  gap: 8px;
-}
-
-.timer-section {
+  width: 100vw;
+  height: 100vh;
+  position: relative;
+  overflow: hidden;
+  background: #000;
   display: flex;
   justify-content: center;
-  margin-bottom: 30px;
+  align-items: center;
 }
 
-.timer-circle {
+.mobile-wrapper {
   position: relative;
-  width: 200px;
-  height: 200px;
+  width: 390px;
+  height: 844px;
+  overflow: hidden;
+  background: #000;
 }
 
-.timer-svg {
+/* Video Player Area - Full Screen */
+.video-player-area {
+  position: absolute;
+  top: 0;
+  left: 0;
   width: 100%;
   height: 100%;
-  transform: rotate(-90deg);
+  z-index: 10;
+  background: #000;
+  overflow: hidden;
 }
 
-.timer-progress {
-  color: #FF6B6B;
-  transition: stroke-dashoffset 1s linear;
+.story-video {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  background: #000;
 }
 
-.timer-text {
-  position: absolute;
-  top: 50%;
-  left: 50%;
-  transform: translate(-50%, -50%);
-  text-align: center;
-}
-
-.time-display {
-  display: block;
-  font-size: 48px;
-  font-weight: bold;
-  color: #2D3748;
-  font-family: 'Courier New', monospace;
-}
-
-.time-label {
-  font-size: 14px;
-  color: #718096;
-}
-
-.zone-section {
-  margin-bottom: 30px;
-}
-
-.zone-card {
-  background: white;
-  border-radius: 20px;
-  padding: 20px;
-  display: flex;
-  align-items: center;
-  gap: 16px;
-  border: 3px solid;
-  transition: all 0.5s ease;
-}
-
-.zone-icon {
-  width: 60px;
-  height: 60px;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 32px;
-  flex-shrink: 0;
-}
-
-.zone-info {
-  flex: 1;
-}
-
-.zone-title {
-  font-size: 20px;
-  font-weight: bold;
-  color: #2D3748;
-  margin-bottom: 4px;
-}
-
-.zone-instruction {
-  font-size: 14px;
-  color: #718096;
-}
-
-.character-section {
+/* Loading state */
+.loading-state {
+  width: 100%;
+  height: 100%;
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin-bottom: 40px;
-}
-
-.character-image {
-  width: 150px;
-  height: 150px;
-  object-fit: contain;
-  margin-bottom: 16px;
-}
-
-.speech-bubble {
-  background: white;
-  padding: 16px 24px;
-  border-radius: 20px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  max-width: 280px;
-  text-align: center;
-}
-
-.speech-bubble p {
-  font-size: 16px;
-  color: #4A5568;
-  font-weight: 500;
-}
-
-.controls {
-  display: flex;
   justify-content: center;
+  color: white;
+  font-size: 18px;
+  gap: 20px;
+  z-index: 100;
 }
 
-.play-pause-button {
-  width: 80px;
-  height: 80px;
+.loading-spinner {
+  width: 50px;
+  height: 50px;
+  border: 4px solid rgba(255, 255, 255, 0.2);
+  border-top-color: #fff;
   border-radius: 50%;
-  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
-  color: white;
-  border: none;
-  cursor: pointer;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* Error state */
+.error-state {
+  width: 100%;
+  height: 100%;
   display: flex;
+  flex-direction: column;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 8px 24px rgba(255, 107, 107, 0.4);
-  transition: all 0.3s ease;
-}
-
-.play-pause-button:hover {
-  transform: scale(1.05);
-}
-
-.play-pause-button.paused {
-  background: linear-gradient(135deg, #667EEA 0%, #764BA2 100%);
-}
-
-/* Completion Overlay */
-.completion-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background: rgba(0, 0, 0, 0.8);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-}
-
-.completion-content {
-  background: white;
-  padding: 40px;
-  border-radius: 24px;
-  text-align: center;
-  max-width: 320px;
-}
-
-.celebration-animation {
-  font-size: 64px;
-  margin-bottom: 20px;
-  animation: bounce 0.5s ease infinite alternate;
-}
-
-@keyframes bounce {
-  from { transform: translateY(0); }
-  to { transform: translateY(-10px); }
-}
-
-.completion-content h2 {
-  font-size: 28px;
-  color: #2D3748;
-  margin-bottom: 12px;
-}
-
-.completion-content p {
-  font-size: 16px;
-  color: #718096;
-  margin-bottom: 24px;
-}
-
-.home-button {
-  background: linear-gradient(135deg, #FF6B6B 0%, #FF8E53 100%);
   color: white;
+  font-size: 18px;
+  gap: 20px;
+  z-index: 100;
+}
+
+.retry-button {
+  padding: 12px 30px;
+  background: rgba(255, 107, 107, 0.9);
   border: none;
-  padding: 16px 32px;
-  border-radius: 12px;
+  border-radius: 25px;
+  color: white;
   font-size: 16px;
   font-weight: 600;
   cursor: pointer;
+  transition: all 0.2s ease;
+}
+
+.retry-button:hover {
+  background: rgba(255, 107, 107, 1);
+  transform: scale(1.05);
+}
+
+/* Top Area */
+/* Yellow banner */
+.top-banner {
+  position: absolute;
+  top: 66px;
+  left: 0;
+  display: flex;
+  align-items: center;
+  padding: 4px 12px;
+  gap: 6px;
+  width: 209px;
+  height: 23px;
+  background: linear-gradient(90deg, rgba(255, 251, 239, 0.3) -15.31%, #FFE27C 108.61%);
+  border-radius: 0px 12px 12px 0px;
+  z-index: 50;
+}
+
+.banner-text {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 15px;
+  color: #222222;
+}
+
+/* Close button */
+.close-button {
+  position: absolute;
+  top: 66px;
+  left: 346px;
+  width: 24px;
+  height: 24px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  z-index: 50;
+  padding: 0;
+}
+
+.close-icon {
+  width: 24px;
+  height: 24px;
+}
+
+/* Brushing Guide Card */
+.guide-card {
+  position: absolute;
+  top: 309px;
+  left: 25px;
+  width: 341px;
+  height: 220px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  overflow: hidden;
+  z-index: 30;
+}
+
+.guide-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* Completion Screen */
+.completion-screen {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 40;
+}
+
+.reward-card {
+  position: absolute;
+  top: 309px;
+  left: 25px;
+  width: 341px;
+  height: 220px;
+  background: #FFFFFF;
+  border-radius: 24px;
+  overflow: hidden;
+}
+
+.reward-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+.tap-it-button {
+  position: absolute;
+  top: 551px;
+  left: calc(50% - 140px/2 - 6px);
+  width: 140px;
+  height: 44px;
+  background: transparent;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.tap-it-image {
+  width: 140px;
+  height: 44px;
+}
+
+/* Bottom hint text */
+.bottom-hint {
+  position: absolute;
+  top: 710px;
+  left: calc(50% - 363px/2 - 0.5px);
+  width: 363px;
+  height: 60px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 6px 12px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 12px;
+  z-index: 30;
+}
+
+.hint-text {
+  font-family: 'Inter';
+  font-style: normal;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 16px;
+  color: #FFFFFF;
+  text-align: center;
 }
 </style>

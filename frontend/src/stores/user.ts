@@ -1,5 +1,7 @@
 import { defineStore } from 'pinia'
 import { ref, computed } from 'vue'
+import { useAuthStore } from '@/stores/auth'
+import { getGlobalFeedForHome, type FeedItemWithOwn } from '@/api/feed'
 
 export interface Story {
   id: number
@@ -38,28 +40,29 @@ export interface ChildInfo {
 
 export const useUserStore = defineStore('user', () => {
   // State
-  const userId = ref<string>(`user_${Date.now()}`)
   const subscriptionStatus = ref<'free' | 'paid'>('free')
   const hasCreatedStory = ref<boolean>(false)
   const lastChildInfo = ref<ChildInfo | null>(null)
   const stories = ref<Story[]>([])
   const brushingRecords = ref<BrushingRecord[]>([])
   const streakCount = ref<number>(0)
+  const feedItems = ref<FeedItemWithOwn[]>([])
+  const isLoadingFeed = ref(false)
 
   // Computed
   const hasStories = computed(() => stories.value.length > 0)
   const latestStory = computed(() => stories.value[0] || null)
   const isPaidUser = computed(() => subscriptionStatus.value === 'paid')
+  const totalFeedCount = computed(() => feedItems.value.length)
+
+  // Get userId from auth store (for backward compatibility)
+  const getUserId = () => {
+    const authStore = useAuthStore()
+    return authStore.userInfo?.id?.toString() || `user_${Date.now()}`
+  }
 
   // Load from localStorage
   const loadUserData = () => {
-    const savedUserId = localStorage.getItem('userId')
-    if (savedUserId) {
-      userId.value = savedUserId
-    } else {
-      localStorage.setItem('userId', userId.value)
-    }
-
     const savedSubscription = localStorage.getItem('subscriptionStatus')
     if (savedSubscription) {
       subscriptionStatus.value = JSON.parse(savedSubscription)
@@ -145,7 +148,7 @@ export const useUserStore = defineStore('user', () => {
     const newStory: Story = {
       ...story,
       id: Date.now(),
-      userId: userId.value,
+      userId: getUserId(),
       createdAt: now,
       updatedAt: now
     }
@@ -168,7 +171,7 @@ export const useUserStore = defineStore('user', () => {
     const newRecord: BrushingRecord = {
       ...record,
       id: Date.now(),
-      userId: userId.value
+      userId: getUserId()
     }
     brushingRecords.value.push(newRecord)
     saveBrushingRecords()
@@ -229,23 +232,40 @@ export const useUserStore = defineStore('user', () => {
     return getTotalCompletedCount() * 5
   }
 
+  // Load feed from API (home page stories)
+  const loadFeed = async () => {
+    isLoadingFeed.value = true
+    try {
+      const response = await getGlobalFeedForHome({ limit: 50 })
+      feedItems.value = response.data || []
+      console.log('Feed loaded:', feedItems.value.length, 'items')
+    } catch (error) {
+      console.error('Failed to load feed:', error)
+      feedItems.value = []
+    } finally {
+      isLoadingFeed.value = false
+    }
+  }
+
   // Initialize
   loadUserData()
 
   return {
     // State
-    userId,
     subscriptionStatus,
     hasCreatedStory,
     lastChildInfo,
     stories,
     brushingRecords,
     streakCount,
+    feedItems,
+    isLoadingFeed,
 
     // Computed
     hasStories,
     latestStory,
     isPaidUser,
+    totalFeedCount,
 
     // Actions
     upgradeSubscription,
@@ -258,6 +278,7 @@ export const useUserStore = defineStore('user', () => {
     getTimeSaved,
     loadUserData,
     loadStories,
-    loadBrushingRecords
+    loadBrushingRecords,
+    loadFeed
   }
 })

@@ -2,6 +2,8 @@ import axios from "axios";
 import type { AxiosInstance, AxiosRequestConfig, AxiosResponse } from "axios";
 import { tansParams, blobValidate } from "@/utils/index";
 import errorCode from "@/utils/errorCode";
+import { getToken, clearAuthData } from "@/utils/storage";
+import router from "@/router";
 
 axios.defaults.headers["Content-Type"] = "application/json;charset=utf-8";
 // 创建axios实例
@@ -15,6 +17,12 @@ const service: AxiosInstance = axios.create({
 // request拦截器
 service.interceptors.request.use(
   (config) => {
+    // Inject token if exists
+    const token = getToken();
+    if (token) {
+      config.headers["Authorization"] = `Bearer ${token}`;
+    }
+
     // get请求映射params参数
     if (config.method === "get" && config.params) {
       let url = config.url + "?" + tansParams(config.params);
@@ -47,28 +55,75 @@ service.interceptors.request.use(
 service.interceptors.response.use(
   (res) => {
     // 未设置状态码则默认成功状态
-    const code = res.data.code || 200;
+    // 后端返回格式：{ code: 0, message: "success", data: {...} }
+    const code = res.data.code;
     // 获取错误信息
-    const msg = errorCode[code] || res.data.msg || errorCode["default"];
+    const msg = res.data.message || errorCode[code] || res.data.msg || errorCode["default"];
     // 二进制数据则直接返回
     if (res.request.responseType === "blob" || res.request.responseType === "arraybuffer") {
       return Promise.resolve(res.data);
     }
+    // 如果没有 code 字段，直接返回数据（兼容旧接口）
+    if (code === undefined || code === null) {
+      return Promise.resolve(res.data);
+    }
+    // code = 0 表示成功
+    if (code === 0) {
+      return Promise.resolve(res.data);
+    }
     if (code === 401) {
-      return Promise.reject("无效的会话，或者会话已过期，请重新登录。");
+      // Check if this is a login/register request - don't clear data for auth endpoints
+      const isAuthEndpoint = res.config?.url?.includes("/auth/login") ||
+                            res.config?.url?.includes("/auth/register") ||
+                            res.config?.url?.includes("/auth/change-password");
+
+      if (isAuthEndpoint) {
+        // For login/register/ change-password, return the error message from backend
+        return Promise.reject(new Error(msg));
+      }
+
+      // For other endpoints, 401 means session expired - clear auth data and redirect
+      clearAuthData();
+      const currentPath = router.currentRoute.value.path;
+      if (currentPath !== "/login") {
+        router.push("/login");
+      }
+      return Promise.reject(new Error(msg));
     } else if (code === 500) {
       return Promise.reject(new Error(msg));
     } else if (code === 601) {
       return Promise.reject(new Error(msg));
-    } else if (code !== 200) {
-      return Promise.reject("error");
     } else {
-      return Promise.resolve(res.data);
+      return Promise.reject(new Error(msg || "error"));
     }
   },
   (error) => {
     console.log("err" + error);
     let { message } = error;
+
+    // Handle HTTP 401 from axios error
+    if (error.response?.status === 401) {
+      // Check if this is a login/register request
+      const isAuthEndpoint = error.config?.url?.includes("/auth/login") ||
+                            error.config?.url?.includes("/auth/register") ||
+                            error.config?.url?.includes("/auth/change-password");
+
+      if (isAuthEndpoint) {
+        // For auth endpoints, extract backend error message
+        const backendMsg = error.response?.data?.message ||
+                           error.response?.data?.msg ||
+                           "Invalid email or password";
+        return Promise.reject(new Error(backendMsg));
+      } else {
+        // For non-auth endpoints, clear data and redirect
+        clearAuthData();
+        const currentPath = router.currentRoute.value.path;
+        if (currentPath !== "/login") {
+          router.push("/login");
+        }
+      }
+    }
+
     if (message == "Network Error") {
       message = "后端接口连接异常";
     } else if (message.includes("timeout")) {
@@ -76,6 +131,7 @@ service.interceptors.response.use(
     } else if (message.includes("Request failed with status code")) {
       message = "系统接口" + message.substr(message.length - 3) + "异常";
     }
+
     return Promise.reject(error);
   },
 );

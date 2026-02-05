@@ -39,10 +39,10 @@
       <!-- Toast Message - Fixed above bottom nav, hidden when video plays -->
       <img v-if="!shouldPlayVideo" src="/images/首页/提示信息.png" alt="Toast" class="toast-message" />
 
-      <!-- Create Button - Blue L button, hidden when video plays -->
+      <!-- Create Button - Always visible, different image based on whether user has created a story -->
       <img
-        v-if="!isPaidUser && !shouldPlayVideo"
-        src="/images/首页/L.png"
+        v-if="!isPaidUser"
+        :src="hasCreatedStory ? '/images/首页/创建过，开始刷牙.png' : '/images/首页/L.png'"
         alt="Create"
         class="create-button"
         @click="goToCreate"
@@ -81,37 +81,24 @@ const hasUserInteracted = ref(false);
 // Video pause state
 const isVideoPaused = ref(false);
 
-// New home backgrounds (3 backgrounds for sliding)
-const homeBackgrounds = ["/images/首页/背景.png", "/images/首页/背景2.png", "/images/首页/背景3.png"];
+// Total stories count from API
+const totalStories = computed(() => userStore.totalFeedCount || 0);
 
-// Paid user background (old user)
-const paidUserBackground = "/SVG/home-old-user.svg";
-
-// Video paths corresponding to each background
-const newUserStoryVideos = [
-  "/images/home-new-user-1.mp4",
-  "/images/home-new-user-2.mp4",
-  "/images/home-new-user-3.mp4",
-];
-
-const paidUserStoryVideos = ["/images/home-old-user.mp4"];
-
-// Total stories count based on user type
-const totalStories = computed(() => {
-  return isPaidUser.value ? 1 : 3;
+// Get current story from feed
+const currentStory = computed(() => {
+  if (totalStories.value === 0) return null;
+  const actualIndex = ((currentSlide.value % totalStories.value) + totalStories.value) % totalStories.value;
+  return userStore.feedItems[actualIndex] || null;
 });
 
-// Current background image based on user state and slide
+// Current background image (use cover image from API)
 const currentBackgroundImage = computed(() => {
-  if (isPaidUser.value) {
-    return paidUserBackground;
-  }
-  const index = ((currentSlide.value % 3) + 3) % 3;
-  return homeBackgrounds[index] || homeBackgrounds[0];
+  return currentStory.value?.cover_image_url || "/images/首页/背景.png";
 });
 
 const streakCount = computed(() => userStore.streakCount);
 const isPaidUser = computed(() => userStore.isPaidUser);
+const hasCreatedStory = computed(() => userStore.hasCreatedStory);
 
 // Check if user has brushing records (old user)
 const hasBrushingRecords = computed(() => userStore.brushingRecords.length > 0);
@@ -119,13 +106,24 @@ const hasBrushingRecords = computed(() => userStore.brushingRecords.length > 0);
 // Show streak banner for users with brushing records
 const showStreakBanner = computed(() => hasBrushingRecords.value && streakCount.value > 0);
 
-// Get current video URL based on user state and current slide
+// Get current video URL from API
 const currentVideoUrl = computed(() => {
-  const total = totalStories.value;
-  const actualIndex = ((currentSlide.value % total) + total) % total;
-  const videos = isPaidUser.value ? paidUserStoryVideos : newUserStoryVideos;
-  return videos[actualIndex] || "";
+  return currentStory.value?.video_url || "";
 });
+
+// Check if current story is from other user
+const isOtherStory = computed(() => {
+  return currentStory.value ? !currentStory.value.is_own : false;
+});
+
+// Preload cover images for smooth sliding
+const preloadCoverImages = () => {
+  const preloadCount = Math.min(5, userStore.feedItems.length);
+  for (let i = 0; i < preloadCount; i++) {
+    const img = new Image();
+    img.src = userStore.feedItems[i].cover_image_url;
+  }
+};
 
 // Navigation
 const goToHome = () => {
@@ -151,9 +149,17 @@ const goToParents = () => {
 
 // Story card click handler
 const handleSlideClick = (index: number) => {
+  const story = userStore.feedItems[index];
+  if (!story) return;
+
   router.push({
     path: "/brushing",
-    query: { source: "home", storyIndex: index },
+    query: {
+      source: "home",
+      taskId: story.task_id,
+      userName: story.child_name,
+      isOtherStory: !story.is_own
+    },
   });
 };
 
@@ -334,15 +340,24 @@ const handleTouchEnd = (e: TouchEvent) => {
   }
 };
 
-onMounted(() => {
+onMounted(async () => {
   // Load fresh user data
   userStore.loadUserData();
+
+  // Load feed from API
+  await userStore.loadFeed();
+
+  // Preload cover images for smooth sliding
+  preloadCoverImages();
+
   // Initialize to middle position for smooth circular navigation
   const total = totalStories.value;
-  currentSlide.value = total;
+  currentSlide.value = total > 0 ? total : 0;
 
   // Start auto-play timer manually (don't rely only on image load)
-  startAutoPlayTimer();
+  if (total > 0) {
+    startAutoPlayTimer();
+  }
 });
 
 onUnmounted(() => {

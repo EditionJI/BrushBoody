@@ -176,8 +176,9 @@
 <script setup lang="ts">
 import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
 import { useRouter } from "vue-router";
-import { uploadPhoto, createVideoTasks, queryVideoTasksStatus, generateCover, videoTasksConfirm } from "@/api/backend";
-import type { TaskStatus, QueryTaskStatusResponse } from "@/api/backend";
+import { uploadPhoto } from "@/api/upload";
+import { createTask, getTaskStatus, generateCover, confirmTask } from "@/api/video";
+import type { TaskStatus, TaskStatusResponse } from "@/api/video";
 import { useUserStore } from "../../stores/user";
 import { pollUntilTrue } from "@/utils";
 
@@ -266,9 +267,9 @@ const handleNextStep1 = async () => {
       try {
         isLoading.value = true;
         loadingMessage.value = "Uploading photo...";
-        const { data } = await uploadPhoto({ file: uploadedPhotoFile.value });
-        uploadedPhotoUrl.value = data.url;
-        console.log("✅ Photo uploaded to OSS:", data.url);
+        const response = await uploadPhoto({ file: uploadedPhotoFile.value });
+        uploadedPhotoUrl.value = response.url;
+        console.log("✅ Photo uploaded to OSS:", response.url);
         goToStep(2);
       } catch (error) {
         console.error("❌ Photo upload failed:", error);
@@ -421,8 +422,7 @@ const onNewStep2SvgLoad = () => {
         // todo
         await createVideoTasksAPI();
         goToStep(3);
-        await pollUntilTrue_getTaskStatusAPI();
-        await updatePreviewImage();
+        await pollUntilTrue_getTaskStatusAPI();  // This now also updates resImgUrl
       });
       console.log("✅ Added click to next button rect");
     }
@@ -471,13 +471,8 @@ onMounted(() => {
   userStoryCount.value = parseInt(localStorage.getItem("userStoryCount") || "0");
   checkDailyRegenLimit();
 
-  // Load saved data
-  const savedPhoto = localStorage.getItem("savedPhoto");
+  // Load saved data (excluding photo)
   const savedData = localStorage.getItem("createStoryData");
-
-  if (savedPhoto) {
-    uploadedPhoto.value = savedPhoto;
-  }
 
   if (savedData) {
     const data = JSON.parse(savedData);
@@ -548,8 +543,6 @@ const handleFileUpload = (event: Event) => {
 
     reader.onload = (e) => {
       uploadedPhoto.value = e.target?.result as string;
-      localStorage.setItem("savedPhoto", uploadedPhoto.value);
-      saveData();
     };
 
     reader.readAsDataURL(file);
@@ -559,8 +552,6 @@ const handleFileUpload = (event: Event) => {
 const deletePhoto = () => {
   uploadedPhoto.value = null;
   uploadedPhotoFile.value = null;
-  localStorage.removeItem("savedPhoto");
-  saveData();
 };
 
 const selectTheme = (themeId: number) => {
@@ -573,7 +564,6 @@ const saveData = () => {
     childGender: childGender.value,
     childAge: childAge.value,
     selectedTheme: selectedTheme.value,
-    uploadedPhoto: uploadedPhoto.value,
     isPublic: isPublic.value,
   };
   localStorage.setItem("createStoryData", JSON.stringify(data));
@@ -606,32 +596,33 @@ const getGenderChinese = (gender: string) => {
 };
 
 const handleConfirm = async () => {
-  if (userStoryCount.value >= 3) {
-    console.log("User has generated 3+ stories, redirecting to payment");
+  if (userStoryCount.value >= 100) {
+    console.log("User has generated 100+ stories, redirecting to payment");
     router.push("/payment");
     return;
   }
 
-  // Check if photo was uploaded
-  if (!uploadedPhotoUrl.value) {
-    triggerToast("请先上传照片");
-    // return;
+  // Check if task exists and is ready to confirm
+  if (!task_id.value) {
+    triggerToast("请先创建绘本任务");
+    return;
   }
 
   isLoading.value = true;
-  loadingMessage.value = "Creating your story...";
+  loadingMessage.value = "Creating your child's personalized story, please wait...";
 
   try {
-    // Call compose API to generate story
-    const response = await uploadPhoto({
-      child_name: nickname.value || "Hero",
-      gender: getGenderChinese(childGender.value),
-      age: childAge.value,
-      theme: getThemeNameChinese(selectedTheme.value || 2),
-      img_url: uploadedPhotoUrl.value,
+    // Confirm the cover and trigger video generation
+    const response = await confirmTask({
+      task_id: task_id.value,
+      confirm: true,
+      is_shared: isPublic.value,
     });
 
-    console.log("✅ Story generated:", response);
+    console.log("✅ 封面已确认:", response);
+
+    // Wait for video generation to complete before navigating
+    await pollForVideoGeneration();
 
     userStoryCount.value++;
     localStorage.setItem("userStoryCount", userStoryCount.value.toString());
@@ -639,18 +630,80 @@ const handleConfirm = async () => {
     userStore.addStory({
       title: `${nickname.value || "Hero"}'s ${getThemeName(selectedTheme.value || 2)} Story`,
       characterName: nickname.value || "Hero",
-      coverImage: uploadedPhotoUrl.value,
+      coverImage: resImgUrl.value || uploadedPhotoUrl.value,
       theme: getThemeName(selectedTheme.value || 2),
       isPublic: isPublic.value,
     });
 
-    router.push("/brushing");
-  } catch (error) {
-    console.error("Story generation error:", error);
-    triggerToast("Failed to generate story. Please try again.");
+    // Navigate to video player with task_id only after video is ready
+    router.push({
+      path: "/brushing",
+      query: {
+        taskId: task_id.value,
+        source: "create",
+        userName: nickname.value || ""
+      }
+    });
+  } catch (error: any) {
+    console.error("确认失败:", error);
+
+    // Extract error message from response
+    let errorMessage = "确认失败，请重新尝试";
+    if (error.response?.data?.detail) {
+      if (typeof error.response.data.detail === 'string') {
+        errorMessage = error.response.data.detail;
+      } else if (Array.isArray(error.response.data.detail)) {
+        errorMessage = error.response.data.detail.map((e: any) => e.msg).join(', ');
+      }
+    } else if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+
+    triggerToast(errorMessage);
   } finally {
     isLoading.value = false;
   }
+};
+
+// Poll for video generation completion
+const pollForVideoGeneration = async () => {
+  console.log("开始轮询视频生成, task_id:", task_id.value);
+
+  const maxAttempts = 30; // 30 * 5 seconds = 2.5 minutes
+  const interval = 5000; // 5 seconds
+
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      const response = await getTaskStatus(task_id.value!);
+      console.log(`轮询 ${i + 1}: status = ${response.status}, video_url = ${response.video_url || 'null'}`);
+
+      if (response.status === 'completed' && response.video_url) {
+        console.log('视频生成成功:', response.video_url);
+        return;
+      }
+
+      if (response.status === 'failed') {
+        throw new Error(response.error_message || '视频生成失败');
+      }
+
+    } catch (error: any) {
+      console.error(`轮询 ${i + 1} 出错:`, error?.message || error);
+
+      // Only throw on fatal errors, continue polling on timeout/network errors
+      if (error?.response?.status === 409 || error?.response?.status === 404) {
+        // Fatal errors: task not found or conflict
+        throw error;
+      }
+      // Continue polling for timeout/network errors
+    }
+
+    // Wait before next poll
+    await new Promise(resolve => setTimeout(resolve, interval));
+  }
+
+  throw new Error('视频生成超时');
 };
 
 const checkDailyRegenLimit = (): boolean => {
@@ -691,14 +744,15 @@ const createVideoTasksAPI = async () => {
       child_name: nickname.value,
       age: childAge.value,
       theme: getThemeNameChinese(selectedTheme.value),
-      gender: getGenderChinese(childGender.value), // '男' | '女'
+      gender: getGenderChinese(childGender.value), // 中文 "男" | "女"
     };
-    const testImgUrl = "https://q7.itc.cn/q_70/images03/20241204/9442f197bdc94c05a32e7ed8b719dd59.jpeg";
-    resImgUrl.value = testImgUrl;
-    const { data } = await createVideoTasks(obj);
-    task_id.value = data.task_id;
+    console.log("创建任务，参数:", obj);
+    const response = await createTask(obj);
+    console.log("创建任务成功，响应:", response);
+    task_id.value = response.task_id;  // video API returns unwrapped data
+    console.log("设置 task_id:", task_id.value);
   } catch (e) {
-    console.log(e);
+    console.log("创建任务失败:", e);
     throw e;
   } finally {
     isLoading.value = false;
@@ -706,31 +760,85 @@ const createVideoTasksAPI = async () => {
 };
 
 // 轮询获取任务状态
-const successMap = ["story_generated", "cover_ready", "completed"];
+const storySuccessMap = ["story_generated"];  // Story generation done
+const coverSuccessMap = ["cover_ready", "completed"];  // Cover generation done
 const errorMap = ["failed", "cancelled"];
-const getTaskStatusAPI = async () => {
-  const obj = {
-    task_id: task_id.value,
+const getStatusMessage = (status: string) => {
+  const messages: Record<string, string> = {
+    "story_generating": "正在生成故事...",
+    "story_generated": "故事已生成，正在生成封面...",
+    "cover_generating": "正在生成封面...",
+    "cover_ready": "封面已就绪",
+    "awaiting_confirmation": "等待确认封面...",
+    "video_generating": "正在生成视频...",
+    "completed": "已完成",
   };
-  const { data } = await queryVideoTasksStatus(obj);
-  const status = data.status;
+  return messages[status] || "处理中...";
+};
+const getTaskStatusAPI = async (targetSuccessMap: string[]) => {
+  console.log(`轮询第: 调用 getTaskStatus, task_id: ${task_id.value}`);
+  const response = await getTaskStatus(task_id.value!);
+  console.log(`轮询第: 响应 status: ${response.status}, cover_image_url: ${response.cover_image_url}`);
+  const status = response.status;  // video API returns unwrapped data
   task_status.value = status;
-  if (successMap.includes(status)) {
-    return { status: "success", data };
+  // Update loading message based on status
+  loadingMessage.value = getStatusMessage(status);
+  if (targetSuccessMap.includes(status)) {
+    return { status: "success", data: response };
   }
   if (errorMap.includes(status)) {
-    return { status: "error", data };
+    return { status: "error", data: response };
   }
-  return { status: "pending", data };
+  return { status: "pending", data: response };
 };
 const pollUntilTrue_getTaskStatusAPI = async () => {
   try {
     isLoading.value = true;
     loadingMessage.value = "Processing...";
-    const { status } = await pollUntilTrue<QueryTaskStatusResponse>(getTaskStatusAPI, 3000, 999);
+    console.log("开始轮询任务状态, task_id:", task_id.value);
+
+    // Phase 1: Poll until story is generated
+    console.log("阶段1: 轮询故事生成...");
+    const storyResult = await pollUntilTrue<TaskStatusResponse>(
+      () => getTaskStatusAPI(storySuccessMap),
+      3000,
+      999
+    );
+    console.log("故事生成完成，触发封面生成");
+
+    // Phase 2: Trigger cover generation
+    console.log("阶段2: 触发封面生成API...");
+    const coverResponse = await generateCover({ task_id: task_id.value!, regenerate: false });
+    console.log("封面生成API响应:", coverResponse);
+
+    // Phase 3: Poll until cover is ready
+    console.log("阶段3: 轮询封面生成...");
+    const coverResult = await pollUntilTrue<TaskStatusResponse>(
+      () => getTaskStatusAPI(coverSuccessMap),
+      3000,
+      999
+    );
+    console.log("封面生成完成，结果:", coverResult);
+
+    // Extract cover_image_url from the successful response
+    if (coverResult.cover_image_url) {
+      resImgUrl.value = coverResult.cover_image_url;
+      console.log("设置封面图片URL:", coverResult.cover_image_url);
+    } else {
+      console.warn("轮询成功但未找到 cover_image_url，结果:", coverResult);
+    }
   } catch (e) {
-    console.log(e);
-    triggerToast("任务状态超时，请重新尝试");
+    console.log("轮询发生错误:", e);
+
+    // Get the final task status to show the actual error message
+    try {
+      const finalStatus = await getTaskStatus(task_id.value!);
+      const errorMsg = finalStatus.error_message || e?.message || "任务状态超时，请重新尝试";
+      console.log("任务失败，错误信息:", errorMsg);
+      triggerToast(`生成失败: ${errorMsg}`);
+    } catch {
+      triggerToast("任务状态超时，请重新尝试");
+    }
     throw e;
   } finally {
     isLoading.value = false;
@@ -745,8 +853,8 @@ const updatePreviewImage = async (regenerate = false) => {
       regenerate,
       task_id: task_id.value,
     };
-    const { data } = await generateCover(obj);
-    resImgUrl.value = data.cover_image_url;
+    const response = await generateCover(obj);
+    resImgUrl.value = response.cover_image_url;  // video API returns unwrapped data
   } catch (e) {
     triggerToast("生成失败，请重新尝试");
     throw e;
