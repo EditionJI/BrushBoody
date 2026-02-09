@@ -123,7 +123,7 @@ const goToSlide = (index: number) => {
 <style scoped>
 .payment-container {
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   position: relative;
   overflow: hidden;
   background: #FFF9F0;
@@ -134,9 +134,9 @@ const goToSlide = (index: number) => {
 
 .mobile-wrapper {
   position: relative;
-  width: min(375px, 100vw, calc(100vh * 375 / 812));
+  width: min(375px, 100vw, calc(var(--vh, 1vh) * 100 * 375 / 812));
   aspect-ratio: 375 / 812;
-  height: min(100vh, calc(100vw * 812 / 375));
+  height: min(calc(var(--vh, 1vh) * 100), calc(100vw * 812 / 375));
   overflow: hidden;
   background: #FFF9F0;
 }

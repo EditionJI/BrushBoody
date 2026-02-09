@@ -220,7 +220,7 @@ const handleSubmit = async () => {
 <style scoped>
 .login-container {
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   position: relative;
   overflow: hidden;
   background: #f5f5f5;

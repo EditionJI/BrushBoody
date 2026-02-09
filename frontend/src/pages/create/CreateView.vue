@@ -918,7 +918,7 @@ const updatePreviewImage = async (regenerate = false) => {
 <style scoped>
 .create-container {
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   position: relative;
   overflow: hidden;
   background: #ffffff;

@@ -425,7 +425,7 @@ watch(currentSlide, () => {
 <style scoped>
 .home-container {
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   position: relative;
   overflow: hidden;
   background: #d9d9d9;

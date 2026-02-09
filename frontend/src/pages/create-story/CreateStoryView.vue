@@ -239,7 +239,7 @@ const finishCreation = () => {
 
 <style scoped>
 .create-story-container {
-  min-height: 100vh;
+  min-height: calc(var(--vh, 1vh) * 100);
   background: linear-gradient(180deg, #FFF9F0 0%, #FFF5E6 100%);
   padding: 20px;
   padding-bottom: 100px;

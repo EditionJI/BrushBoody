@@ -211,7 +211,7 @@ onUnmounted(() => {
 <style scoped>
 .brushing-container {
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   position: relative;
   overflow: hidden;
   background: #000;

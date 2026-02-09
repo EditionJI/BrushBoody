@@ -366,7 +366,7 @@ onMounted(() => {
    ============================================ */
 .stories-container {
   width: 100vw;
-  height: 100vh;
+  height: calc(var(--vh, 1vh) * 100);
   position: relative;
   overflow: hidden;
   background: linear-gradient(135deg, #d4dff5 0%, #e8ecf5 50%, #f5f5f5 100%);
