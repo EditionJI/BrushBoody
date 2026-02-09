@@ -448,7 +448,7 @@ watch(currentSlide, () => {
 .full-screen-image {
   width: 100%;
   height: 756px;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   z-index: 1;
@@ -460,7 +460,7 @@ watch(currentSlide, () => {
 
 /* Streak Banner - for users with brushing records */
 .streak-banner {
-  position: absolute;
+  position: fixed;
   top: 5%;
   left: 5%;
   width: 90%;
@@ -492,7 +492,7 @@ watch(currentSlide, () => {
 
 /* Public Badge - Top left yellow label */
 .public-badge {
-  position: absolute;
+  position: fixed;
   left: 0;
   top: 66px;
   width: 209px;
@@ -503,7 +503,7 @@ watch(currentSlide, () => {
 
 /* Story card click area - Match background image size */
 .story-card-area {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   width: 100%;
@@ -517,7 +517,7 @@ watch(currentSlide, () => {
   width: 100%;
   height: 100%;
   object-fit: cover;
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   pointer-events: none;
@@ -525,7 +525,7 @@ watch(currentSlide, () => {
 
 /* Pause button - Centered on video */
 .pause-button {
-  position: absolute;
+  position: fixed;
   left: calc(50% - 56px / 2);
   top: calc(50% - 56px / 2);
   width: 56px;
@@ -536,7 +536,7 @@ watch(currentSlide, () => {
 
 /* Toast Message - Above bottom nav */
 .toast-message {
-  position: absolute;
+  position: fixed;
   left: calc(50% - 295px / 2 - 18.5px);
   top: 638px;
   width: 295px;
@@ -547,7 +547,7 @@ watch(currentSlide, () => {
 
 /* Create Button - Blue L button */
 .create-button {
-  position: absolute;
+  position: fixed;
   left: calc(50% - 342px / 2);
   top: 688px;
   width: 342px;
@@ -558,9 +558,10 @@ watch(currentSlide, () => {
 
 /* Bottom Navigation - 3个图标 */
 .bottom-nav {
-  position: absolute;
+  position: fixed;
   left: 0;
   bottom: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   width: 100%;
   height: 88px;
   display: flex;

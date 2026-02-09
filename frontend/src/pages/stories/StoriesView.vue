@@ -394,7 +394,7 @@ onMounted(() => {
 
 /* 背景层 */
 .bg-layer {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: #FFFFFF;
   z-index: 0;
@@ -404,7 +404,7 @@ onMounted(() => {
    顶部安全区 - 状态栏 (54px)
    ============================================ */
 .safe-area {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
   right: 0;
@@ -439,7 +439,7 @@ onMounted(() => {
    顶部导航 (54px)
    ============================================ */
 .top-nav {
-  position: absolute;
+  position: fixed;
   top: 54px;
   left: 0;
   right: 0;
@@ -470,7 +470,7 @@ onMounted(() => {
 
 /* Done 按钮 */
 .done-button {
-  position: absolute;
+  position: fixed;
   top: 67px;
   right: 16px;
   padding: 8px 16px;
@@ -494,7 +494,7 @@ onMounted(() => {
    尺寸: 358px × 436px
    ============================================ */
 .stories-grid {
-  position: absolute;
+  position: fixed;
   top: 120px;
   left: 0;
   right: 0;
@@ -542,7 +542,7 @@ onMounted(() => {
 
 .loading-spinner::before {
   content: '';
-  position: absolute;
+  position: fixed;
   width: 100%;
   height: 100%;
   border: 3px solid rgba(0, 115, 255, 0.1);
@@ -678,7 +678,7 @@ onMounted(() => {
 
 /* 卡片背景 */
 .card-bg {
-  position: absolute;
+  position: fixed;
   inset: 0;
   background: #F5F5F5;
   border-radius: 16px;
@@ -687,7 +687,7 @@ onMounted(() => {
 
 /* 3D阴影效果 */
 .card-shadow-3d {
-  position: absolute;
+  position: fixed;
   left: 5%;
   right: 5%;
   top: 0;
@@ -701,7 +701,7 @@ onMounted(() => {
 
 /* 阴影层2 */
 .card-shadow-layer-2 {
-  position: absolute;
+  position: fixed;
   left: 5%;
   right: 5%;
   top: 1.73%;
@@ -713,7 +713,7 @@ onMounted(() => {
 
 /* 阴影层3 */
 .card-shadow-layer-3 {
-  position: absolute;
+  position: fixed;
   left: 5%;
   right: 5%;
   top: 1.73%;
@@ -725,7 +725,7 @@ onMounted(() => {
 
 /* 封面图片 */
 .card-cover {
-  position: absolute;
+  position: fixed;
   left: 5%;
   right: 5%;
   top: 2%;
@@ -739,7 +739,7 @@ onMounted(() => {
 
 /* 故事名称 */
 .story-name {
-  position: absolute;
+  position: fixed;
   left: 16%;
   right: 16%;
   bottom: 18%;
@@ -756,7 +756,7 @@ onMounted(() => {
 
 /* 分享按钮 */
 .share-button {
-  position: absolute;
+  position: fixed;
   left: 12%;
   right: 12%;
   bottom: 5%;
@@ -782,7 +782,7 @@ onMounted(() => {
 
 /* 删除按钮 */
 .delete-button {
-  position: absolute;
+  position: fixed;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -809,7 +809,7 @@ onMounted(() => {
    尺寸: 74.44px × 73.75px
    ============================================ */
 .create-button {
-  position: absolute;
+  position: fixed;
   right: 16px;
   bottom: 104px; /* 距离底部导航栏上方 16px */
   width: 74.44px;
@@ -837,8 +837,9 @@ onMounted(() => {
    底部导航栏 - 3个图标
    ============================================ */
 .bottom-nav {
-  position: absolute;
+  position: fixed;
   bottom: 0;
+  padding-bottom: env(safe-area-inset-bottom, 0px);
   left: 0;
   max-width: 390px;
   width: 100%;
