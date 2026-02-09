@@ -436,8 +436,10 @@ watch(currentSlide, () => {
 
 .mobile-wrapper {
   position: relative;
-  width: 390px;
-  height: 844px;
+  max-width: 390px;
+  width: 100%;
+  max-height: 844px;
+  height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   background: white;
 }

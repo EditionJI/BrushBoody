@@ -378,8 +378,10 @@ onMounted(() => {
 
 .mobile-wrapper {
   position: relative;
-  width: 390px;
-  height: 844px;
+  max-width: 390px;
+  width: 100%;
+  max-height: 844px;
+  height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   background: #FFFFFF;
   border-radius: 0;
@@ -838,7 +840,8 @@ onMounted(() => {
   position: absolute;
   bottom: 0;
   left: 0;
-  width: 390px;
+  max-width: 390px;
+  width: 100%;
   height: 88px;
   display: flex;
   justify-content: space-around;
@@ -868,8 +871,10 @@ onMounted(() => {
   top: 0;
   left: 50%;
   transform: translateX(-50%);
-  width: 390px;
-  height: 844px;
+  max-width: 390px;
+  width: 100%;
+  max-height: 844px;
+  height: calc(var(--vh, 1vh) * 100);
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   display: flex;

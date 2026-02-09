@@ -231,8 +231,10 @@ const handleSubmit = async () => {
 
 .mobile-wrapper {
   position: relative;
-  width: 375px;
-  height: 812px;
+  max-width: 375px;
+  width: 100%;
+  max-height: 812px;
+  height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   background: white;
   display: flex;

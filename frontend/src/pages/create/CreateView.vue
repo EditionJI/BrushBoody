@@ -929,8 +929,10 @@ const updatePreviewImage = async (regenerate = false) => {
 
 .mobile-wrapper {
   position: relative;
-  width: 390px;
-  height: 844px;
+  max-width: 390px;
+  width: 100%;
+  max-height: 844px;
+  height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   background: #ffffff;
 }
@@ -947,7 +949,8 @@ const updatePreviewImage = async (regenerate = false) => {
   position: absolute;
   top: 0;
   left: 0;
-  width: 390px;
+  max-width: 390px;
+  width: 100%;
   height: 54px;
   display: flex;
   justify-content: space-between;
@@ -1017,7 +1020,8 @@ const updatePreviewImage = async (regenerate = false) => {
   position: absolute;
   top: 54px;
   left: 0;
-  width: 390px;
+  max-width: 390px;
+  width: 100%;
   height: 54px;
   display: flex;
   align-items: center;
@@ -1273,7 +1277,8 @@ const updatePreviewImage = async (regenerate = false) => {
 
 .step-new-2-svg,
 .step-preview-svg {
-  width: 390px;
+  max-width: 390px;
+  width: 100%;
   height: 836px;
   left: 0;
   top: 4px;
@@ -1366,8 +1371,10 @@ const updatePreviewImage = async (regenerate = false) => {
   position: absolute;
   left: 0;
   top: 0;
-  width: 390px;
-  height: 844px;
+  max-width: 390px;
+  width: 100%;
+  max-height: 844px;
+  height: calc(var(--vh, 1vh) * 100);
   background: #eaf6ff;
   border: none;
   border-radius: 0;
