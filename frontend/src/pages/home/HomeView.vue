@@ -422,7 +422,7 @@ watch(currentSlide, () => {
 /* Full screen background image */
 .full-screen-image {
   width: 100%;
-  height: 756px;
+  height: calc(var(--vh, 1vh) * 100);
   position: fixed;
   top: 0;
   left: 0;
@@ -482,7 +482,7 @@ watch(currentSlide, () => {
   top: 0;
   left: 0;
   width: 100%;
-  height: 756px;
+  height: calc(var(--vh, 1vh) * 100);
   z-index: 5;
   cursor: pointer;
   overflow: hidden;
