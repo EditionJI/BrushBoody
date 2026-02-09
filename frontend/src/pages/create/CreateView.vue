@@ -1101,7 +1101,7 @@ const updatePreviewImage = async (regenerate = false) => {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  top: 748px;
+  bottom: 40px;
   width: 342px;
   height: 48px;
   cursor: pointer;
@@ -1246,7 +1246,7 @@ const updatePreviewImage = async (regenerate = false) => {
   width: 342px;
   height: 188px;
   left: calc(50% - 342px / 2);
-  top: 611px;
+  bottom: 180px;
   display: block;
   object-fit: contain;
 }
@@ -1255,7 +1255,7 @@ const updatePreviewImage = async (regenerate = false) => {
 .create-button-overlay {
   position: absolute;
   left: calc(50% - 342px / 2);
-  top: 665px;
+  bottom: 120px;
   width: 302px;
   height: 48px;
   cursor: pointer;
@@ -1266,7 +1266,7 @@ const updatePreviewImage = async (regenerate = false) => {
 .regenerate-button-overlay {
   position: absolute;
   left: calc(50% - 342px / 2);
-  top: 731px;
+  bottom: 55px;
   width: 302px;
   height: 48px;
   cursor: pointer;

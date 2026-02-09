@@ -513,7 +513,7 @@ watch(currentSlide, () => {
 .toast-message {
   position: fixed;
   left: calc(50% - 295px / 2 - 18.5px);
-  top: 638px;
+  bottom: calc(145px + env(safe-area-inset-bottom, 0px));
   width: 295px;
   height: 38px;
   z-index: 10;
@@ -524,7 +524,7 @@ watch(currentSlide, () => {
 .create-button {
   position: fixed;
   left: calc(50% - 342px / 2);
-  top: 688px;
+  bottom: calc(80px + env(safe-area-inset-bottom, 0px));
   width: 342px;
   height: 56px;
   z-index: 10;
