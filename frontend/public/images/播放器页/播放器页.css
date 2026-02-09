@@ -1,0 +1,765 @@
+/* 02:00 */
+
+position: relative;
+width: 390px;
+height: 844px;
+left: 5224px;
+top: 283px;
+
+background: #FFFFFF;
+
+
+/* 绘本 */
+
+position: absolute;
+width: 482px;
+height: 910px;
+left: calc(50% - 482px/2);
+top: calc(50% - 910px/2 + 18px);
+
+background: url(根据文案生成简笔图.png);
+
+
+/* 顶部安全区 */
+
+position: absolute;
+width: 390px;
+height: 54px;
+left: 0px;
+top: 0px;
+
+
+
+/* Status Bar - iPhone */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+
+
+/* Time */
+
+position: absolute;
+height: 54px;
+left: 0%;
+right: 64.25%;
+top: calc(50% - 54px/2);
+
+
+
+/* Time */
+
+position: absolute;
+left: 38.39%;
+right: 37.94%;
+top: 33.96%;
+bottom: 25.3%;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 17px;
+line-height: 22px;
+/* identical to box height, or 129% */
+text-align: center;
+
+color: #000000;
+
+
+
+/* Levels */
+
+position: absolute;
+height: 54px;
+left: 64.25%;
+right: 0%;
+top: calc(50% - 54px/2);
+
+
+
+/* Battery */
+
+position: absolute;
+left: 58.09%;
+right: 22.31%;
+top: 42.59%;
+bottom: 33.33%;
+
+
+
+/* Border */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 25px;
+left: calc(50% - 25px/2 + 23.79px);
+top: 42.59%;
+bottom: 33.33%;
+
+mix-blend-mode: normal;
+opacity: 0.35;
+border: 1px solid #000000;
+border-radius: 4.3px;
+
+
+/* Cap */
+
+position: absolute;
+width: 1.33px;
+left: calc(50% - 1.33px/2 + 37.95px);
+top: 51.45%;
+bottom: 41.01%;
+
+background: #000000;
+mix-blend-mode: normal;
+opacity: 0.4;
+
+
+/* Capacity */
+
+position: absolute;
+width: 21px;
+left: calc(50% - 21px/2 + 23.79px);
+top: 46.3%;
+bottom: 37.04%;
+
+background: #000000;
+border-radius: 2.5px;
+
+
+/* Wifi */
+
+position: absolute;
+width: 17.14px;
+left: calc(50% - 17.14px/2 - 4.44px);
+top: 43.77%;
+bottom: 33.4%;
+
+background: #000000;
+
+
+/* Cellular Connection */
+
+position: absolute;
+width: 19.2px;
+left: calc(50% - 19.2px/2 - 30.11px);
+top: 43.58%;
+bottom: 33.77%;
+
+background: #000000;
+
+
+/* Rectangle 2 */
+
+position: absolute;
+visibility: hidden;
+left: 34.1%;
+right: 34.1%;
+top: 20.37%;
+bottom: 11.11%;
+
+background: #000000;
+border-radius: 100px;
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* 提示信息 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 4px 12px;
+gap: 6px;
+
+position: absolute;
+width: 209px;
+height: 23px;
+left: 0px;
+top: 66px;
+
+background: linear-gradient(90deg, rgba(255, 251, 239, 0.3) -15.31%, #FFE27C 108.61%);
+border-radius: 0px 12px 12px 0px;
+
+
+/* alert-circle
+
+alert, circle, warning, error
+*/
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Shared with parental permission */
+
+width: 185px;
+height: 15px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 12px;
+line-height: 15px;
+/* identical to box height */
+
+color: #222222;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* 遮罩 */
+
+position: absolute;
+width: 390px;
+height: 844px;
+left: calc(50% - 390px/2);
+top: 0px;
+
+background: #000000;
+opacity: 0.4;
+
+
+/* 进度条5 */
+
+position: absolute;
+width: 27px;
+height: 363px;
+left: calc(50% - 27px/2 - 168.5px);
+top: 777px;
+
+transform: rotate(-90deg);
+
+
+/* 文本 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: flex-start;
+padding: 0px;
+gap: 57px;
+
+position: absolute;
+width: 14px;
+height: 363px;
+left: calc(50% - 14px/2 - 175px);
+top: 790px;
+
+transform: rotate(-90deg);
+
+
+/* 00:00 */
+
+width: 27px;
+height: 14px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 400;
+font-size: 10px;
+line-height: 14px;
+/* identical to box height */
+
+color: #FFFFFF;
+
+text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.6);
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* 00:30 */
+
+width: 27px;
+height: 14px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 400;
+font-size: 10px;
+line-height: 14px;
+/* identical to box height */
+
+color: #FFFFFF;
+
+text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.6);
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* 01:00 */
+
+width: 27px;
+height: 14px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 400;
+font-size: 10px;
+line-height: 14px;
+/* identical to box height */
+
+color: #FFFFFF;
+
+text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.6);
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* 01:30 */
+
+width: 27px;
+height: 14px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 400;
+font-size: 10px;
+line-height: 14px;
+/* identical to box height */
+
+color: #FFFFFF;
+
+text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.6);
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* 02:00 */
+
+width: 27px;
+height: 14px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 400;
+font-size: 10px;
+line-height: 14px;
+/* identical to box height */
+
+color: #FFFFFF;
+
+text-shadow: 0px 1px 2px rgba(0, 0, 0, 0.6);
+
+/* Inside auto layout */
+flex: none;
+order: 4;
+flex-grow: 0;
+
+
+/* 底 */
+
+position: absolute;
+width: 340px;
+height: 6px;
+left: calc(50% - 340px/2 - 1px);
+top: calc(50% - 6px/2 + 361px);
+
+background: #FFFFFF;
+box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.25);
+border-radius: 9.24324px;
+
+
+/* 横线 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+
+position: absolute;
+width: 340px;
+height: 6px;
+left: calc(50% - 340px/2 - 1px);
+top: 780px;
+
+background: #E7E9EC;
+border-radius: 57.7703px;
+
+
+/* Rectangle 3465089 */
+
+width: 85px;
+height: 6px;
+
+/* 主色 */
+background: #1484FF;
+border-radius: 20px 0px 0px 20px;
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Rectangle 3465090 */
+
+width: 85px;
+height: 6px;
+
+background: #1484FF;
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Rounded rectangle */
+
+width: 85px;
+height: 6px;
+
+background: #1484FF;
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Rounded rectangle */
+
+width: 85px;
+height: 6px;
+
+background: #1484FF;
+border-radius: 0px 20px 20px 0px;
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* 节点 */
+
+position: absolute;
+width: 259px;
+height: 12px;
+left: 107px;
+top: 777px;
+
+
+
+/* 节点 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 8px;
+height: 8px;
+left: 194px;
+top: 779px;
+
+background: #1484FF;
+border: 1.15541px solid #FFFFFF;
+
+
+/* 节点 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 8px;
+height: 8px;
+left: 107px;
+top: 779px;
+
+background: #1484FF;
+border: 1.15541px solid #FFFFFF;
+
+
+/* 节点 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 8px;
+height: 8px;
+left: 277px;
+top: 779px;
+
+background: #1484FF;
+border: 1px solid #FFFFFF;
+
+
+/* 节点 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 12px;
+height: 12px;
+left: 354px;
+top: 777px;
+
+background: #1484FF;
+border: 2px solid #FFFFFF;
+
+
+/* x-close
+
+x, close, exit, remove, cross, delete
+*/
+
+position: absolute;
+width: 24px;
+height: 24px;
+left: 346px;
+top: 66px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 25%;
+right: 25%;
+top: 25%;
+bottom: 25%;
+
+border: 2px solid #FFFFFF;
+box-shadow: 0px 1px 2px rgba(0, 0, 0, 0.4);
+
+
+/* 刷牙指导5 */
+
+position: absolute;
+width: 341px;
+height: 286px;
+left: calc(50% - 341px/2 + 0.5px);
+top: calc(50% - 286px/2 + 30px);
+
+
+
+/* 刷牙指导 */
+
+position: absolute;
+width: 341px;
+height: 225px;
+left: 25px;
+top: 309px;
+
+background: #ADDEFF;
+border-radius: 24px;
+
+
+/* 刷牙指导 */
+
+position: absolute;
+width: 341px;
+height: 220px;
+left: 25px;
+top: 309px;
+
+background: #FFFFFF;
+border-radius: 24px;
+
+
+/* 奖励 */
+
+position: absolute;
+width: 341px;
+height: 220px;
+left: 25px;
+top: 309px;
+
+
+
+/* 刷牙指导 */
+
+position: absolute;
+width: 341px;
+height: 220px;
+left: 25px;
+top: 309px;
+
+background: #FFFFFF;
+border-radius: 24px;
+
+
+/* 生成可爱儿童背景_副本2 1 */
+
+position: absolute;
+width: 430px;
+height: 326px;
+left: -13px;
+top: 247px;
+
+background: url(生成可爱儿童背景_副本2.png);
+
+
+/* Tap it */
+
+position: absolute;
+width: 140px;
+height: 44px;
+left: calc(50% - 140px/2 - 6px);
+top: 551px;
+
+
+
+/* 刷牙指导 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 140px;
+height: 44px;
+left: 119px;
+top: 551px;
+
+background: url(.png), linear-gradient(180deg, #0073FF 0%, #0DA2FF 100%);
+background-blend-mode: plus-lighter, normal;
+box-shadow: inset 0px 1px 18px 2px #D2EAFF, inset 0px 1px 4px 2px #D2EAFF;
+border-radius: 100px;
+
+
+/* Tap it */
+
+position: absolute;
+width: 56px;
+height: 28px;
+left: calc(50% - 56px/2 - 7px);
+top: 557px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 20px;
+line-height: 28px;
+/* identical to box height */
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #FFFFFF;
+
+
+
+/* 提示信息 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 6px 12px;
+gap: 6px;
+
+position: absolute;
+width: 363px;
+height: 60px;
+left: calc(50% - 363px/2 - 0.5px);
+top: 710px;
+
+background: rgba(0, 0, 0, 0.5);
+border-radius: 12px;
+
+
+/* alert-circle
+
+alert, circle, warning, error
+*/
+
+display: none;
+width: 16px;
+height: 16px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Wow-wow Jane! 
+You're a brushing champion!Look! A rainbow space rock in your rocket! Tap it, see what's the surprise~ */
+
+width: 339px;
+height: 48px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 500;
+font-size: 13px;
+line-height: 16px;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* bar */
+
+position: absolute;
+height: 34px;
+left: 0%;
+right: 0%;
+bottom: 0px;
+
+
+
+/* 🌈bg */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 95.97%;
+bottom: 0%;
+
+
+
+/* 矩形 */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 95.97%;
+bottom: 0%;
+
+
+
+/* Rectangle 24 */
+
+position: absolute;
+left: 32.82%;
+right: 32.82%;
+top: 98.34%;
+bottom: 1.07%;
+
+background: #000000;
+border-radius: 100px;

@@ -1,0 +1,2360 @@
+/* bg */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+background: #FFFFFF;
+
+
+/* 背景 */
+
+position: absolute;
+width: 390px;
+height: 844px;
+left: 0px;
+top: 0px;
+
+
+
+/* bg */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: -16%;
+
+background: #FFFFFF;
+
+
+/* 生成可爱儿童背景 1 */
+
+position: absolute;
+height: 944px;
+left: -18.09%;
+right: -18.09%;
+bottom: -91px;
+
+background: url(生成可爱儿童背景.png);
+
+
+/* bg */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: -16%;
+
+background: #FFFFFF;
+
+
+/* Ellipse 2 */
+
+position: absolute;
+visibility: hidden;
+left: 60.51%;
+right: -12.56%;
+top: 81.75%;
+bottom: -5.81%;
+
+background: #3A96FF;
+opacity: 0.5;
+
+
+/* Ellipse 3502 */
+
+position: absolute;
+left: -23.33%;
+right: 47.18%;
+top: -11.61%;
+bottom: 76.42%;
+
+background: #5890F1;
+opacity: 0.5;
+filter: blur(100px);
+
+
+/* Ellipse 3500 */
+
+position: absolute;
+left: 2.05%;
+right: 5.13%;
+top: 7.46%;
+bottom: 49.64%;
+
+background: #FFFFFF;
+filter: blur(100px);
+
+
+/* Ellipse 3501 */
+
+position: absolute;
+left: 2.05%;
+right: 5.13%;
+top: 7.46%;
+bottom: 49.64%;
+
+background: #FFFFFF;
+filter: blur(100px);
+
+
+/* 顶部安全区 */
+
+position: absolute;
+width: 390px;
+height: 54px;
+left: 0px;
+top: 0px;
+
+
+
+/* Status Bar - iPhone */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+
+
+/* Time */
+
+position: absolute;
+height: 54px;
+left: 0%;
+right: 64.25%;
+top: calc(50% - 54px/2);
+
+
+
+/* Time */
+
+position: absolute;
+left: 38.39%;
+right: 37.94%;
+top: 33.96%;
+bottom: 25.3%;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 17px;
+line-height: 22px;
+/* identical to box height, or 129% */
+text-align: center;
+
+color: #000000;
+
+
+
+/* Levels */
+
+position: absolute;
+height: 54px;
+left: 64.25%;
+right: 0%;
+top: calc(50% - 54px/2);
+
+
+
+/* Battery */
+
+position: absolute;
+left: 58.09%;
+right: 22.31%;
+top: 42.59%;
+bottom: 33.33%;
+
+
+
+/* Border */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 25px;
+left: calc(50% - 25px/2 + 23.79px);
+top: 42.59%;
+bottom: 33.33%;
+
+mix-blend-mode: normal;
+opacity: 0.35;
+border: 1px solid #000000;
+border-radius: 4.3px;
+
+
+/* Cap */
+
+position: absolute;
+width: 1.33px;
+left: calc(50% - 1.33px/2 + 37.95px);
+top: 51.45%;
+bottom: 41.01%;
+
+background: #000000;
+mix-blend-mode: normal;
+opacity: 0.4;
+
+
+/* Capacity */
+
+position: absolute;
+width: 21px;
+left: calc(50% - 21px/2 + 23.79px);
+top: 46.3%;
+bottom: 37.04%;
+
+background: #000000;
+border-radius: 2.5px;
+
+
+/* Wifi */
+
+position: absolute;
+width: 17.14px;
+left: calc(50% - 17.14px/2 - 4.44px);
+top: 43.77%;
+bottom: 33.4%;
+
+background: #000000;
+
+
+/* Cellular Connection */
+
+position: absolute;
+width: 19.2px;
+left: calc(50% - 19.2px/2 - 30.11px);
+top: 43.58%;
+bottom: 33.77%;
+
+background: #000000;
+
+
+/* Rectangle 2 */
+
+position: absolute;
+visibility: hidden;
+left: 34.1%;
+right: 34.1%;
+top: 20.37%;
+bottom: 11.11%;
+
+background: #000000;
+border-radius: 100px;
+transform: matrix(-1, 0, 0, 1, 0, 0);
+
+
+/* 顶部导航 */
+
+position: absolute;
+width: 390px;
+height: 54px;
+left: 0px;
+top: 54px;
+
+
+
+/* bg */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 0%;
+
+
+
+/* 返回
+
+arrow, narrow, left
+*/
+
+position: absolute;
+visibility: hidden;
+width: 28px;
+height: 28px;
+left: 16px;
+top: calc(50% - 28px/2);
+
+
+
+/* Frame 2147228166 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 8px;
+
+position: absolute;
+width: 159px;
+height: 28px;
+left: calc(50% - 159px/2 - 0.5px);
+top: 13px;
+
+
+
+/* XXX's Stories */
+
+width: 137px;
+height: 28px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 20px;
+line-height: 28px;
+/* identical to box height */
+text-align: center;
+
+color: #111111;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Back */
+
+width: 8.4px;
+height: 14px;
+
+transform: rotate(-90deg);
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Path */
+
+position: absolute;
+left: 91.19%;
+right: 3.52%;
+top: 35.01%;
+bottom: 14.99%;
+
+background: #111111;
+transform: rotate(-90deg);
+
+
+/* Frame 2147228164 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+flex-wrap: wrap;
+align-items: flex-start;
+align-content: flex-start;
+padding: 0px;
+gap: 16px;
+
+position: absolute;
+width: 358px;
+height: 436px;
+left: 16px;
+top: 120px;
+
+
+
+/* 1 */
+
+width: 171px;
+height: 210px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Rectangle1 */
+
+position: absolute;
+left: 0%;
+right: 52.23%;
+top: 4.13%;
+bottom: 51.83%;
+
+background: #F5F5F5;
+border-radius: 16px;
+
+
+/* buttons/btn1 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 16px 20px;
+gap: 4px;
+
+position: absolute;
+left: 6.98%;
+right: 59.5%;
+top: 37.16%;
+bottom: 55.5%;
+
+background: url(.png), linear-gradient(180deg, #0073FF 0%, #0DA2FF 100%);
+background-blend-mode: plus-lighter, normal;
+box-shadow: inset 0px 1px 18px 2px #D2EAFF, inset 0px 1px 4px 2px #D2EAFF;
+border-radius: 100px;
+
+
+/* Label */
+
+width: 34px;
+height: 18px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 13px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Tairbrty */
+
+position: absolute;
+left: 16.48%;
+right: 68.99%;
+top: 31.19%;
+bottom: 64.22%;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height */
+text-align: center;
+
+color: #222222;
+
+
+
+/* Rectangle 22240 */
+
+position: absolute;
+left: 5.01%;
+right: 60.91%;
+top: 0%;
+bottom: 72.94%;
+
+background: #A89C60;
+box-shadow: 0px 15.8959px 7.57394px -7.48043px rgba(31, 32, 34, 0.38);
+border-radius: 16px;
+transform: matrix(1, 0.06, -0.06, 1, 0, 0);
+
+
+/* Image1 */
+
+position: absolute;
+left: 5.01%;
+right: 62.03%;
+top: 1.73%;
+bottom: 71.2%;
+
+
+
+/* Rectangle 22242 */
+
+position: absolute;
+left: 5.01%;
+right: 62.03%;
+top: 1.73%;
+bottom: 71.2%;
+
+background: #D9D9D9;
+border-radius: 16px;
+
+
+/* Rectangle 22243 */
+
+position: absolute;
+left: 5.01%;
+right: 62.03%;
+top: 1.73%;
+bottom: 71.2%;
+
+background: #D9D9D9;
+border-radius: 16px;
+
+
+/* image 513 */
+
+position: absolute;
+left: 2.23%;
+right: 59.08%;
+top: 1.73%;
+bottom: 66.87%;
+
+background: url(image.png);
+border-radius: 16px;
+
+
+/* image 512 */
+
+position: absolute;
+left: 2.89%;
+right: 59.82%;
+top: 1.73%;
+bottom: 67.74%;
+
+background: url(image.png);
+border-radius: 16px;
+
+
+/* image 510 */
+
+position: absolute;
+left: 4.75%;
+right: 61.76%;
+top: 0.65%;
+bottom: 66.01%;
+
+background: url(image.png);
+border-radius: 16px;
+
+
+/* image 511 */
+
+position: absolute;
+left: 2.89%;
+right: 59.82%;
+top: 1.73%;
+bottom: 67.74%;
+
+background: url(image.png);
+border-radius: 16px;
+
+
+/* image 507 */
+
+position: absolute;
+left: 4.85%;
+right: 61.59%;
+top: 1.73%;
+bottom: 70.99%;
+
+background: url(image.png);
+border-radius: 16px;
+
+
+/* 2 */
+
+width: 171px;
+height: 210px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Rectangle2 */
+
+position: absolute;
+left: 52.23%;
+right: 0%;
+top: 4.13%;
+bottom: 51.83%;
+
+background: #F5F5F5;
+border-radius: 16px;
+
+
+/* Text */
+
+position: absolute;
+left: 65.51%;
+right: 12.98%;
+top: 31.19%;
+bottom: 64.22%;
+
+
+
+/* Sthm sthap */
+
+position: absolute;
+left: 65.51%;
+right: 12.98%;
+top: 31.19%;
+bottom: 64.22%;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height */
+text-align: center;
+
+color: #222222;
+
+
+
+/* buttons/btn2 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 16px 20px;
+gap: 4px;
+
+position: absolute;
+left: 59.22%;
+right: 7.26%;
+top: 37.16%;
+bottom: 55.5%;
+
+background: url(.png), linear-gradient(180deg, #0073FF 0%, #0DA2FF 100%);
+background-blend-mode: plus-lighter, normal;
+box-shadow: inset 0px 1px 18px 2px #D2EAFF, inset 0px 1px 4px 2px #D2EAFF;
+border-radius: 100px;
+
+
+/* Label */
+
+width: 34px;
+height: 18px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 13px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Rectangle 22240 */
+
+position: absolute;
+left: 57.25%;
+right: 8.67%;
+top: 0%;
+bottom: 72.94%;
+
+background: #6093A8;
+box-shadow: 0px 15.8959px 7.57394px -7.48043px rgba(31, 32, 34, 0.38);
+border-radius: 16px;
+transform: matrix(1, 0.06, -0.06, 1, 0, 0);
+
+
+/* Image2 */
+
+position: absolute;
+left: 57.26%;
+right: 9.78%;
+top: 1.83%;
+bottom: 71.1%;
+
+
+
+/* Rectangle 22242 */
+
+position: absolute;
+left: 57.26%;
+right: 9.78%;
+top: 1.83%;
+bottom: 71.1%;
+
+background: #D9D9D9;
+border-radius: 16px;
+
+
+/* Rectangle 22243 */
+
+position: absolute;
+left: 57.25%;
+right: 10.03%;
+top: 1.73%;
+bottom: 71.2%;
+
+background: #D9D9D9;
+border-radius: 16px;
+
+
+/* image 513 */
+
+position: absolute;
+left: 54.48%;
+right: 7.1%;
+top: 1.73%;
+bottom: 66.87%;
+
+background: url(image.png);
+
+
+/* image 512 */
+
+position: absolute;
+left: 55.14%;
+right: 7.83%;
+top: 1.73%;
+bottom: 67.73%;
+
+background: url(image.png);
+
+
+/* image 510 */
+
+position: absolute;
+left: 56.98%;
+right: 9.76%;
+top: 0.65%;
+bottom: 66%;
+
+background: url(image.png);
+
+
+/* image 511 */
+
+position: absolute;
+visibility: hidden;
+left: 55.14%;
+right: 7.83%;
+top: 1.73%;
+bottom: 67.73%;
+
+background: url(image.png);
+
+
+/* image 507 */
+
+position: absolute;
+visibility: hidden;
+left: 57.08%;
+right: 9.6%;
+top: 1.73%;
+bottom: 70.98%;
+
+background: url(image.png);
+border-radius: 18.8875px;
+
+
+/* 3 */
+
+width: 171px;
+height: 210px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* Rectangle3 */
+
+position: absolute;
+left: 0%;
+right: 52.23%;
+top: 55.96%;
+bottom: 0%;
+
+background: #F5F5F5;
+border-radius: 16px;
+
+
+/* buttons/btn3 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 16px 20px;
+gap: 4px;
+
+position: absolute;
+left: 6.98%;
+right: 59.5%;
+top: 88.99%;
+bottom: 3.67%;
+
+background: url(.png), linear-gradient(180deg, #0073FF 0%, #0DA2FF 100%);
+background-blend-mode: plus-lighter, normal;
+box-shadow: inset 0px 1px 18px 2px #D2EAFF, inset 0px 1px 4px 2px #D2EAFF;
+border-radius: 100px;
+
+
+/* Label */
+
+width: 34px;
+height: 18px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 13px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Text */
+
+position: absolute;
+left: 16.12%;
+right: 67.8%;
+top: 83.03%;
+bottom: 11.18%;
+
+
+
+/* Katuion */
+
+position: absolute;
+left: 16.12%;
+right: 67.8%;
+top: 83.03%;
+bottom: 11.18%;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 20px;
+text-align: center;
+
+color: #222222;
+
+
+
+/* Rectangle 22240 */
+
+position: absolute;
+left: 5.01%;
+right: 60.91%;
+top: 51.83%;
+bottom: 21.1%;
+
+background: #6C6D9E;
+box-shadow: 0px 15.8959px 7.57394px -7.48043px rgba(31, 32, 34, 0.38);
+border-radius: 16px;
+transform: matrix(1, 0.06, -0.06, 1, 0, 0);
+
+
+/* Image3 */
+
+position: absolute;
+left: 5.03%;
+right: 62.01%;
+top: 53.67%;
+bottom: 19.27%;
+
+
+
+/* Rectangle 22242 */
+
+position: absolute;
+left: 5.03%;
+right: 62.01%;
+top: 53.67%;
+bottom: 19.27%;
+
+background: #D9D9D9;
+border-radius: 16px;
+
+
+/* Rectangle 22243 */
+
+position: absolute;
+left: 5.01%;
+right: 62.26%;
+top: 53.57%;
+bottom: 19.36%;
+
+background: #D9D9D9;
+border-radius: 16px;
+
+
+/* image 513 */
+
+position: absolute;
+left: 2.25%;
+right: 59.34%;
+top: 53.57%;
+bottom: 15.03%;
+
+background: url(image.png);
+
+
+/* image 512 */
+
+position: absolute;
+left: 2.9%;
+right: 60.07%;
+top: 53.57%;
+bottom: 15.9%;
+
+background: url(image.png);
+
+
+/* image 510 */
+
+position: absolute;
+left: 4.75%;
+right: 62%;
+top: 52.48%;
+bottom: 14.17%;
+
+background: url(image.png);
+
+
+/* image 511 */
+
+position: absolute;
+left: 2.9%;
+right: 60.07%;
+top: 53.57%;
+bottom: 15.9%;
+
+background: url(image.png);
+
+
+/* image 507 */
+
+position: absolute;
+visibility: hidden;
+left: 4.85%;
+right: 61.83%;
+top: 53.57%;
+bottom: 19.15%;
+
+background: url(image.png);
+border-radius: 18.8875px;
+
+
+/* 4 */
+
+width: 171px;
+height: 202px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* Rectangle4 */
+
+position: absolute;
+left: 52.23%;
+right: 0%;
+top: 54.13%;
+bottom: 1.83%;
+
+background: #F5F5F5;
+border-radius: 16px;
+
+
+/* buttons/btn4 */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 16px 20px;
+gap: 4px;
+
+position: absolute;
+left: 59.22%;
+right: 7.26%;
+top: 87.16%;
+bottom: 5.5%;
+
+background: url(.png), linear-gradient(180deg, #0073FF 0%, #0DA2FF 100%);
+background-blend-mode: plus-lighter, normal;
+box-shadow: inset 0px 1px 18px 2px #D2EAFF, inset 0px 1px 4px 2px #D2EAFF;
+border-radius: 100px;
+
+
+/* Label */
+
+width: 34px;
+height: 18px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 13px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Text */
+
+position: absolute;
+left: 66.38%;
+right: 13.59%;
+top: 81.19%;
+bottom: 13.02%;
+
+
+
+/* Struk ball */
+
+position: absolute;
+left: 66.38%;
+right: 13.59%;
+top: 81.19%;
+bottom: 13.02%;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 20px;
+text-align: center;
+
+color: #222222;
+
+
+
+/* Image4 */
+
+position: absolute;
+left: 57.26%;
+right: 9.78%;
+top: 51.83%;
+bottom: 21.1%;
+
+
+
+/* Rectangle 22242 */
+
+position: absolute;
+left: 57.26%;
+right: 9.78%;
+top: 51.83%;
+bottom: 21.1%;
+
+background: #D9D9D9;
+border-radius: 16px;
+
+
+/* Rectangle 22243 */
+
+position: absolute;
+left: 57.25%;
+right: 10.03%;
+top: 51.73%;
+bottom: 21.2%;
+
+background: #D9D9D9;
+border-radius: 16px;
+
+
+/* image 513 */
+
+position: absolute;
+left: 54.48%;
+right: 7.1%;
+top: 51.73%;
+bottom: 16.87%;
+
+background: url(image.png);
+
+
+/* image 512 */
+
+position: absolute;
+visibility: hidden;
+left: 55.14%;
+right: 7.83%;
+top: 51.73%;
+bottom: 17.73%;
+
+background: url(image.png);
+
+
+/* image 510 */
+
+position: absolute;
+visibility: hidden;
+left: 56.98%;
+right: 9.76%;
+top: 50.65%;
+bottom: 16%;
+
+background: url(image.png);
+
+
+/* image 511 */
+
+position: absolute;
+visibility: hidden;
+left: 55.14%;
+right: 7.83%;
+top: 51.73%;
+bottom: 17.73%;
+
+background: url(image.png);
+
+
+/* image 507 */
+
+position: absolute;
+visibility: hidden;
+left: 57.08%;
+right: 9.6%;
+top: 51.73%;
+bottom: 20.98%;
+
+background: url(image.png);
+border-radius: 18.8875px;
+
+
+/* 5 */
+
+display: none;
+width: 171px;
+height: 210px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 4;
+flex-grow: 0;
+
+
+/* Rectangle 22239 */
+
+position: absolute;
+left: 0%;
+right: 52.23%;
+top: 107.8%;
+bottom: -51.83%;
+
+background: #F5F5F5;
+border-radius: 16px;
+
+
+/* buttons/L */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 16px 20px;
+gap: 4px;
+
+position: absolute;
+left: 6.98%;
+right: 59.5%;
+top: 140.83%;
+bottom: -48.17%;
+
+background: url(.png), linear-gradient(180deg, #0073FF 0%, #0DA2FF 100%);
+background-blend-mode: plus-lighter, normal;
+box-shadow: inset 0px 1px 18px 2px #D2EAFF, inset 0px 1px 4px 2px #D2EAFF;
+border-radius: 100px;
+
+
+/* Label */
+
+width: 34px;
+height: 18px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 13px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Tairbrty */
+
+position: absolute;
+left: 16.48%;
+right: 68.99%;
+top: 134.86%;
+bottom: -39.45%;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height */
+text-align: center;
+
+color: #222222;
+
+
+
+/* Rectangle 22240 */
+
+position: absolute;
+left: 5.01%;
+right: 60.91%;
+top: 103.67%;
+bottom: -30.73%;
+
+background: #A89C60;
+box-shadow: 0px 15.8959px 7.57394px -7.48043px rgba(31, 32, 34, 0.38);
+border-radius: 16px;
+transform: matrix(1, 0.06, -0.06, 1, 0, 0);
+
+
+/* Image */
+
+position: absolute;
+left: 5.01%;
+right: 62.03%;
+top: 105.4%;
+bottom: -32.47%;
+
+
+
+/* Rectangle 22242 */
+
+position: absolute;
+left: 5.01%;
+right: 62.03%;
+top: 105.4%;
+bottom: -32.47%;
+
+background: #D9D9D9;
+border-radius: 16px;
+
+
+/* Rectangle 22243 */
+
+position: absolute;
+left: 5.01%;
+right: 62.03%;
+top: 105.4%;
+bottom: -32.47%;
+
+background: #D9D9D9;
+border-radius: 16px;
+
+
+/* image 513 */
+
+position: absolute;
+left: 2.23%;
+right: 59.08%;
+top: 105.4%;
+bottom: -36.8%;
+
+background: url(image.png);
+border-radius: 16px;
+
+
+/* image 512 */
+
+position: absolute;
+left: 2.89%;
+right: 59.82%;
+top: 105.4%;
+bottom: -35.93%;
+
+background: url(image.png);
+border-radius: 16px;
+
+
+/* image 510 */
+
+position: absolute;
+left: 4.75%;
+right: 61.76%;
+top: 104.32%;
+bottom: -37.66%;
+
+background: url(image.png);
+border-radius: 16px;
+
+
+/* image 511 */
+
+position: absolute;
+left: 2.89%;
+right: 59.82%;
+top: 105.4%;
+bottom: -35.93%;
+
+background: url(image.png);
+border-radius: 16px;
+
+
+/* image 507 */
+
+position: absolute;
+left: 4.85%;
+right: 61.59%;
+top: 105.4%;
+bottom: -32.68%;
+
+background: url(image.png);
+border-radius: 16px;
+
+
+/* 6 */
+
+display: none;
+width: 171px;
+height: 210px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 5;
+flex-grow: 0;
+
+
+/* Rectangle 22239 */
+
+position: absolute;
+left: 52.23%;
+right: 0%;
+top: 107.8%;
+bottom: -51.83%;
+
+background: #F5F5F5;
+border-radius: 16px;
+
+
+/* Text */
+
+position: absolute;
+left: 65.51%;
+right: 12.98%;
+top: 134.86%;
+bottom: -39.45%;
+
+
+
+/* Sthm sthap */
+
+position: absolute;
+left: 65.51%;
+right: 12.98%;
+top: 134.86%;
+bottom: -39.45%;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 600;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height */
+text-align: center;
+
+color: #222222;
+
+
+
+/* buttons/L */
+
+box-sizing: border-box;
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+justify-content: center;
+align-items: center;
+padding: 16px 20px;
+gap: 4px;
+
+position: absolute;
+left: 59.22%;
+right: 7.26%;
+top: 140.83%;
+bottom: -48.17%;
+
+background: url(.png), linear-gradient(180deg, #0073FF 0%, #0DA2FF 100%);
+background-blend-mode: plus-lighter, normal;
+box-shadow: inset 0px 1px 18px 2px #D2EAFF, inset 0px 1px 4px 2px #D2EAFF;
+border-radius: 100px;
+
+
+/* Label */
+
+width: 34px;
+height: 18px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 13px;
+line-height: 18px;
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #FFFFFF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Rectangle 22240 */
+
+position: absolute;
+left: 57.25%;
+right: 8.67%;
+top: 103.67%;
+bottom: -30.73%;
+
+background: #6093A8;
+box-shadow: 0px 15.8959px 7.57394px -7.48043px rgba(31, 32, 34, 0.38);
+border-radius: 16px;
+transform: matrix(1, 0.06, -0.06, 1, 0, 0);
+
+
+/* Image */
+
+position: absolute;
+left: 57.26%;
+right: 9.78%;
+top: 105.5%;
+bottom: -32.57%;
+
+
+
+/* Rectangle 22242 */
+
+position: absolute;
+left: 57.26%;
+right: 9.78%;
+top: 105.5%;
+bottom: -32.57%;
+
+background: #D9D9D9;
+border-radius: 16px;
+
+
+/* Rectangle 22243 */
+
+position: absolute;
+left: 57.25%;
+right: 10.03%;
+top: 105.4%;
+bottom: -32.47%;
+
+background: #D9D9D9;
+border-radius: 16px;
+
+
+/* image 513 */
+
+position: absolute;
+left: 54.48%;
+right: 7.1%;
+top: 105.4%;
+bottom: -36.8%;
+
+background: url(image.png);
+
+
+/* image 512 */
+
+position: absolute;
+left: 55.14%;
+right: 7.83%;
+top: 105.4%;
+bottom: -35.94%;
+
+background: url(image.png);
+
+
+/* image 510 */
+
+position: absolute;
+left: 56.98%;
+right: 9.76%;
+top: 104.32%;
+bottom: -37.67%;
+
+background: url(image.png);
+
+
+/* image 511 */
+
+position: absolute;
+visibility: hidden;
+left: 55.14%;
+right: 7.83%;
+top: 105.4%;
+bottom: -35.94%;
+
+background: url(image.png);
+
+
+/* image 507 */
+
+position: absolute;
+visibility: hidden;
+left: 57.08%;
+right: 9.6%;
+top: 105.4%;
+bottom: -32.69%;
+
+background: url(image.png);
+border-radius: 18.8875px;
+
+
+/* 底部栏 */
+
+position: absolute;
+width: 390px;
+height: 88px;
+left: 0px;
+bottom: 0px;
+
+
+
+/* bar */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 61.36%;
+bottom: 0%;
+
+
+
+/* 🌈bg */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 61.36%;
+bottom: 0%;
+
+
+
+/* 矩形 */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 61.36%;
+bottom: 0%;
+
+background: #FFFFFF;
+
+
+/* Rectangle 24 */
+
+position: absolute;
+left: 32.82%;
+right: 32.82%;
+top: 84.09%;
+bottom: 10.23%;
+
+background: #000000;
+border-radius: 100px;
+
+
+/* bak */
+
+position: absolute;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 38.64%;
+
+background: #FFFFFF;
+
+
+/* 分割线 */
+
+position: absolute;
+visibility: hidden;
+left: 0%;
+right: 0%;
+top: 0%;
+bottom: 100%;
+
+/* 线 */
+border: 0.5px solid #E6E6E6;
+
+
+/* 图标 */
+
+/* Auto layout */
+display: flex;
+flex-direction: row;
+align-items: center;
+padding: 0px;
+gap: 52px;
+
+position: absolute;
+width: 332px;
+height: 43px;
+left: calc(50% - 332px/2);
+top: calc(50% - 43px/2 - 12.5px);
+
+
+
+/* 8 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 4px;
+
+width: 44px;
+height: 41px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Frame */
+
+width: 24px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Vector */
+
+position: absolute;
+left: 8.33%;
+right: 8.33%;
+top: 8.33%;
+bottom: 8.33%;
+
+border: 2px solid #ADADB7;
+
+
+/* Ellipse 2914 */
+
+position: absolute;
+left: 45.83%;
+right: 45.83%;
+top: 45.83%;
+bottom: 45.83%;
+
+background: #ADADB7;
+
+
+/* 首页 */
+
+width: 31px;
+height: 13px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 11px;
+line-height: 13px;
+text-align: center;
+
+/* 正文01 */
+color: #8E8E9D;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* 7 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 4px;
+
+width: 44px;
+height: 41px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* plus-circle
+
+plus, add, addition, calculate, mathematics, circle
+*/
+
+width: 24px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Icon */
+
+position: absolute;
+left: 8.33%;
+right: 8.33%;
+top: 8.33%;
+bottom: 8.33%;
+
+border: 2px solid #ADADB7;
+
+
+/* 首页 */
+
+width: 35px;
+height: 13px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 11px;
+line-height: 13px;
+text-align: center;
+
+/* 正文01 */
+color: #8E8E9D;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* 6 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 4px;
+
+width: 44px;
+height: 43px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 2;
+flex-grow: 0;
+
+
+/* 底部Tab栏
+
+file, attachment, text, paper, pdf, report
+*/
+
+width: 24px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Union */
+
+position: absolute;
+width: 18px;
+height: 22px;
+left: 3px;
+top: 1px;
+
+/* 主色 */
+background: #1484FF;
+
+
+/* Subtract */
+
+position: absolute;
+width: 18px;
+height: 22px;
+left: 3px;
+top: 1px;
+
+background: #2E2E31;
+
+
+/* Subtract */
+
+position: absolute;
+width: 18px;
+height: 22px;
+left: 3px;
+top: 1px;
+
+background: #2E2E31;
+
+
+/* Icon */
+
+position: absolute;
+left: 16.67%;
+right: 16.67%;
+top: 8.33%;
+bottom: 8.33%;
+
+background: #2E2E31;
+border: 2px solid #2E2E31;
+
+
+/* Vector 1684 */
+
+position: absolute;
+left: 58.33%;
+right: 6.68%;
+top: 1.01%;
+bottom: 66.67%;
+
+background: #FFFFFF;
+
+
+/* Icon */
+
+position: absolute;
+left: 33.33%;
+right: 33.33%;
+top: 54.17%;
+bottom: 29.17%;
+
+border: 2px solid #FFFFFF;
+
+
+/* Vector 1685 */
+
+position: absolute;
+left: 62.5%;
+right: 12.5%;
+top: 4.17%;
+bottom: 70.83%;
+
+background: #2E2E31;
+border-radius: 0.5px;
+
+
+/* 首页 */
+
+width: 44px;
+height: 15px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 11px;
+line-height: 15px;
+text-align: center;
+
+/* 主色 */
+color: #1484FF;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+align-self: stretch;
+flex-grow: 0;
+
+
+/* 9 */
+
+/* Auto layout */
+display: flex;
+flex-direction: column;
+align-items: center;
+padding: 0px;
+gap: 4px;
+
+width: 44px;
+height: 41px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 3;
+flex-grow: 0;
+
+
+/* 底部Tab栏 */
+
+width: 24px;
+height: 24px;
+
+
+/* Inside auto layout */
+flex: none;
+order: 0;
+flex-grow: 0;
+
+
+/* Icon */
+
+position: absolute;
+left: 12.5%;
+right: 12.5%;
+top: 12.5%;
+bottom: 16.67%;
+
+border: 2px solid #ADADB7;
+
+
+/* 首页 */
+
+width: 40px;
+height: 13px;
+
+font-family: 'Inter';
+font-style: normal;
+font-weight: 400;
+font-size: 11px;
+line-height: 13px;
+text-align: center;
+
+/* 正文01 */
+color: #8E8E9D;
+
+
+/* Inside auto layout */
+flex: none;
+order: 1;
+flex-grow: 0;
+
+
+/* Group 1321316051 */
+
+position: absolute;
+width: 74.44px;
+height: 73.75px;
+left: 300px;
+top: 665.81px;
+
+
+
+/* Group 1321315952 */
+
+position: absolute;
+width: 74.44px;
+height: 73.75px;
+left: 300px;
+top: 665.81px;
+
+
+
+/* Group 1321315953 */
+
+position: absolute;
+left: 3.04%;
+right: -1.79%;
+top: 0%;
+bottom: 0%;
+
+
+
+/* image 2040 */
+
+position: absolute;
+height: 73.75px;
+left: 3.04%;
+right: 3.62%;
+top: 0px;
+
+background: url(image.png);
+
+
+/* image 2039 */
+
+position: absolute;
+height: 68.95px;
+left: 11.7%;
+right: -1.79%;
+top: 2.68px;
+
+background: url(image.png);
+filter: blur(2px);
+
+
+/* plus-circle
+
+plus, add, addition, calculate, mathematics, circle
+*/
+
+position: absolute;
+visibility: hidden;
+width: 24px;
+height: 24px;
+left: 29.71px;
+top: 24.68px;
+
+
+
+/* image 2041 */
+
+position: absolute;
+visibility: hidden;
+width: 80.01px;
+height: 79.74px;
+left: -2.26px;
+top: -1.62px;
+
+background: url(image.png);
+
+
+/* icon_Agent */
+
+position: absolute;
+left: 33.19%;
+right: 26.41%;
+top: 31.77%;
+bottom: 27.46%;
+
+
+
+/* Rectangle 346241646 */
+
+position: absolute;
+height: 30.07px;
+left: 0%;
+right: 0%;
+top: 0px;
+
+
+
+/* Group 1321315754 */
+
+position: absolute;
+visibility: hidden;
+left: 12.5%;
+right: 0%;
+top: 8.33%;
+bottom: 11.21%;
+
+
+
+/* Group 1321315745 */
+
+position: absolute;
+left: 12.5%;
+right: 7.04%;
+top: 8.33%;
+bottom: 11.21%;
+
+
+
+/* Rectangle 346241645 */
+
+position: absolute;
+left: 12.5%;
+right: 30.61%;
+top: 8.33%;
+bottom: 34.77%;
+
+background: #FFFFFF;
+transform: rotate(45deg);
+
+
+/* Rectangle 346241646 */
+
+position: absolute;
+visibility: hidden;
+left: 71.19%;
+right: 8.44%;
+top: 8.33%;
+bottom: 71.29%;
+
+background: #FFFFFF;
+transform: rotate(45deg);
+
+
+/* Ellipse 3529 */
+
+position: absolute;
+left: 86.25%;
+right: 0%;
+top: 18.37%;
+bottom: 67.88%;
+
+background: #FFFFFF;
+
+
+/* plus
+
+plus, add, addition, calculate, mathematics
+*/
+
+position: absolute;
+width: 24px;
+height: 24px;
+left: 3.29px;
+top: 2.75px;
+
+
+
+/* Icon */
+
+position: absolute;
+left: 20.83%;
+right: 20.83%;
+top: 20.83%;
+bottom: 20.83%;
+
+border: 3px solid #FFFFFF;
+box-shadow: 0px 2px 3px rgba(60, 128, 216, 0.25);
+
+
+/* Group 1321316038 */
+
+position: absolute;
+visibility: hidden;
+width: 58.38px;
+height: 25.39px;
+left: 311.37px;
+top: 642px;
+
+
+
+/* Group 1000011073 */
+
+position: absolute;
+width: nanpx;
+height: nanpx;
+left: 311.37px;
+top: 642px;
+
+
+
+/* Mask group */
+
+position: absolute;
+visibility: hidden;
+width: 107px;
+height: 102px;
+left: 274.65px;
+top: 567.52px;
+
+
+
+/* Rectangle 3464548 */
+
+position: absolute;
+width: 107px;
+height: 102px;
+left: 274.65px;
+top: 567.52px;
+
+background: #007AFF;
+border-radius: 16px;
+
+
+/* Union */
+
+position: absolute;
+width: 102.34px;
+height: 92.48px;
+left: 274.65px;
+top: 577.52px;
+
+background: linear-gradient(131.08deg, rgba(0, 122, 255, 0) -5.67%, #007AFF 94.63%);
+opacity: 0.1;
+
+
+/* Vector */
+
+position: absolute;
+width: 14.35px;
+height: 58.19px;
+left: 362.63px;
+top: 611.81px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+width: 47.64px;
+height: 58.19px;
+left: 308.94px;
+top: 611.81px;
+
+background: #FFFFFF;
+
+
+/* Vector */
+
+position: absolute;
+left: 74.56%;
+right: 16.35%;
+top: 68.43%;
+bottom: 27.37%;
+
+background: rgba(255, 255, 255, 0.7);
+
+
+/* Vector */
+
+position: absolute;
+left: 70.42%;
+right: 25.68%;
+top: 72.49%;
+bottom: 25.71%;
+
+background: rgba(255, 255, 255, 0.3);
+
+
+/* Union */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 58.38px;
+height: 25.39px;
+left: 311.37px;
+top: 642px;
+
+background: #D8EBFF;
+border: 0.5px solid #FFFFFF;
+backdrop-filter: blur(2px);
+/* Note: backdrop-filter has minimal browser support */
+border-radius: 2px;
+
+
+/* Rectangle 3464548 */
+
+position: absolute;
+width: 58.38px;
+height: 22.3px;
+left: 311.37px;
+top: 642px;
+
+background: #FFFFFF;
+border-radius: 6px;
+
+
+/* Rectangle 346241758 */
+
+position: absolute;
+width: 6.52px;
+height: 6.52px;
+left: 336.77px;
+top: 659px;
+
+background: #D9D9D9;
+transform: rotate(-45deg);
+
+
+/* Create */
+
+position: absolute;
+width: 58px;
+height: 14px;
+left: 311.65px;
+top: 646.15px;
+
+font-family: 'PingFang SC';
+font-style: normal;
+font-weight: 500;
+font-size: 10px;
+line-height: 14px;
+/* identical to box height */
+display: flex;
+align-items: center;
+text-align: center;
+
+color: #007AFF;
+

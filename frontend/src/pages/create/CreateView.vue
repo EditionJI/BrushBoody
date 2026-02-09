@@ -1,720 +1,560 @@
 <template>
   <div class="create-container">
     <div class="mobile-wrapper" ref="wrapperRef">
-
-    <!-- ========== STEP 1: Upload Info (New Design) ========== -->
-    <div v-if="currentStep === 1" class="step-1">
-      <!-- Status Bar (54px) -->
-      <div class="status-bar">
-        <span class="time">9:41</span>
-        <div class="levels">
-          <div class="wifi"></div>
-          <div class="cellular"></div>
-          <div class="battery">
-            <div class="capacity"></div>
+      <!-- ========== STEP 1: Upload Info (New Design) ========== -->
+      <div v-if="currentStep === 1" class="step-1">
+        <!-- Status Bar (54px) -->
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="levels">
+            <div class="wifi"></div>
+            <div class="cellular"></div>
+            <div class="battery">
+              <div class="capacity"></div>
+            </div>
           </div>
         </div>
-      </div>
 
-      <!-- Top Navigation (54px) -->
-      <div class="top-nav">
-        <img src="/images/创建页/返回.png" alt="Back" class="back-button" @click="goBack" />
-        <img src="/images/创建页/Create a story.png" alt="Create a story" class="title-image" />
-      </div>
+        <!-- Top Navigation (54px) -->
+        <div class="top-nav">
+          <img src="/images/创建页/返回.png" alt="Back" class="back-button" @click="goBack" />
+          <img src="/images/创建页/Create a story.png" alt="Create a story" class="title-image" />
+        </div>
 
-      <!-- Main Content Area -->
-      <div class="main-content">
-        <!-- Upload Section -->
-        <div class="upload-section">
-          <div class="upload-labels">
-            <img src="/images/创建页/上传.png" alt="Upload your kid's photo" class="upload-label" />
-          </div>
-          <div class="upload-area" @click="triggerUpload">
-            <div v-if="!uploadedPhoto" class="upload-placeholder">
-              <div class="plus-icon"></div>
+        <!-- Main Content Area -->
+        <div class="main-content">
+          <!-- Upload Section -->
+          <div class="upload-section">
+            <div class="upload-labels">
+              <img src="/images/创建页/上传.png" alt="Upload your kid's photo" class="upload-label" />
             </div>
-            <img v-else :src="uploadedPhoto" alt="Uploaded photo" class="uploaded-photo" />
-            <!-- Delete button for uploaded photo -->
+            <div class="upload-area" @click="triggerUpload">
+              <div v-if="!uploadedPhoto" class="upload-placeholder">
+                <div class="plus-icon"></div>
+              </div>
+              <img v-else :src="uploadedPhoto" alt="Uploaded photo" class="uploaded-photo" />
+            </div>
+            <!-- Delete button for uploaded photo - outside upload-area to avoid clipping -->
             <div v-if="uploadedPhoto" class="delete-button" @click.stop="deletePhoto">
               <span class="delete-x">×</span>
             </div>
           </div>
-        </div>
 
-        <!-- Nickname Input -->
-        <div class="input-group">
-          <img src="/images/创建页/Your-kids-nickname.png" alt="Nickname" class="input-label" />
-          <div class="input-box" @click="focusNickname">
-            <input
-              ref="nicknameInputRef"
-              v-model="nickname"
-              type="text"
-              placeholder="e.g. Leo"
-              class="text-input"
-              @blur="saveData"
-            />
+          <!-- Nickname Input -->
+          <div class="input-group">
+            <img src="/images/创建页/Your-kids-nickname.png" alt="Nickname" class="input-label" />
+            <div class="input-box" @click="focusNickname">
+              <input
+                ref="nicknameInputRef"
+                v-model="nickname"
+                type="text"
+                placeholder="e.g. Leo"
+                class="text-input"
+                @blur="saveData"
+              />
+            </div>
           </div>
-        </div>
 
-        <!-- Gender Select -->
-        <div class="input-group">
-          <img src="/images/创建页/Gender.png" alt="Gender" class="input-label" />
-          <div class="select-box" @click="toggleGenderDropdown">
-            <span class="select-text">{{ getGenderLabel(childGender) }}</span>
-            <span class="select-arrow">▼</span>
+          <!-- Gender Select -->
+          <div class="input-group">
+            <img src="/images/创建页/Gender.png" alt="Gender" class="input-label" />
+            <div class="select-box" @click="toggleGenderDropdown">
+              <span class="select-text">{{ getGenderLabel(childGender) }}</span>
+              <span class="select-arrow">▼</span>
+            </div>
+            <!-- Gender Dropdown -->
+            <div v-if="showGenderDropdown" class="dropdown-menu">
+              <div v-for="(label, key) in genderOptions" :key="key" class="dropdown-item" @click="selectGender(key)">
+                {{ label }}
+              </div>
+            </div>
           </div>
-          <!-- Gender Dropdown -->
-          <div v-if="showGenderDropdown" class="dropdown-menu">
-            <div
-              v-for="(label, key) in genderOptions"
-              :key="key"
-              class="dropdown-item"
-              @click="selectGender(key)"
-            >
-              {{ label }}
+
+          <!-- Age Select -->
+          <div class="input-group">
+            <img src="/images/创建页/Age.png" alt="Age" class="input-label" />
+            <div class="select-box" @click="toggleAgeDropdown">
+              <span class="select-text">{{ getAgeLabel(childAge) }}</span>
+              <span class="select-arrow">▼</span>
+            </div>
+            <!-- Age Dropdown -->
+            <div v-if="showAgeDropdown" class="dropdown-menu dropdown-menu-age">
+              <div v-for="age in ageOptions" :key="age" class="dropdown-item" @click="selectAge(age)">
+                {{ getAgeLabel(age) }}
+              </div>
             </div>
           </div>
         </div>
 
-        <!-- Age Select -->
-        <div class="input-group">
-          <img src="/images/创建页/Age.png" alt="Age" class="input-label" />
-          <div class="select-box" @click="toggleAgeDropdown">
-            <span class="select-text">{{ getAgeLabel(childAge) }}</span>
-            <span class="select-arrow">▼</span>
-          </div>
-          <!-- Age Dropdown -->
-          <div v-if="showAgeDropdown" class="dropdown-menu dropdown-menu-age">
-            <div
-              v-for="age in ageOptions"
-              :key="age"
-              class="dropdown-item"
-              @click="selectAge(age)"
-            >
-              {{ getAgeLabel(age) }}
+        <!-- Next Step Button -->
+        <img src="/images/创建页/L.png" alt="Next Step" class="next-button" @click="handleNextStep1" />
+
+        <!-- Home Indicator -->
+        <div class="home-indicator"></div>
+      </div>
+
+      <!-- ========== STEP 2: Select Theme (Keep SVG for now) ========== -->
+      <div v-if="currentStep === 2" class="step-2">
+        <object
+          data="/SVG/create-new-2.svg"
+          type="image/svg+xml"
+          class="full-screen-svg step-new-2-svg"
+          @load="onNewStep2SvgLoad"
+        ></object>
+      </div>
+
+      <!-- ========== STEP 3: AI Preview (New Design) ========== -->
+      <div v-if="currentStep === 3" class="step-3">
+        <!-- Status Bar (54px) -->
+        <div class="status-bar">
+          <span class="time">9:41</span>
+          <div class="levels">
+            <div class="wifi"></div>
+            <div class="cellular"></div>
+            <div class="battery">
+              <div class="capacity"></div>
             </div>
           </div>
         </div>
-      </div>
 
-      <!-- Next Step Button -->
-      <img src="/images/创建页/L.png" alt="Next Step" class="next-button" @click="handleNextStep1" />
-
-      <!-- Home Indicator -->
-      <div class="home-indicator"></div>
-    </div>
-
-    <!-- ========== STEP 2: Select Theme (Keep SVG for now) ========== -->
-    <div v-if="currentStep === 2" class="step-2">
-      <object data="/SVG/create-new-2.svg" type="image/svg+xml" class="full-screen-svg step-new-2-svg" @load="onNewStep2SvgLoad"></object>
-    </div>
-
-    <!-- ========== STEP 3: AI Preview (New Design) ========== -->
-    <div v-if="currentStep === 3" class="step-3">
-      <!-- Status Bar (54px) -->
-      <div class="status-bar">
-        <span class="time">9:41</span>
-        <div class="levels">
-          <div class="wifi"></div>
-          <div class="cellular"></div>
-          <div class="battery">
-            <div class="capacity"></div>
-          </div>
+        <!-- Top Navigation (54px) -->
+        <div class="top-nav">
+          <img src="/images/创建页/创建页第3步-返回.png" alt="Back" class="back-button" @click="goToPreviewBack" />
+          <img src="/images/创建页/Create a story.png" alt="Create a story" class="title-image" />
         </div>
-      </div>
 
-      <!-- Top Navigation (54px) -->
-      <div class="top-nav">
-        <img src="/images/创建页/返回.png" alt="Back" class="back-button" @click="goToPreviewBack" />
-        <img src="/images/创建页/Create a story.png" alt="Create a story" class="title-image" />
-      </div>
-
-      <!-- Main Content Area -->
-      <div class="preview-main-content">
-        <!-- Title Label -->
-        <img src="/images/创建页/Previewing_ page 1.png" alt="Previewing page 1" class="preview-title" />
-
-        <!-- Preview Image Area -->
+        <!-- Preview Image Area - Full Screen -->
         <div class="preview-image-container">
-          <img
-            v-if="uploadedPhoto"
-            :src="uploadedPhoto"
-            alt="Preview"
-            class="preview-image"
-          />
-          <img
-            v-else
-            src="/images/首页/背景.png"
-            alt="Placeholder"
-            class="preview-placeholder"
-          />
-          <img src="/images/创建页/Mask group.png" alt="Mask" class="preview-mask" />
+          <img v-if="resImgUrl" :src="resImgUrl" alt="Preview" class="preview-image" />
+          <img v-else src="/images/首页/背景.png" alt="Placeholder" class="preview-placeholder" />
+          <!-- <img src="/images/创建页/Mask group.png" alt="Mask" class="preview-mask" /> -->
         </div>
 
-        <!-- Question Label -->
-        <img src="/images/创建页/Does the character and story style look correct_.png" alt="Question" class="preview-question" />
+        <!-- Input Section PNG (Question + Two Buttons) -->
+        <img src="/images/创建页/输入框1.png" alt="Input section" class="input-section-png" />
+
+        <!-- Clickable overlays for buttons -->
+        <div class="create-button-overlay" @click="handleConfirm"></div>
+        <div class="regenerate-button-overlay" @click="handleRegenerateCover"></div>
+
+        <!-- Public Toggle (主按钮) - Separate element with text and toggle -->
+        <div class="public-toggle-main">
+          <span class="public-toggle-label">Public: Others can read this book.</span>
+          <div class="public-toggle-switch" :class="{ active: isPublic }" @click="togglePublic">
+            <div class="public-toggle-knob"></div>
+          </div>
+        </div>
+
+        <!-- Home Indicator -->
+        <div class="home-indicator"></div>
       </div>
 
-      <!-- Public Toggle - Moved outside preview-main-content for correct positioning -->
-      <div class="public-toggle-container">
-        <span class="public-label">Public: Others can read this book.</span>
-        <div class="toggle-switch" :class="{ active: isPublic }" @click="togglePublic">
-          <div class="toggle-knob"></div>
+      <!-- Toast Notification -->
+      <transition name="fade">
+        <div v-if="showToast" class="toast-notification">
+          {{ toastMessage }}
+        </div>
+      </transition>
+
+      <!-- Loading Overlay -->
+      <div v-if="isLoading" class="loading-overlay">
+        <div class="loading-content">
+          <div class="spinner"></div>
+          <p>{{ loadingMessage }}</p>
         </div>
       </div>
 
-      <!-- Create Book Button -->
-      <img src="/images/创建页/创建绘本.png" alt="Create book" class="create-book-button" @click="handleConfirm" />
-
-      <!-- Regenerate Preview Button -->
-      <img src="/images/创建页/重新预览.png" alt="Regenerate preview" class="regenerate-button" @click="handleRegenerateCover" />
-
-      <!-- Home Indicator -->
-      <div class="home-indicator"></div>
-    </div>
-
-    <!-- Toast Notification -->
-    <transition name="fade">
-      <div v-if="showToast" class="toast-notification">
-        {{ toastMessage }}
-      </div>
-    </transition>
-
-    <!-- Loading Overlay -->
-    <div v-if="isLoading" class="loading-overlay">
-      <div class="loading-content">
-        <div class="spinner"></div>
-        <p>{{ loadingMessage }}</p>
-      </div>
-    </div>
-
-    <!-- Hidden file input -->
-    <input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" class="hidden" />
+      <!-- Hidden file input -->
+      <input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" class="hidden" />
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from 'vue'
-import { useRouter } from 'vue-router'
-import { generateCharacter, generateStory } from '../../api/backend'
-import { useUserStore } from '../../stores/user'
+import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
+import { useRouter } from "vue-router";
+import { uploadPhoto } from "@/api/upload";
+import { createTask, getTaskStatus, generateCover, confirmTask } from "@/api/video";
+import type { TaskStatus, TaskStatusResponse } from "@/api/video";
+import { useUserStore } from "../../stores/user";
+import { pollUntilTrue } from "@/utils";
 
-const router = useRouter()
-const userStore = useUserStore()
+const router = useRouter();
+const userStore = useUserStore();
 
-const wrapperRef = ref<HTMLElement | null>(null)
+const wrapperRef = ref<HTMLElement | null>(null);
 
 // State
-const isLoading = ref(false)
-const loadingMessage = ref('Creating magic...')
-const currentStep = ref(1)
-const fileInput = ref<HTMLInputElement | null>(null)
-const nicknameInputRef = ref<HTMLInputElement | null>(null)
+const isLoading = ref(false);
+const loadingMessage = ref("Creating magic...");
+const currentStep = ref(1);
+const fileInput = ref<HTMLInputElement | null>(null);
+const nicknameInputRef = ref<HTMLInputElement | null>(null);
 
 // SVG document references (for Step 2 & 3)
-let newStep2SvgDoc: Document | null = null
-let previewSvgDoc: Document | null = null
+let newStep2SvgDoc: Document | null = null;
+let previewSvgDoc: Document | null = null;
 
 // Form data
-const uploadedPhoto = ref<string | null>(null)
-const nickname = ref('')
-const childGender = ref<'male' | 'female' | 'prefer_not_to_say'>('prefer_not_to_say')
-const childAge = ref(3)
-const selectedTheme = ref<number | null>(null)
-const isPublic = ref(false)
+const uploadedPhoto = ref<string | null>(null); // Local base64 for preview
+const uploadedPhotoFile = ref<File | null>(null); // Original file for upload
+const uploadedPhotoUrl = ref<string | null>(null); // OSS URL after upload
+
+const task_id = ref<string | null>(null);
+const task_status = ref<TaskStatus | null>(null);
+const resImgUrl = ref<string | null>(null);
+const nickname = ref("");
+const childGender = ref<"male" | "female" | "prefer_not_to_say">("male");
+const childAge = ref(3);
+const selectedTheme = ref<number | null>(null);
+const isPublic = ref(false);
 
 // Dropdown states
-const showGenderDropdown = ref(false)
-const showAgeDropdown = ref(false)
+const showGenderDropdown = ref(false);
+const showAgeDropdown = ref(false);
 
 // Options
 const genderOptions = {
-  male: 'Boy',
-  female: 'Girl',
-  prefer_not_to_say: 'Prefer not to say'
-}
-const ageOptions = Array.from({ length: 12 }, (_, i) => i + 1)
+  male: "Boy",
+  female: "Girl",
+  prefer_not_to_say: "Prefer not to say",
+};
+const ageOptions = Array.from({ length: 12 }, (_, i) => i + 1);
 
 // User stats
-const userStoryCount = ref(0)
-const dailyRegenCount = ref(0)
+const userStoryCount = ref(0);
+const dailyRegenCount = ref(0);
 
 // Toast
-const showToast = ref(false)
-const toastMessage = ref('')
+const showToast = ref(false);
+const toastMessage = ref("");
 
 const triggerToast = (msg: string) => {
-  toastMessage.value = msg
-  showToast.value = true
+  toastMessage.value = msg;
+  showToast.value = true;
   setTimeout(() => {
-    showToast.value = false
-  }, 2000)
-}
+    showToast.value = false;
+  }, 2000);
+};
 
 const validateStep1 = () => {
   if (!uploadedPhoto.value) {
-    triggerToast('请上传宝宝的照片')
-    return false
+    triggerToast("请上传宝宝的照片");
+    return false;
   }
   if (!nickname.value.trim()) {
-    triggerToast('请输入宝宝的昵称')
-    return false
+    triggerToast("请输入宝宝的昵称");
+    return false;
   }
   if (!childGender.value) {
-    triggerToast('请选择宝宝的性别')
-    return false
+    triggerToast("请选择宝宝的性别");
+    return false;
   }
   if (!childAge.value) {
-    triggerToast('请选择宝宝的年龄')
-    return false
+    triggerToast("请选择宝宝的年龄");
+    return false;
   }
-  return true
-}
+  return true;
+};
 
-const handleNextStep1 = () => {
+const handleNextStep1 = async () => {
   if (validateStep1()) {
-    goToStep(2)
+    // Upload photo to OSS before proceeding to step 2
+    if (uploadedPhotoFile.value) {
+      try {
+        isLoading.value = true;
+        loadingMessage.value = "Uploading photo...";
+        const response = await uploadPhoto({ file: uploadedPhotoFile.value });
+        uploadedPhotoUrl.value = response.url;
+        console.log("✅ Photo uploaded to OSS:", response.url);
+        goToStep(2);
+      } catch (error) {
+        console.error("❌ Photo upload failed:", error);
+        triggerToast("Photo upload failed, please try again");
+      } finally {
+        isLoading.value = false;
+      }
+    } else {
+      goToStep(2);
+    }
   }
-}
+};
 
 // Check if user is new or existing
 const isNewUser = computed(() => {
-  const stories = JSON.parse(localStorage.getItem('stories') || '[]')
-  return stories.length === 0
-})
+  const stories = JSON.parse(localStorage.getItem("stories") || "[]");
+  return stories.length === 0;
+});
 
 // Helper functions
 const getGenderLabel = (gender: string) => {
-  return genderOptions[gender as keyof typeof genderOptions] || 'Unknown'
-}
+  return genderOptions[gender as keyof typeof genderOptions] || "Unknown";
+};
 
 const getAgeLabel = (age: number) => {
-  return age === 1 ? '1 year old' : `${age} years old`
-}
+  return age === 1 ? "1 year old" : `${age} years old`;
+};
 
 const focusNickname = () => {
   nextTick(() => {
-    nicknameInputRef.value?.focus()
-  })
-}
+    nicknameInputRef.value?.focus();
+  });
+};
 
 const toggleGenderDropdown = () => {
-  showGenderDropdown.value = !showGenderDropdown.value
-  showAgeDropdown.value = false
-}
+  showGenderDropdown.value = !showGenderDropdown.value;
+  showAgeDropdown.value = false;
+};
 
 const toggleAgeDropdown = () => {
-  showAgeDropdown.value = !showAgeDropdown.value
-  showGenderDropdown.value = false
-}
+  showAgeDropdown.value = !showAgeDropdown.value;
+  showGenderDropdown.value = false;
+};
 
 const selectGender = (key: string) => {
-  childGender.value = key as any
-  showGenderDropdown.value = false
-  saveData()
-}
+  childGender.value = key as any;
+  showGenderDropdown.value = false;
+  saveData();
+};
 
 const selectAge = (age: number) => {
-  childAge.value = age
-  showAgeDropdown.value = false
-  saveData()
-}
+  childAge.value = age;
+  showAgeDropdown.value = false;
+  saveData();
+};
 
 // Close dropdowns when clicking outside
 const handleGlobalClick = (e: MouseEvent) => {
-  const target = e.target as HTMLElement
-  if (!target.closest('.input-group')) {
-    showGenderDropdown.value = false
-    showAgeDropdown.value = false
+  const target = e.target as HTMLElement;
+  if (!target.closest(".input-group")) {
+    showGenderDropdown.value = false;
+    showAgeDropdown.value = false;
   }
-}
+};
 
 // ========== SVG INTERACTIONS - Step 2 (Theme Selection) ==========
 const onNewStep2SvgLoad = () => {
-  console.log('=== create-new-2.svg loaded ===')
+  console.log("=== create-new-2.svg loaded ===");
 
-  const objectEl = document.querySelector('.step-new-2-svg') as HTMLObjectElement
+  const objectEl = document.querySelector(".step-new-2-svg") as HTMLObjectElement;
   if (!objectEl) {
-    console.error('SVG object element not found for create-new-2')
-    return
+    console.error("SVG object element not found for create-new-2");
+    return;
   }
 
-  newStep2SvgDoc = objectEl.contentDocument
+  newStep2SvgDoc = objectEl.contentDocument;
   if (!newStep2SvgDoc) {
-    console.error('Cannot access SVG document for create-new-2')
-    return
+    console.error("Cannot access SVG document for create-new-2");
+    return;
   }
 
-  console.log('SVG loaded, setting up interactions for theme selection...')
+  console.log("SVG loaded, setting up interactions for theme selection...");
 
-  const svgRoot = newStep2SvgDoc.querySelector('svg')
+  const svgRoot = newStep2SvgDoc.querySelector("svg");
   if (!svgRoot) {
-    console.error('SVG root not found')
-    return
+    console.error("SVG root not found");
+    return;
   }
 
   // 1. 返回按钮
-  const backButton = newStep2SvgDoc.getElementById('back-button')
+  const backButton = newStep2SvgDoc.getElementById("back-button");
   if (backButton) {
-    console.log('✅ Found back-button')
-    backButton.style.cursor = 'pointer'
-    backButton.style.pointerEvents = 'auto'
-    backButton.addEventListener('click', (e) => {
-      e.stopPropagation()
-      console.log('🔙 Back button clicked (step 2)')
-      goToStep(1)
-    })
+    console.log("✅ Found back-button");
+    backButton.style.cursor = "pointer";
+    backButton.style.pointerEvents = "auto";
+    backButton.addEventListener("click", (e) => {
+      e.stopPropagation();
+      console.log("🔙 Back button clicked (step 2)");
+      goToStep(1);
+    });
   }
 
   // 2. 主题选项
   for (let i = 1; i <= 4; i++) {
-    const themeOption = newStep2SvgDoc.getElementById(`theme-option-${i}`) as SVGRectElement
+    const themeOption = newStep2SvgDoc.getElementById(`theme-option-${i}`) as SVGRectElement;
     if (themeOption) {
-      console.log(`✅ Found theme-option-${i}`)
-      themeOption.style.cursor = 'pointer'
-      themeOption.style.pointerEvents = 'auto'
+      console.log(`✅ Found theme-option-${i}`);
+      themeOption.style.cursor = "pointer";
+      themeOption.style.pointerEvents = "auto";
 
-      themeOption.addEventListener('click', (e) => {
-        e.stopPropagation()
-        console.log(`🎨 Theme ${i} clicked`)
-        selectTheme(i)
-        updateThemeSelection(newStep2SvgDoc, svgRoot, i)
-      })
+      themeOption.addEventListener("click", (e) => {
+        e.stopPropagation();
+        console.log(`🎨 Theme ${i} clicked`);
+        selectTheme(i);
+        updateThemeSelection(newStep2SvgDoc, svgRoot, i);
+      });
 
       if (selectedTheme.value === i) {
-        updateThemeSelection(newStep2SvgDoc, svgRoot, i)
+        updateThemeSelection(newStep2SvgDoc, svgRoot, i);
       }
     }
   }
 
   watch(selectedTheme, (newTheme) => {
     if (newStep2SvgDoc && svgRoot) {
-      updateThemeSelection(newStep2SvgDoc, svgRoot, newTheme)
+      updateThemeSelection(newStep2SvgDoc, svgRoot, newTheme);
     }
-  })
+  });
 
   // 3. Next 按钮
-  const allRects = newStep2SvgDoc.querySelectorAll('rect')
+  const allRects = newStep2SvgDoc.querySelectorAll("rect");
   allRects.forEach((rect) => {
-    const x = parseFloat(rect.getAttribute('x') || '0')
-    const y = parseFloat(rect.getAttribute('y') || '0')
-    const width = parseFloat(rect.getAttribute('width') || '0')
-    const height = parseFloat(rect.getAttribute('height') || '0')
+    const x = parseFloat(rect.getAttribute("x") || "0");
+    const y = parseFloat(rect.getAttribute("y") || "0");
+    const width = parseFloat(rect.getAttribute("width") || "0");
+    const height = parseFloat(rect.getAttribute("height") || "0");
 
     if (Math.abs(x - 28) < 1 && Math.abs(y - 752) < 2 && width >= 340 && width <= 343 && height >= 47 && height <= 49) {
-      rect.style.cursor = 'pointer'
-      rect.style.pointerEvents = 'auto'
-      rect.addEventListener('click', (e) => {
-        e.stopPropagation()
-        console.log('➡️ Next button clicked (step 2)')
+      rect.style.cursor = "pointer";
+      rect.style.pointerEvents = "auto";
+      rect.addEventListener("click", async (e) => {
+        e.stopPropagation();
+        console.log("➡️ Next button clicked (step 2)");
 
         if (!selectedTheme.value) {
-          triggerToast('请选择一个主题')
-          return
+          triggerToast("请选择一个主题");
+          return;
         }
 
-        goToStep(3)
-      })
-      console.log('✅ Added click to next button rect')
+        // todo
+        await createVideoTasksAPI();
+        goToStep(3);
+        await pollUntilTrue_getTaskStatusAPI();  // This now also updates resImgUrl
+      });
+      console.log("✅ Added click to next button rect");
     }
-  })
+  });
 
-  console.log('create-new-2.svg interactions setup complete')
-}
+  console.log("create-new-2.svg interactions setup complete");
+};
 
 const updateThemeSelection = (svgDoc: Document, svgRoot: SVGSVGElement, selectedId: number) => {
   for (let i = 1; i <= 4; i++) {
-    const oldRadio = svgDoc.getElementById(`theme-radio-${i}`)
-    oldRadio?.remove()
+    const oldRadio = svgDoc.getElementById(`theme-radio-${i}`);
+    oldRadio?.remove();
   }
 
-  const themeOption = svgDoc.getElementById(`theme-option-${selectedId}`) as SVGRectElement
-  if (!themeOption) return
+  const themeOption = svgDoc.getElementById(`theme-option-${selectedId}`) as SVGRectElement;
+  if (!themeOption) return;
 
-  const x = parseFloat(themeOption.getAttribute('x') || '0')
-  const y = parseFloat(themeOption.getAttribute('y') || '0')
-  const width = parseFloat(themeOption.getAttribute('width') || '0')
+  const x = parseFloat(themeOption.getAttribute("x") || "0");
+  const y = parseFloat(themeOption.getAttribute("y") || "0");
+  const width = parseFloat(themeOption.getAttribute("width") || "0");
 
-  const radioGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-  radioGroup.setAttribute('id', `theme-radio-${selectedId}`)
+  const radioGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
+  radioGroup.setAttribute("id", `theme-radio-${selectedId}`);
 
-  const circle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-  circle.setAttribute('cx', (x + width - 30).toString())
-  circle.setAttribute('cy', (y + 34).toString())
-  circle.setAttribute('r', '10')
-  circle.setAttribute('fill', 'none')
-  circle.setAttribute('stroke', '#4A90E2')
-  circle.setAttribute('stroke-width', '3')
+  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  circle.setAttribute("cx", (x + width - 30).toString());
+  circle.setAttribute("cy", (y + 34).toString());
+  circle.setAttribute("r", "10");
+  circle.setAttribute("fill", "none");
+  circle.setAttribute("stroke", "#4A90E2");
+  circle.setAttribute("stroke-width", "3");
 
-  const innerCircle = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-  innerCircle.setAttribute('cx', (x + width - 30).toString())
-  innerCircle.setAttribute('cy', (y + 34).toString())
-  innerCircle.setAttribute('r', '5')
-  innerCircle.setAttribute('fill', '#4A90E2')
+  const innerCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
+  innerCircle.setAttribute("cx", (x + width - 30).toString());
+  innerCircle.setAttribute("cy", (y + 34).toString());
+  innerCircle.setAttribute("r", "5");
+  innerCircle.setAttribute("fill", "#4A90E2");
 
-  radioGroup.appendChild(circle)
-  radioGroup.appendChild(innerCircle)
-  svgRoot.appendChild(radioGroup)
-}
-
-// ========== SVG INTERACTIONS - Step 3 (Preview) ==========
-const onPreviewSvgLoad = () => {
-  console.log('=== create-preview.svg loaded ===')
-
-  const objectEl = document.querySelector('.step-preview-svg') as HTMLObjectElement
-  if (!objectEl) {
-    console.error('SVG object element not found for preview')
-    return
-  }
-
-  previewSvgDoc = objectEl.contentDocument
-  if (!previewSvgDoc) {
-    console.error('Cannot access SVG document for preview')
-    return
-  }
-
-  console.log('SVG loaded, setting up interactions for preview...')
-
-  const svgRoot = previewSvgDoc.querySelector('svg')
-  if (!svgRoot) {
-    console.error('SVG root not found')
-    return
-  }
-
-  // 1. 返回按钮
-  const backButton = previewSvgDoc.getElementById('back-button')
-  if (backButton) {
-    console.log('✅ Found back-button')
-    backButton.style.cursor = 'pointer'
-    backButton.style.pointerEvents = 'auto'
-    backButton.addEventListener('click', (e) => {
-      e.stopPropagation()
-      console.log('🔙 Back button clicked (preview)')
-      goToPreviewBack()
-    })
-  }
-
-  // 2. Public toggle
-  const publicToggle = previewSvgDoc.getElementById('public-toggle')
-  if (publicToggle) {
-    console.log('✅ Found public-toggle')
-    publicToggle.style.cursor = 'pointer'
-    publicToggle.style.pointerEvents = 'auto'
-    publicToggle.addEventListener('click', (e) => {
-      e.stopPropagation()
-      console.log('🔘 Public toggle clicked')
-      togglePublic()
-    })
-
-    updatePublicToggleDisplay(previewSvgDoc, svgRoot)
-  }
-
-  watch(isPublic, (newValue) => {
-    if (previewSvgDoc && svgRoot) {
-      updatePublicToggleDisplay(previewSvgDoc, svgRoot)
-    }
-  })
-
-  // 3. Yes 按钮
-  const yesButton = previewSvgDoc.getElementById('yes-button')
-  if (yesButton) {
-    console.log('✅ Found yes-button')
-    yesButton.style.cursor = 'pointer'
-    yesButton.style.pointerEvents = 'auto'
-    yesButton.addEventListener('click', (e) => {
-      e.stopPropagation()
-      console.log('✅ Yes button clicked')
-      handleConfirm()
-    })
-
-    const allRects = previewSvgDoc.querySelectorAll('rect')
-    allRects.forEach((rect) => {
-      const x = parseFloat(rect.getAttribute('x') || '0')
-      const y = parseFloat(rect.getAttribute('y') || '0')
-      const width = parseFloat(rect.getAttribute('width') || '0')
-      const height = parseFloat(rect.getAttribute('height') || '0')
-
-      if (!rect.getAttribute('id') && Math.abs(x - 28) < 1 && Math.abs(y - 652) < 2 && width >= 340 && width <= 344 && height >= 54 && height <= 58) {
-        rect.style.cursor = 'pointer'
-        rect.style.pointerEvents = 'auto'
-        rect.addEventListener('click', (e) => {
-          e.stopPropagation()
-          console.log('✅ Yes button clicked (shadow)')
-          handleConfirm()
-        })
-      }
-    })
-  }
-
-  // 4. No 按钮
-  const noButton = previewSvgDoc.getElementById('no-button')
-  if (noButton) {
-    console.log('✅ Found no-button')
-    noButton.style.cursor = 'pointer'
-    noButton.style.pointerEvents = 'auto'
-    noButton.addEventListener('click', (e) => {
-      e.stopPropagation()
-      console.log('❌ No button clicked')
-      handleRegenerateCover()
-    })
-
-    const allRects = previewSvgDoc.querySelectorAll('rect')
-    allRects.forEach((rect) => {
-      const x = parseFloat(rect.getAttribute('x') || '0')
-      const y = parseFloat(rect.getAttribute('y') || '0')
-      const width = parseFloat(rect.getAttribute('width') || '0')
-      const height = parseFloat(rect.getAttribute('height') || '0')
-
-      if (!rect.getAttribute('id') && Math.abs(x - 28) < 1 && Math.abs(y - 724) < 2 && width >= 340 && width <= 344 && height >= 54 && height <= 58) {
-        rect.style.cursor = 'pointer'
-        rect.style.pointerEvents = 'auto'
-        rect.addEventListener('click', (e) => {
-          e.stopPropagation()
-          console.log('❌ No button clicked (border)')
-          handleRegenerateCover()
-        })
-      }
-    })
-  }
-
-  if (uploadedPhoto.value) {
-    updatePreviewImage(uploadedPhoto.value)
-  }
-
-  console.log('create-preview.svg interactions setup complete')
-}
-
-const updatePublicToggleDisplay = (svgDoc: Document, svgRoot: SVGSVGElement) => {
-  const publicToggle = svgDoc.getElementById('public-toggle') as SVGRectElement
-  if (!publicToggle) return
-
-  const x = parseFloat(publicToggle.getAttribute('x') || '0')
-  const y = parseFloat(publicToggle.getAttribute('y') || '0')
-  const width = parseFloat(publicToggle.getAttribute('width') || '0')
-
-  const oldToggleIndicator = svgDoc.getElementById('toggle-indicator')
-  oldToggleIndicator?.remove()
-
-  const toggleGroup = document.createElementNS('http://www.w3.org/2000/svg', 'g')
-  toggleGroup.setAttribute('id', 'toggle-indicator')
-
-  const toggleBg = document.createElementNS('http://www.w3.org/2000/svg', 'rect')
-  toggleBg.setAttribute('x', (x + width - 60).toString())
-  toggleBg.setAttribute('y', (y + 19).toString())
-  toggleBg.setAttribute('width', '50')
-  toggleBg.setAttribute('height', '28')
-  toggleBg.setAttribute('rx', '14')
-  toggleBg.setAttribute('fill', isPublic.value ? '#4A90E2' : '#ccc')
-  toggleGroup.appendChild(toggleBg)
-
-  const toggleSlider = document.createElementNS('http://www.w3.org/2000/svg', 'circle')
-  toggleSlider.setAttribute('cx', isPublic.value ? (x + width - 20).toString() : (x + width - 50).toString())
-  toggleSlider.setAttribute('cy', (y + 33).toString())
-  toggleSlider.setAttribute('r', '12')
-  toggleSlider.setAttribute('fill', 'white')
-  toggleSlider.setAttribute('filter', 'drop-shadow(0 2px 4px rgba(0,0,0,0.2))')
-  toggleGroup.appendChild(toggleSlider)
-
-  svgRoot.appendChild(toggleGroup)
-}
+  radioGroup.appendChild(circle);
+  radioGroup.appendChild(innerCircle);
+  svgRoot.appendChild(radioGroup);
+};
 
 onMounted(() => {
   // Load user stats
-  userStoryCount.value = parseInt(localStorage.getItem('userStoryCount') || '0')
-  checkDailyRegenLimit()
+  userStoryCount.value = parseInt(localStorage.getItem("userStoryCount") || "0");
+  checkDailyRegenLimit();
 
-  // Load saved data
-  const savedPhoto = localStorage.getItem('savedPhoto')
-  const savedData = localStorage.getItem('createStoryData')
-
-  if (savedPhoto) {
-    uploadedPhoto.value = savedPhoto
-  }
+  // Load saved data (excluding photo)
+  const savedData = localStorage.getItem("createStoryData");
 
   if (savedData) {
-    const data = JSON.parse(savedData)
-    nickname.value = data.nickname || ''
-    childGender.value = data.childGender || 'prefer_not_to_say'
-    childAge.value = data.childAge || ''
-    selectedTheme.value = data.selectedTheme || null
-    isPublic.value = data.isPublic || false
+    const data = JSON.parse(savedData);
+    nickname.value = data.nickname || "";
+    // Force default to "male" if saved value is "prefer_not_to_say"
+    childGender.value = (data.childGender && data.childGender !== "prefer_not_to_say") ? data.childGender : "male";
+    childAge.value = data.childAge || "";
+    selectedTheme.value = data.selectedTheme || null;
+    isPublic.value = data.isPublic || false;
   }
 
   // Set initial step
-  currentStep.value = 1
+  currentStep.value = 1;
 
   // Add global click listener for closing dropdowns
-  document.addEventListener('click', handleGlobalClick)
-})
+  document.addEventListener("click", handleGlobalClick);
+});
 
 onUnmounted(() => {
-  document.removeEventListener('click', handleGlobalClick)
-})
+  document.removeEventListener("click", handleGlobalClick);
+});
 
 const goBack = () => {
   if (currentStep.value > 1) {
     if (isNewUser.value) {
-      currentStep.value--
+      currentStep.value--;
     } else {
       if (currentStep.value === 2) {
-        currentStep.value = 1
+        currentStep.value = 1;
       }
     }
   } else {
     if (window.history.state && window.history.state.back) {
-      router.back()
+      router.back();
     } else {
-      router.push('/')
+      router.push("/");
     }
   }
-}
+};
 
 const goToPreviewBack = () => {
-  currentStep.value = 2
-}
+  currentStep.value = 2;
+};
 
 const goToStep = (step: number) => {
-  currentStep.value = step
-  saveData()
-}
+  currentStep.value = step;
+  saveData();
+};
 
 const triggerUpload = () => {
-  fileInput.value?.click()
-}
+  fileInput.value?.click();
+};
 
 const handleFileUpload = (event: Event) => {
-  const target = event.target as HTMLInputElement
+  const target = event.target as HTMLInputElement;
   if (target.files && target.files[0]) {
-    const file = target.files[0]
+    const file = target.files[0];
 
     // Validate file size (5MB limit)
     if (file.size > 5 * 1024 * 1024) {
-      triggerToast('图片大小不能超过5MB')
-      return
+      triggerToast("图片大小不能超过5MB");
+      return;
     }
 
-    const reader = new FileReader()
+    // Save the original file for upload
+    uploadedPhotoFile.value = file;
+
+    const reader = new FileReader();
 
     reader.onload = (e) => {
-      uploadedPhoto.value = e.target?.result as string
-      localStorage.setItem('savedPhoto', uploadedPhoto.value)
-      saveData()
-    }
+      uploadedPhoto.value = e.target?.result as string;
+    };
 
-    reader.readAsDataURL(file)
+    reader.readAsDataURL(file);
   }
-}
+};
 
 const deletePhoto = () => {
-  uploadedPhoto.value = null
-  localStorage.removeItem('savedPhoto')
-  saveData()
-}
+  uploadedPhoto.value = null;
+  uploadedPhotoFile.value = null;
+};
 
 const selectTheme = (themeId: number) => {
-  selectedTheme.value = themeId
-}
+  selectedTheme.value = themeId;
+};
 
 const saveData = () => {
   const data = {
@@ -722,134 +562,357 @@ const saveData = () => {
     childGender: childGender.value,
     childAge: childAge.value,
     selectedTheme: selectedTheme.value,
-    uploadedPhoto: uploadedPhoto.value,
-    isPublic: isPublic.value
-  }
-  localStorage.setItem('createStoryData', JSON.stringify(data))
-}
+    isPublic: isPublic.value,
+  };
+  localStorage.setItem("createStoryData", JSON.stringify(data));
+};
 
 const togglePublic = () => {
-  isPublic.value = !isPublic.value
-  saveData()
-}
+  isPublic.value = !isPublic.value;
+  saveData();
+};
 
 const getThemeName = (id: number) => {
-  const themes = ['Space Adventure', 'Jungle Safari', 'Ocean Explorer', 'Superhero']
-  return themes[id - 1] || 'Space Adventure'
-}
+  const themes = ["Space Adventure", "Jungle Safari", "Ocean Explorer", "Superhero"];
+  return themes[id - 1] || "Space Adventure";
+};
+
+// Theme mapping for Chinese API
+const getThemeNameChinese = (id: number) => {
+  const themes = ["太空冒险", "森林冒险", "海洋探险", "超级英雄"];
+  return themes[id - 1] || "森林冒险";
+};
+
+// Gender mapping for Chinese API
+const getGenderChinese = (gender: string) => {
+  const mapping = {
+    male: "男",
+    female: "女",
+    prefer_not_to_say: "保密",
+  };
+  return mapping[gender as keyof typeof mapping] || "保密";
+};
 
 const handleConfirm = async () => {
-  if (userStoryCount.value >= 3) {
-    console.log('User has generated 3+ stories, redirecting to payment')
-    router.push('/payment')
-    return
+  if (userStoryCount.value >= 100) {
+    console.log("User has generated 100+ stories, redirecting to payment");
+    router.push("/payment");
+    return;
   }
 
-  isLoading.value = true
-  loadingMessage.value = 'Creating your story...'
+  // Check if task exists and is ready to confirm
+  if (!task_id.value) {
+    triggerToast("请先创建绘本任务");
+    return;
+  }
+
+  isLoading.value = true;
+  loadingMessage.value = "Magic is happening ✨\nYour story will be ready soon...";
 
   try {
-    await new Promise(resolve => setTimeout(resolve, 3000))
+    // Confirm the cover and trigger video generation
+    const response = await confirmTask({
+      task_id: task_id.value,
+      confirm: true,
+      is_shared: isPublic.value,
+    });
 
-    userStoryCount.value++
-    localStorage.setItem('userStoryCount', userStoryCount.value.toString())
+    console.log("✅ 封面已确认:", response);
+
+    // Wait for video generation to complete before navigating
+    await pollForVideoGeneration();
+
+    userStoryCount.value++;
+    localStorage.setItem("userStoryCount", userStoryCount.value.toString());
 
     userStore.addStory({
-      title: `${nickname.value || 'Hero'}'s ${getThemeName(selectedTheme.value || 1)} Story`,
-      characterName: nickname.value || 'Hero',
-      coverImage: uploadedPhoto.value || '/images/preview-placeholder.png',
-      theme: getThemeName(selectedTheme.value || 1),
-      isPublic: isPublic.value
-    })
+      title: `${nickname.value || "Hero"}'s ${getThemeName(selectedTheme.value || 2)} Story`,
+      characterName: nickname.value || "Hero",
+      coverImage: resImgUrl.value || uploadedPhotoUrl.value,
+      theme: getThemeName(selectedTheme.value || 2),
+      isPublic: isPublic.value,
+    });
 
-    router.push('/brushing')
-  } catch (error) {
-    console.error(error)
-    triggerToast('Failed to generate story. Please try again.')
+    // Navigate to video player with task_id only after video is ready
+    router.push({
+      path: "/brushing",
+      query: {
+        taskId: task_id.value,
+        source: "create",
+        userName: nickname.value || ""
+      }
+    });
+  } catch (error: any) {
+    console.error("确认失败:", error);
+
+    // Extract error message from response
+    let errorMessage = "确认失败，请重新尝试";
+    if (error.response?.data?.detail) {
+      if (typeof error.response.data.detail === 'string') {
+        errorMessage = error.response.data.detail;
+      } else if (Array.isArray(error.response.data.detail)) {
+        errorMessage = error.response.data.detail.map((e: any) => e.msg).join(', ');
+      }
+    } else if (error.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error.message) {
+      errorMessage = error.message;
+    }
+
+    triggerToast(errorMessage);
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
+};
+
+// Poll for video generation completion
+const pollForVideoGeneration = async () => {
+  console.log("开始轮询视频生成, task_id:", task_id.value);
+
+  const maxAttempts = 60; // 60 * 5 seconds = 5 minutes
+  const interval = 5000; // 5 seconds
+
+  for (let i = 0; i < maxAttempts; i++) {
+    try {
+      const response = await getTaskStatus(task_id.value!);
+      console.log(`轮询 ${i + 1}: status = ${response.status}, video_url = ${response.video_url || 'null'}`);
+
+      if (response.status === 'completed' && response.video_url) {
+        console.log('视频生成成功:', response.video_url);
+        return;
+      }
+
+      if (response.status === 'failed') {
+        throw new Error(response.error_message || '视频生成失败');
+      }
+
+    } catch (error: any) {
+      console.error(`轮询 ${i + 1} 出错:`, error?.message || error);
+
+      // Only throw on fatal errors, continue polling on timeout/network errors
+      if (error?.response?.status === 409 || error?.response?.status === 404) {
+        // Fatal errors: task not found or conflict
+        throw error;
+      }
+      // Continue polling for timeout/network errors
+    }
+
+    // Wait before next poll
+    await new Promise(resolve => setTimeout(resolve, interval));
+  }
+
+  throw new Error('视频生成超时');
+};
 
 const checkDailyRegenLimit = (): boolean => {
-  const today = new Date().toDateString()
-  const savedDate = localStorage.getItem('regenDate')
-  const savedCount = localStorage.getItem('dailyRegenCount')
+  const today = new Date().toDateString();
+  const savedDate = localStorage.getItem("regenDate");
+  const savedCount = localStorage.getItem("dailyRegenCount");
 
   if (savedDate === today) {
-    dailyRegenCount.value = parseInt(savedCount || '0')
+    dailyRegenCount.value = parseInt(savedCount || "0");
   } else {
-    dailyRegenCount.value = 0
-    localStorage.setItem('regenDate', today)
-    localStorage.setItem('dailyRegenCount', '0')
+    dailyRegenCount.value = 0;
+    localStorage.setItem("regenDate", today);
+    localStorage.setItem("dailyRegenCount", "0");
   }
 
-  return dailyRegenCount.value < 3
-}
+  return dailyRegenCount.value < 100;  // Increased to 100 for testing
+};
 
 const handleRegenerateCover = async () => {
   if (!checkDailyRegenLimit()) {
-    triggerToast('今日重新生成次数已用完，明天再试')
-    return
+    triggerToast("今日重新生成次数已用完，明天再试");
+    return;
   }
 
-  isLoading.value = true
-  loadingMessage.value = 'Regenerating cover...'
+  await updatePreviewImage(true);
+  dailyRegenCount.value++;
+  localStorage.setItem("dailyRegenCount", dailyRegenCount.value.toString());
+  localStorage.setItem("regenDate", new Date().toDateString());
+};
 
+const createVideoTasksAPI = async () => {
   try {
-    await new Promise(resolve => setTimeout(resolve, 3000))
+    isLoading.value = true;
+    loadingMessage.value = "Creating task...";
+    loadingMessage.value = "Saving form...";
+    const obj = {
+      img_url: uploadedPhotoUrl.value,
+      child_name: nickname.value,
+      age: childAge.value,
+      theme: getThemeNameChinese(selectedTheme.value),
+      gender: getGenderChinese(childGender.value), // 中文 "男" | "女"
+    };
+    console.log("创建任务，参数:", obj);
+    const response = await createTask(obj);
+    console.log("创建任务成功，响应:", response);
+    task_id.value = response.task_id;  // video API returns unwrapped data
+    console.log("设置 task_id:", task_id.value);
+  } catch (e) {
+    console.log("创建任务失败:", e);
+    throw e;
+  } finally {
+    isLoading.value = false;
+  }
+};
 
-    if (uploadedPhoto.value) {
-      updatePreviewImage(uploadedPhoto.value)
+// 轮询获取任务状态
+const storySuccessMap = ["story_generated"];  // Story generation done
+const coverSuccessMap = ["cover_ready", "completed"];  // Cover generation done
+const errorMap = ["failed", "cancelled"];
+const getStatusMessage = (status: string) => {
+  const messages: Record<string, string> = {
+    "story_generating": "正在生成故事...",
+    "story_generated": "故事已生成，正在生成封面...",
+    "cover_generating": "正在生成封面...",
+    "cover_ready": "封面已就绪",
+    "awaiting_confirmation": "等待确认封面...",
+    "video_generating": "正在生成视频...",
+    "completed": "已完成",
+  };
+  return messages[status] || "处理中...";
+};
+const getTaskStatusAPI = async (targetSuccessMap: string[]) => {
+  console.log(`轮询第: 调用 getTaskStatus, task_id: ${task_id.value}`);
+  const response = await getTaskStatus(task_id.value!);
+  console.log(`轮询第: 响应 status: ${response.status}, cover_image_url: ${response.cover_image_url}`);
+  const status = response.status;  // video API returns unwrapped data
+  task_status.value = status;
+  // Update loading message based on status
+  loadingMessage.value = getStatusMessage(status);
+  if (targetSuccessMap.includes(status)) {
+    return { status: "success", data: response };
+  }
+  if (errorMap.includes(status)) {
+    return { status: "error", data: response };
+  }
+  return { status: "pending", data: response };
+};
+const pollUntilTrue_getTaskStatusAPI = async () => {
+  try {
+    isLoading.value = true;
+    loadingMessage.value = "Processing...";
+    console.log("开始轮询任务状态, task_id:", task_id.value);
+
+    // Phase 1: Poll until story is generated
+    console.log("阶段1: 轮询故事生成...");
+    const storyResult = await pollUntilTrue<TaskStatusResponse>(
+      () => getTaskStatusAPI(storySuccessMap),
+      3000,
+      999
+    );
+    console.log("故事生成完成，触发封面生成");
+
+    // Phase 2: Trigger cover generation
+    console.log("阶段2: 触发封面生成API...");
+    const coverResponse = await generateCover({ task_id: task_id.value!, regenerate: false });
+    console.log("封面生成API响应:", coverResponse);
+
+    // Phase 3: Poll until cover is ready
+    console.log("阶段3: 轮询封面生成...");
+    const coverResult = await pollUntilTrue<TaskStatusResponse>(
+      () => getTaskStatusAPI(coverSuccessMap),
+      3000,
+      999
+    );
+    console.log("封面生成完成，结果:", coverResult);
+
+    // Extract cover_image_url from the successful response
+    if (coverResult.cover_image_url) {
+      resImgUrl.value = coverResult.cover_image_url;
+      console.log("设置封面图片URL:", coverResult.cover_image_url);
+    } else {
+      console.warn("轮询成功但未找到 cover_image_url，结果:", coverResult);
+    }
+  } catch (e) {
+    console.log("轮询发生错误:", e);
+
+    // Get the final task status to show the actual error message
+    try {
+      const finalStatus = await getTaskStatus(task_id.value!);
+      const errorMsg = finalStatus.error_message || e?.message || "任务状态超时，请重新尝试";
+      console.log("任务失败，错误信息:", errorMsg);
+      triggerToast(`生成失败: ${errorMsg}`);
+    } catch {
+      triggerToast("任务状态超时，请重新尝试");
+    }
+    throw e;
+  } finally {
+    isLoading.value = false;
+  }
+};
+
+const updatePreviewImage = async (regenerate = false) => {
+  try {
+    isLoading.value = true;
+
+    // Check current task status before regenerating
+    if (regenerate) {
+      const currentStatus = await getTaskStatus(task_id.value!);
+      console.log("Current task status before regenerate:", currentStatus.status);
+
+      // Only allow regeneration from specific states
+      const validRegenStates = ["cover_ready", "awaiting_confirmation"];
+      if (!validRegenStates.includes(currentStatus.status)) {
+        triggerToast(`无法重新生成封面，当前状态: ${currentStatus.status}`);
+        return;
+      }
     }
 
-    dailyRegenCount.value++
-    localStorage.setItem('dailyRegenCount', dailyRegenCount.value.toString())
-    localStorage.setItem('regenDate', new Date().toDateString())
+    loadingMessage.value = regenerate ? "正在重新生成封面..." : "正在生成封面...";
+    const obj = {
+      regenerate,
+      task_id: task_id.value,
+    };
 
-    console.log('Cover regenerated, daily count:', dailyRegenCount.value)
-  } catch (error) {
-    console.error(error)
-    triggerToast('生成失败，请重新尝试')
+    const response = await generateCover(obj);
+    console.log("generateCover response:", response);
+
+    // If regenerating, we need to poll for the new cover to be ready
+    if (regenerate) {
+      console.log("Starting to poll for regenerated cover...");
+      loadingMessage.value = "正在生成新封面...";
+
+      const coverResult = await pollUntilTrue<TaskStatusResponse>(
+        () => getTaskStatusAPI(coverSuccessMap),
+        3000,
+        999
+      );
+
+      if (coverResult.cover_image_url) {
+        resImgUrl.value = coverResult.cover_image_url;
+        console.log("Regenerated cover ready:", coverResult.cover_image_url);
+      } else {
+        throw new Error("封面生成完成但未获取到URL");
+      }
+    } else {
+      // For initial cover generation, use the response directly
+      resImgUrl.value = response.cover_image_url;
+    }
+  } catch (e: any) {
+    console.error("updatePreviewImage error:", e);
+
+    // Extract error message
+    let errorMessage = "生成失败，请重新尝试";
+    if (e?.response?.data?.detail) {
+      if (typeof e.response.data.detail === 'string') {
+        errorMessage = e.response.data.detail;
+      } else if (Array.isArray(e.response.data.detail)) {
+        errorMessage = e.response.data.detail.map((err: any) => err.msg).join(', ');
+      }
+    } else if (e?.message) {
+      errorMessage = e.message;
+    } else if (typeof e === 'string') {
+      errorMessage = e;
+    }
+
+    triggerToast(errorMessage);
+    throw e;
   } finally {
-    isLoading.value = false
+    isLoading.value = false;
   }
-}
-
-const updatePreviewImage = (imageSrc: string) => {
-  if (!previewSvgDoc) return
-
-  const pattern0 = previewSvgDoc.getElementById('pattern0_1183_631')
-  if (!pattern0) {
-    console.error('pattern0_1183_631 not found')
-    return
-  }
-
-  let image0 = previewSvgDoc.getElementById('image0_1183_631') as SVGImageElement
-  if (!image0) {
-    const svgRoot = previewSvgDoc.querySelector('svg')
-    if (!svgRoot) return
-
-    image0 = document.createElementNS('http://www.w3.org/2000/svg', 'image')
-    image0.setAttribute('id', 'image0_1183_631')
-    image0.setAttribute('width', '343')
-    image0.setAttribute('height', '267')
-    svgRoot.appendChild(image0)
-    console.log('Created image0_1183_631 element')
-  }
-
-  image0.setAttribute('href', imageSrc)
-  image0.setAttributeNS('http://www.w3.org/1999/xlink', 'href', imageSrc)
-  image0.setAttribute('preserveAspectRatio', 'xMidYMid slice')
-
-  const useElement = pattern0.querySelector('use')
-  if (useElement) {
-    useElement.setAttribute('transform', 'scale(343, 267)')
-    console.log('Updated pattern0 use transform to: scale(343, 267)')
-  }
-
-  console.log('Preview image updated successfully')
-}
+};
 </script>
 
 <style scoped>
@@ -858,7 +921,7 @@ const updatePreviewImage = (imageSrc: string) => {
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background: #FFFFFF;
+  background: #ffffff;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -869,7 +932,7 @@ const updatePreviewImage = (imageSrc: string) => {
   width: 390px;
   height: 844px;
   overflow: hidden;
-  background: #FFFFFF;
+  background: #ffffff;
 }
 
 /* ========== STEP 1 STYLES ========== */
@@ -894,7 +957,7 @@ const updatePreviewImage = (imageSrc: string) => {
 }
 
 .time {
-  font-family: 'PingFang SC';
+  font-family: "PingFang SC";
   font-weight: 600;
   font-size: 17px;
   color: #000000;
@@ -929,7 +992,7 @@ const updatePreviewImage = (imageSrc: string) => {
 }
 
 .battery::after {
-  content: '';
+  content: "";
   position: absolute;
   right: -2px;
   top: 3px;
@@ -1034,7 +1097,7 @@ const updatePreviewImage = (imageSrc: string) => {
 
 .plus-icon::before,
 .plus-icon::after {
-  content: '';
+  content: "";
   position: absolute;
   background: #101010;
   border-radius: 2px;
@@ -1062,23 +1125,24 @@ const updatePreviewImage = (imageSrc: string) => {
 
 .delete-button {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: 43px;
+  left: 68px;
   width: 24px;
   height: 24px;
   background: white;
-  border: 2px solid #FF6B6B;
+  border: 2px solid #ff6b6b;
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
 }
 
 .delete-x {
   font-size: 18px;
-  color: #FF6B6B;
+  color: #ff6b6b;
   font-weight: bold;
   line-height: 1;
 }
@@ -1098,7 +1162,7 @@ const updatePreviewImage = (imageSrc: string) => {
 .select-box {
   width: 343px;
   height: 54px;
-  background: #FFFFFF;
+  background: #ffffff;
   border: 1px solid rgba(105, 105, 105, 0.25);
   border-radius: 12px;
   display: flex;
@@ -1124,7 +1188,7 @@ const updatePreviewImage = (imageSrc: string) => {
 }
 
 .text-input::placeholder {
-  color: #8E8E9D;
+  color: #8e8e9d;
 }
 
 .select-text {
@@ -1134,7 +1198,7 @@ const updatePreviewImage = (imageSrc: string) => {
 
 .select-arrow {
   font-size: 12px;
-  color: #3A4750;
+  color: #3a4750;
 }
 
 /* Dropdown Menu */
@@ -1144,7 +1208,7 @@ const updatePreviewImage = (imageSrc: string) => {
   left: 0;
   margin-top: 4px;
   width: 343px;
-  background: #FFFFFF;
+  background: #ffffff;
   border-radius: 12px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
   z-index: 100;
@@ -1267,19 +1331,27 @@ const updatePreviewImage = (imageSrc: string) => {
   text-align: center;
 }
 
+.loading-content p {
+  white-space: pre-line;
+}
+
 .spinner {
   width: 50px;
   height: 50px;
   border: 5px solid #f3f3f3;
-  border-top: 5px solid #4A90E2;
+  border-top: 5px solid #4a90e2;
   border-radius: 50%;
   animation: spin 1s linear infinite;
   margin: 0 auto 20px;
 }
 
 @keyframes spin {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
 }
 
 /* ========== STEP 3 STYLES (Preview - New Design) ========== */
@@ -1289,32 +1361,16 @@ const updatePreviewImage = (imageSrc: string) => {
   position: relative;
 }
 
-/* Preview Main Content */
-.preview-main-content {
-  position: absolute;
-  left: 24px;
-  top: 124px;
-  width: 343px;
-  display: flex;
-  flex-direction: column;
-  gap: 10px;
-}
-
-/* Preview Title */
-.preview-title {
-  display: block;
-  width: 343px;
-  height: auto;
-}
-
-/* Preview Image Container */
+/* Preview Image Container - Full Screen (390px × 844px) */
 .preview-image-container {
-  position: relative;
-  width: 343px;
-  height: 257px;
-  background: #EAF6FF;
-  border: 1px solid rgba(105, 105, 105, 0.25);
-  border-radius: 16px;
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 390px;
+  height: 844px;
+  background: #eaf6ff;
+  border: none;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -1334,94 +1390,101 @@ const updatePreviewImage = (imageSrc: string) => {
   pointer-events: none;
 }
 
-/* Preview Question */
-.preview-question {
+/* Input Section PNG (Question + Two Buttons) - New CSS specs */
+.input-section-png {
+  position: absolute;
+  width: 342px;
+  height: 188px;
+  left: calc(50% - 342px / 2);
+  top: 611px;
   display: block;
-  width: 343px;
-  height: auto;
-  margin-top: 16px;
+  object-fit: contain;
 }
 
-/* Public Toggle Container */
-.public-toggle-container {
+/* Create Button Overlay (Clickable Area) - Adjusted for new position */
+.create-button-overlay {
   position: absolute;
-  width: 343px;
-  height: 68px;
-  left: 23px;
-  bottom: 327px;
-  background: #FFFFFF;
-  border: 1px solid rgba(105, 105, 105, 0.25);
+  left: calc(50% - 342px / 2);
+  top: 665px;
+  width: 302px;
+  height: 48px;
+  cursor: pointer;
+  z-index: 20;
+}
+
+/* Regenerate Button Overlay (Clickable Area) - Adjusted for new position */
+.regenerate-button-overlay {
+  position: absolute;
+  left: calc(50% - 342px / 2);
+  top: 731px;
+  width: 302px;
+  height: 48px;
+  cursor: pointer;
+  z-index: 20;
+}
+
+/* Public Toggle Main (主按钮) - New CSS from 创建页3.css */
+.public-toggle-main {
+  position: absolute;
+  width: 342px;
+  height: 52px;
+  left: calc(50% - 342px / 2);
+  bottom: 241px;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0px 1.27226px 15.2672px rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 14px 16px;
-  gap: 8px;
+  padding: 12px 20px;
+  gap: 23px;
   box-sizing: border-box;
 }
 
-.public-label {
-  flex: 1;
-  font-family: 'PingFang SC';
+/* Public Toggle Label */
+.public-toggle-label {
+  flex: none;
+  order: 0;
+  width: 228px;
+  height: 20px;
+  font-family: "PingFang SC";
   font-style: normal;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 14px;
   line-height: 20px;
-  color: #FF9718;
+  color: #222222;
 }
 
-.toggle-switch {
-  width: 51px;
-  height: 30px;
-  background: #B4B4B4;
-  border-radius: 100px;
+/* Public Toggle Switch - 默认灰色，激活时蓝色 */
+.public-toggle-switch {
   position: relative;
+  flex: none;
+  order: 1;
+  width: 51px;
+  height: 28px;
+  background: #b4b4b4;
+  border-radius: 100px;
   cursor: pointer;
   transition: background 0.3s ease;
-  flex-shrink: 0;
 }
 
-.toggle-switch.active {
-  background: #4A90E2;
+.public-toggle-switch.active {
+  background: #1484ff;
 }
 
-.toggle-knob {
+/* Public Toggle Knob - 未激活在左边，激活滑到右边 */
+.public-toggle-knob {
   position: absolute;
-  width: 26px;
-  height: 26px;
-  right: 2px;
-  top: 2px;
-  background: #FFFFFF;
+  width: 24px;
+  height: 24px;
+  left: 2px;
+  top: calc(50% - 24px / 2);
+  background: #ffffff;
   border-radius: 100px;
-  box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.04), 0px 3px 8px rgba(0, 0, 0, 0.15), 0px 3px 1px rgba(0, 0, 0, 0.06);
-  transition: right 0.3s ease;
+  transition: left 0.3s ease;
 }
 
-.toggle-switch.active .toggle-knob {
-  right: 23px;
-}
-
-/* Create Book Button */
-.create-book-button {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 646px;
-  width: 342px;
-  height: 56px;
-  cursor: pointer;
-  z-index: 10;
-}
-
-/* Regenerate Preview Button */
-.regenerate-button {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  top: 718px;
-  width: 342px;
-  height: 56px;
-  cursor: pointer;
-  z-index: 10;
+.public-toggle-switch.active .public-toggle-knob {
+  left: 27px;
 }
 </style>

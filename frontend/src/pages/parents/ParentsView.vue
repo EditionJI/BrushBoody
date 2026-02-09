@@ -23,99 +23,99 @@
 </template>
 
 <script setup lang="ts">
-import { computed, onMounted, onUnmounted, ref } from 'vue'
-import { useRouter } from 'vue-router'
+import { computed, onMounted, onUnmounted, ref } from "vue";
+import { useRouter } from "vue-router";
 
-const router = useRouter()
+const router = useRouter();
 
-const wrapperRef = ref<HTMLElement | null>(null)
-const bgNaturalWidth = ref<number | null>(null)
-const bgNaturalHeight = ref<number | null>(null)
-const overlayOffsetX = ref(0)
-const overlayOffsetY = ref(0)
-const overlayScale = ref(1)
-let resizeObserver: ResizeObserver | null = null
+const wrapperRef = ref<HTMLElement | null>(null);
+const bgNaturalWidth = ref<number | null>(null);
+const bgNaturalHeight = ref<number | null>(null);
+const overlayOffsetX = ref(0);
+const overlayOffsetY = ref(0);
+const overlayScale = ref(1);
+let resizeObserver: ResizeObserver | null = null;
 
 const hotspotLayerStyle = computed(() => {
-  const w = bgNaturalWidth.value
-  const h = bgNaturalHeight.value
-  if (!w || !h) return { display: 'none' }
+  const w = bgNaturalWidth.value;
+  const h = bgNaturalHeight.value;
+  if (!w || !h) return { display: "none" };
 
   return {
-    position: 'absolute',
-    top: '0',
-    left: '0',
+    position: "absolute",
+    top: "0",
+    left: "0",
     width: `${w}px`,
     height: `${h}px`,
     transform: `translate(${overlayOffsetX.value}px, ${overlayOffsetY.value}px) scale(${overlayScale.value})`,
-    transformOrigin: 'top left',
-    zIndex: '10'
-  }
-})
+    transformOrigin: "top left",
+    zIndex: "10",
+  };
+});
 
 const recomputeOverlay = () => {
-  const w = bgNaturalWidth.value
-  const h = bgNaturalHeight.value
-  const wrapper = wrapperRef.value
-  if (!w || !h || !wrapper) return
+  const w = bgNaturalWidth.value;
+  const h = bgNaturalHeight.value;
+  const wrapper = wrapperRef.value;
+  if (!w || !h || !wrapper) return;
 
-  const containerW = wrapper.clientWidth
-  const containerH = wrapper.clientHeight
-  const scale = Math.min(containerW / w, containerH / h)
-  overlayScale.value = scale
-  overlayOffsetX.value = (containerW - w * scale) / 2
-  overlayOffsetY.value = (containerH - h * scale) / 2
-}
+  const containerW = wrapper.clientWidth;
+  const containerH = wrapper.clientHeight;
+  const scale = Math.min(containerW / w, containerH / h);
+  overlayScale.value = scale;
+  overlayOffsetX.value = (containerW - w * scale) / 2;
+  overlayOffsetY.value = (containerH - h * scale) / 2;
+};
 
 const onBgImageLoad = (event: Event) => {
-  const img = event.target as HTMLImageElement
-  bgNaturalWidth.value = img.naturalWidth
-  bgNaturalHeight.value = img.naturalHeight
-  recomputeOverlay()
-}
+  const img = event.target as HTMLImageElement;
+  bgNaturalWidth.value = img.naturalWidth;
+  bgNaturalHeight.value = img.naturalHeight;
+  recomputeOverlay();
+};
 
 onMounted(() => {
   if (wrapperRef.value) {
-    resizeObserver = new ResizeObserver(() => recomputeOverlay())
-    resizeObserver.observe(wrapperRef.value)
+    resizeObserver = new ResizeObserver(() => recomputeOverlay());
+    resizeObserver.observe(wrapperRef.value);
   }
-})
+});
 
 onUnmounted(() => {
-  resizeObserver?.disconnect()
-  resizeObserver = null
-})
+  resizeObserver?.disconnect();
+  resizeObserver = null;
+});
 
 const goBack = () => {
-  if (window.history.length > 1) router.back()
-  else router.push('/')
-}
+  if (window.history.length > 1) router.back();
+  else router.push("/");
+};
 
 const goToSettings = () => {
   // Navigate to settings page (to be implemented)
-  console.log('Navigate to settings')
-}
+  console.log("Navigate to settings");
+};
 
 const goToHome = () => {
-  router.push('/')
-}
+  router.push("/");
+};
 
 const goToCreate = () => {
-  router.push('/create')
-}
+  router.push("/create");
+};
 
 const goToStories = () => {
-  router.push('/stories')
-}
+  router.push("/stories");
+};
 
 const stayHere = () => {
   // Already on parents page, do nothing
-}
+};
 
 const viewStats = () => {
   // Show detailed statistics (to be implemented)
-  console.log('View detailed statistics')
-}
+  console.log("View detailed statistics");
+};
 </script>
 
 <style scoped>
@@ -124,7 +124,7 @@ const viewStats = () => {
   height: 100vh;
   position: relative;
   overflow: hidden;
-  background: #FFF9F0;
+  background: #fff9f0;
   display: flex;
   justify-content: center;
   align-items: center;
