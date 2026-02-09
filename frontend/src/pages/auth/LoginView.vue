@@ -132,6 +132,11 @@ const validateForm = (): boolean => {
     return false;
   }
 
+  if (!isLoginMode.value && formData.username.length < 3) {
+    showToast("Username must be at least 3 characters", "error");
+    return false;
+  }
+
   if (!isLoginMode.value && !formData.email.trim()) {
     showToast("Please enter email", "error");
     return false;
@@ -183,7 +188,18 @@ const handleSubmit = async () => {
     // Extract error message from various possible formats
     let errorMsg = "Authentication failed";
 
-    if (error?.response?.data?.message) {
+    if (error?.response?.data?.detail) {
+      // Pydantic validation error format: { detail: [{ msg: "...", loc: ["body", "field"] }] }
+      const detail = error.response.data.detail;
+      if (Array.isArray(detail) && detail[0]?.msg) {
+        // Get field name from location (e.g., ["body", "username"] -> "username")
+        const field = detail[0].loc?.[1] || "field";
+        const msg = detail[0].msg;
+        errorMsg = `${field}: ${msg}`;
+      } else if (typeof detail === "string") {
+        errorMsg = detail;
+      }
+    } else if (error?.response?.data?.message) {
       // Backend returned { message: "..." }
       errorMsg = error.response.data.message;
     } else if (error?.response?.data?.msg) {
