@@ -1,12 +1,48 @@
-/* 创建绘本（3/3） */
+/* 背景 */
 
-position: relative;
+position: absolute;
 width: 390px;
 height: 844px;
-left: 1046px;
-top: 283px;
+left: 0px;
+top: 0px;
 
-background: #FFFFFF;
+
+
+/* bg */
+
+position: absolute;
+width: 390px;
+height: 844px;
+left: calc(50% - 390px/2);
+top: 0px;
+
+background: #D9D9D9;
+
+
+/* 1 */
+
+box-sizing: border-box;
+
+position: absolute;
+width: 540px;
+height: 902px;
+left: calc(50% - 540px/2);
+top: calc(50% - 902px/2 + 14px);
+
+background: url(根据文案生成简笔图 (1).png);
+border: 1px solid #000000;
+box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
+
+
+/* 绘本 */
+
+position: absolute;
+width: 482px;
+height: 910px;
+left: calc(50% - 482px/2);
+top: calc(50% - 910px/2 + 18px);
+
+background: url(根据文案生成简笔图.png);
 
 
 /* 顶部安全区 */
@@ -55,7 +91,7 @@ line-height: 22px;
 /* identical to box height, or 129% */
 text-align: center;
 
-color: #000000;
+color: #FFFFFF;
 
 
 
@@ -91,7 +127,7 @@ bottom: 33.33%;
 
 mix-blend-mode: normal;
 opacity: 0.35;
-border: 1px solid #000000;
+border: 1px solid #FFFFFF;
 border-radius: 4.3px;
 
 
@@ -103,7 +139,7 @@ left: calc(50% - 1.33px/2 + 37.95px);
 top: 51.45%;
 bottom: 41.01%;
 
-background: #000000;
+background: #FFFFFF;
 mix-blend-mode: normal;
 opacity: 0.4;
 
@@ -116,7 +152,7 @@ left: calc(50% - 21px/2 + 23.79px);
 top: 46.3%;
 bottom: 37.04%;
 
-background: #000000;
+background: #FFFFFF;
 border-radius: 2.5px;
 
 
@@ -128,7 +164,7 @@ left: calc(50% - 17.14px/2 - 4.44px);
 top: 43.77%;
 bottom: 33.4%;
 
-background: #000000;
+background: #FFFFFF;
 
 
 /* Cellular Connection */
@@ -139,7 +175,7 @@ left: calc(50% - 19.2px/2 - 30.11px);
 top: 43.58%;
 bottom: 33.77%;
 
-background: #000000;
+background: #FFFFFF;
 
 
 /* Rectangle 2 */
@@ -154,267 +190,6 @@ bottom: 11.11%;
 background: #000000;
 border-radius: 100px;
 transform: matrix(-1, 0, 0, 1, 0, 0);
-
-
-/* 轮播 */
-
-/* Auto layout */
-display: flex;
-flex-direction: row;
-align-items: center;
-padding: 0px;
-gap: 7px;
-
-position: absolute;
-visibility: hidden;
-width: 32px;
-height: 6px;
-left: 237px;
-top: 529px;
-
-
-
-/* Ellipse 2582 */
-
-width: 6px;
-height: 6px;
-
-background: #FFFFFF;
-
-/* Inside auto layout */
-flex: none;
-order: 0;
-flex-grow: 0;
-
-
-/* Ellipse 2583 */
-
-width: 6px;
-height: 6px;
-
-background: #D9D9D9;
-opacity: 0.5;
-
-/* Inside auto layout */
-flex: none;
-order: 1;
-flex-grow: 0;
-
-
-/* Ellipse 2584 */
-
-width: 6px;
-height: 6px;
-
-background: #D9D9D9;
-opacity: 0.5;
-
-/* Inside auto layout */
-flex: none;
-order: 2;
-flex-grow: 0;
-
-
-/* Frame 1000011905 */
-
-/* Auto layout */
-display: flex;
-flex-direction: column;
-align-items: center;
-padding: 0px;
-gap: 6px;
-
-position: absolute;
-width: 88px;
-height: 117px;
-left: calc(50% - 88px/2 - 239px);
-top: calc(50% - 117px/2 + 0.5px);
-
-
-
-/* AI 机器人 */
-
-width: 88px;
-height: 88px;
-
-
-/* Inside auto layout */
-flex: none;
-order: 0;
-flex-grow: 0;
-
-
-/* Ellipse 2593 */
-
-position: absolute;
-width: 88px;
-height: 88px;
-left: 0px;
-top: 0px;
-
-background: linear-gradient(170.91deg, #FFFFFF 6.9%, #B597DE 95.31%);
-box-shadow: inset 1.76px 1.76px 5.28px #FFFFFF;
-
-
-/* Ellipse 2594 */
-
-position: absolute;
-width: 88px;
-height: 88px;
-left: 0px;
-top: 0px;
-
-background: conic-gradient(from 166.43deg at 59.5% 57.5%, #A0C7FF 0deg, #FFFFFF 144.68deg, #A0C7FF 360deg);
-box-shadow: inset 1.76px 1.76px 5.28px #FFFFFF;
-
-
-/* Rectangle 3464941 */
-
-position: absolute;
-width: 66px;
-height: 42.24px;
-left: 10.56px;
-top: 22.88px;
-
-background: linear-gradient(150.64deg, #0C1015 0.56%, #0B0E14 75.87%);
-box-shadow: inset 0px 3.52px 1.76px #000000;
-border-radius: 24.64px;
-
-
-/* Group 1321315318 */
-
-position: absolute;
-width: 34.93px;
-height: 15.27px;
-left: calc(50% - 34.93px/2 - 0.13px);
-top: calc(50% - 15.27px/2 - 14.79px);
-
-
-
-/* Union */
-
-position: absolute;
-visibility: hidden;
-width: 10.93px;
-height: 14.89px;
-left: 50.87px;
-top: 36.26px;
-
-background: #F8FDF7;
-opacity: 0.6;
-
-
-/* Rectangle 3464943 */
-
-position: absolute;
-width: 7.92px;
-height: 12.32px;
-left: 49.28px;
-top: 34.63px;
-
-background: #F8FDF7;
-border-radius: 10.56px;
-transform: rotate(42.4deg);
-
-
-/* Rectangle 3464944 */
-
-position: absolute;
-width: 7.92px;
-height: 12.32px;
-left: 49.28px;
-top: 38.15px;
-
-background: #F8FDF7;
-border-radius: 10.56px;
-transform: rotate(-37.58deg);
-
-
-/* Union */
-
-position: absolute;
-width: 10.64px;
-height: 15.24px;
-left: 50.69px;
-top: 36.08px;
-
-background: #FFFFFF;
-
-
-/* Rectangle 3464943 */
-
-position: absolute;
-width: 7.04px;
-height: 12.32px;
-left: 49.28px;
-top: 34.63px;
-
-background: #F8FDF7;
-border-radius: 10.56px;
-transform: rotate(42.4deg);
-
-
-/* Rectangle 3464944 */
-
-position: absolute;
-width: 7.04px;
-height: 12.32px;
-left: 49.28px;
-top: 38.68px;
-
-background: #F8FDF7;
-border-radius: 10.56px;
-transform: rotate(-37.58deg);
-
-
-/* Rectangle 3464943 */
-
-position: absolute;
-visibility: hidden;
-width: 8.8px;
-height: 14.96px;
-left: 26.4px;
-top: 36.39px;
-
-background: #F8FDF7;
-opacity: 0.6;
-border-radius: 10.56px;
-
-
-/* Rectangle 3464942 */
-
-position: absolute;
-width: 8.8px;
-height: 14.96px;
-left: 26.4px;
-top: 36.39px;
-
-background: #FFFFFF;
-border-radius: 10.56px;
-
-
-/* 能帮你记录、解答、查询、思考 */
-
-width: 88px;
-height: 23px;
-
-font-family: 'PingFang SC';
-font-style: normal;
-font-weight: 400;
-font-size: 15px;
-line-height: 23px;
-/* identical to box height, or 153% */
-text-align: center;
-
-color: #FFFFFF;
-
-opacity: 0.7;
-
-/* Inside auto layout */
-flex: none;
-order: 1;
-align-self: stretch;
-flex-grow: 0;
 
 
 /* Home Indicator */
@@ -481,7 +256,7 @@ right: 16.67%;
 top: 25%;
 bottom: 25%;
 
-border: 2.33333px solid #000000;
+border: 2.33333px solid #FFFFFF;
 
 
 /* Create a story */
@@ -499,128 +274,42 @@ font-size: 20px;
 line-height: 28px;
 /* identical to box height */
 
-color: #111111;
+color: #FFFFFF;
 
-
-
-/* 1 */
-
-position: absolute;
-width: 343px;
-height: 289px;
-left: 24px;
-top: 124px;
-
-
-
-/* Previewing: page 1 */
-
-position: absolute;
-width: 343px;
-height: 22px;
-left: 24px;
-top: 124px;
-
-font-family: 'PingFang SC';
-font-style: normal;
-font-weight: 600;
-font-size: 16px;
-line-height: 22px;
-
-color: #222222;
-
-
-
-/* 画面 */
-
-position: absolute;
-width: 343px;
-height: 257px;
-left: 24px;
-top: 156px;
-
-background: #EAF6FF;
-border: 1px solid rgba(105, 105, 105, 0.25);
-border-radius: 16px;
-
-
-/* Mask group */
-
-position: absolute;
-width: 343px;
-height: 257px;
-left: 24px;
-top: 156px;
-
-
-
-/* 画面 */
-
-position: absolute;
-width: 343px;
-height: 257px;
-left: 24px;
-top: 156px;
-
-background: #EAF6FF;
-border: 1px solid rgba(105, 105, 105, 0.25);
-border-radius: 16px;
-
-
-/* 画面 */
-
-position: absolute;
-width: 397px;
-height: 232px;
-left: 0px;
-top: 168px;
-
-background: url(image.png);
-border-radius: 16px 16px 0px 0px;
-
-
-/* 1 */
-
-box-sizing: border-box;
-
-position: absolute;
-width: 480px;
-height: 802px;
-left: calc(50% - 480px/2 - 8px);
-top: calc(50% - 802px/2 - 105px);
-
-background: url(根据文案生成简笔图 (1).png);
-border: 1px solid #000000;
-box-shadow: 0px 4px 4px rgba(0, 0, 0, 0.25);
 
 
 /* 输入框1 */
 
+box-sizing: border-box;
+
 /* Auto layout */
 display: flex;
 flex-direction: column;
-align-items: flex-start;
-padding: 0px;
-gap: 10px;
+align-items: center;
+padding: 12px 20px;
+gap: 8px;
 
 position: absolute;
-width: 343px;
-height: 182px;
-left: 24px;
-top: 553px;
+width: 342px;
+height: 188px;
+left: calc(50% - 342px/2);
+top: 611px;
 
+background: rgba(255, 255, 255, 0.5);
+box-shadow: 0px 1.27226px 15.2672px rgba(0, 0, 0, 0.05);
+border-radius: 12px;
 
 
 /* Does the character and story style look correct? */
 
-width: 343px;
-height: 44px;
+width: 302px;
+height: 40px;
 
 font-family: 'PingFang SC';
 font-style: normal;
 font-weight: 600;
-font-size: 16px;
-line-height: 22px;
+font-size: 14px;
+line-height: 20px;
 
 color: #222222;
 
@@ -628,7 +317,6 @@ color: #222222;
 /* Inside auto layout */
 flex: none;
 order: 0;
-align-self: stretch;
 flex-grow: 0;
 
 
@@ -637,18 +325,18 @@ flex-grow: 0;
 /* Auto layout */
 display: flex;
 flex-direction: column;
-align-items: flex-start;
+justify-content: center;
+align-items: center;
 padding: 0px;
-gap: 16px;
+gap: 12px;
 
-width: 343px;
-height: 128px;
+width: 302px;
+height: 108px;
 
 
 /* Inside auto layout */
 flex: none;
 order: 1;
-align-self: stretch;
 flex-grow: 0;
 
 
@@ -664,8 +352,8 @@ align-items: center;
 padding: 16px 20px;
 gap: 4px;
 
-width: 342px;
-height: 56px;
+width: 302px;
+height: 48px;
 
 background: url(.png), linear-gradient(180deg, #0073FF 0%, #0DA2FF 100%);
 background-blend-mode: plus-lighter, normal;
@@ -680,14 +368,15 @@ flex-grow: 0;
 
 /* Label */
 
-width: 171px;
-height: 22px;
+width: 150px;
+height: 20px;
 
 font-family: 'PingFang SC';
 font-style: normal;
 font-weight: 600;
-font-size: 16px;
-line-height: 22px;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height */
 display: flex;
 align-items: center;
 text-align: center;
@@ -711,11 +400,10 @@ align-items: center;
 padding: 14px 16px;
 gap: 8px;
 
-width: 342px;
-height: 56px;
+width: 302px;
+height: 48px;
 
 background: #FFFFFF;
-border: 1px solid rgba(105, 105, 105, 0.25);
 border-radius: 100px;
 
 /* Inside auto layout */
@@ -726,19 +414,20 @@ flex-grow: 0;
 
 /* Label */
 
-width: 285px;
-height: 22px;
+width: 249px;
+height: 20px;
 
 font-family: 'PingFang SC';
 font-style: normal;
 font-weight: 600;
-font-size: 16px;
-line-height: 22px;
+font-size: 14px;
+line-height: 20px;
+/* identical to box height */
 display: flex;
 align-items: center;
 text-align: center;
 
-color: #666666;
+color: #333333;
 
 
 /* Inside auto layout */
@@ -749,37 +438,39 @@ flex-grow: 0;
 
 /* 主按钮 */
 
+box-sizing: border-box;
+
 /* Auto layout */
 display: flex;
 flex-direction: row;
 align-items: center;
-padding: 14px 16px;
-gap: 8px;
+padding: 12px 20px;
+gap: 23px;
 
 position: absolute;
-width: 343px;
-height: 68px;
-left: 23px;
-bottom: 327px;
+width: 342px;
+height: 52px;
+left: calc(50% - 342px/2);
+bottom: 241px;
 
-background: #FFFFFF;
-border: 1px solid rgba(105, 105, 105, 0.25);
+background: rgba(255, 255, 255, 0.5);
+box-shadow: 0px 1.27226px 15.2672px rgba(0, 0, 0, 0.05);
 border-radius: 12px;
 
 
 /* Public: Others can read this book. */
 
-width: 252px;
+width: 228px;
 height: 20px;
 
 font-family: 'PingFang SC';
 font-style: normal;
-font-weight: 500;
+font-weight: 600;
 font-size: 14px;
 line-height: 20px;
-/* identical to box height, or 143% */
+/* identical to box height */
 
-color: #FF9718;
+color: #222222;
 
 
 /* Inside auto layout */
@@ -791,9 +482,9 @@ flex-grow: 0;
 /* Toggle */
 
 width: 51px;
-height: 30px;
+height: 28px;
 
-background: #B4B4B4;
+background: #1484FF;
 border-radius: 100px;
 transform: matrix(-1, 0, 0, 1, 0, 0);
 
@@ -806,13 +497,12 @@ flex-grow: 0;
 /* Knob */
 
 position: absolute;
-width: 26px;
-height: 26px;
-right: 23px;
-top: calc(50% - 26px/2);
+width: 24px;
+height: 24px;
+right: 2px;
+top: calc(50% - 24px/2);
 
 background: #FFFFFF;
-box-shadow: 0px 0px 0px 1px rgba(0, 0, 0, 0.04), 0px 3px 8px rgba(0, 0, 0, 0.15), 0px 3px 1px rgba(0, 0, 0, 0.06);
 border-radius: 100px;
 transform: matrix(-1, 0, 0, 1, 0, 0);
 
@@ -834,10 +524,10 @@ flex-grow: 0;
 /* Path */
 
 position: absolute;
-left: 91.55%;
-right: 6.36%;
-top: 34.41%;
-bottom: 47.94%;
+left: 97.95%;
+right: -0.06%;
+top: 58.46%;
+bottom: 18.46%;
 
 background: #3A4750;
 transform: rotate(-90deg);

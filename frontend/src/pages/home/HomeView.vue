@@ -45,16 +45,14 @@
         :src="hasCreatedStory ? '/images/首页/创建过，开始刷牙.png' : '/images/首页/L.png'"
         alt="Create"
         class="create-button"
-        @click="goToCreate"
+        @click="handleBlueButtonClick"
       />
 
       <!-- Bottom Navigation - Fixed at bottom -->
-      <img src="/images/首页/底部栏.png" alt="Bottom Nav" class="bottom-nav" />
-      <div class="bottom-nav-area">
-        <div class="nav-item home" @click="goToHome"></div>
-        <div class="nav-item create" @click="goToCreate"></div>
-        <div class="nav-item stories" @click="goToStories"></div>
-        <div class="nav-item parents" @click="goToParents"></div>
+      <div class="bottom-nav">
+        <img src="/images/HOME.png" alt="Home" class="nav-icon home" @click="goToHome" />
+        <img src="/images/CREATE.png" alt="Create" class="nav-icon create" @click="goToCreate" />
+        <img src="/images/STORY.png" alt="Stories" class="nav-icon stories" @click="goToStories" />
       </div>
     </div>
   </div>
@@ -116,13 +114,43 @@ const isOtherStory = computed(() => {
   return currentStory.value ? !currentStory.value.is_own : false;
 });
 
-// Preload cover images for smooth sliding
+// Track already preloaded videos to avoid duplicate loading
+const preloadedVideos = ref<Set<string>>(new Set());
+
+// Preload cover images for smooth sliding - preload ALL images for circular navigation
 const preloadCoverImages = () => {
-  const preloadCount = Math.min(5, userStore.feedItems.length);
-  for (let i = 0; i < preloadCount; i++) {
+  // Preload all cover images to ensure smooth circular navigation
+  for (let i = 0; i < userStore.feedItems.length; i++) {
     const img = new Image();
     img.src = userStore.feedItems[i].cover_image_url;
   }
+};
+
+// Preload videos around current position (前后各2个, 共5个)
+const preloadVideosAround = (centerIndex: number) => {
+  const total = totalStories.value;
+  if (total === 0) return;
+
+  // Preload range: [center-2, center-1, center, center+1, center+2]
+  const preloadRange = [-2, -1, 0, 1, 2];
+
+  preloadRange.forEach(offset => {
+    // Handle circular navigation
+    let index = ((centerIndex + offset) % total + total) % total;
+    const story = userStore.feedItems[index];
+
+    if (story && story.video_url && !preloadedVideos.value.has(story.video_url)) {
+      // Create video element to preload
+      const video = document.createElement('video');
+      video.preload = 'metadata'; // Only preload metadata, not full video
+      video.src = story.video_url;
+
+      // Mark as preloaded
+      preloadedVideos.value.add(story.video_url);
+
+      console.log(`Preloading video for story ${index}:`, story.video_url);
+    }
+  });
 };
 
 // Navigation
@@ -136,15 +164,30 @@ const goToHome = () => {
 };
 
 const goToCreate = () => {
+  // Always go to create page (for bottom nav)
   router.push("/create");
+};
+
+const handleBlueButtonClick = () => {
+  // If user has created stories, play the current story
+  if (hasCreatedStory.value && currentStory.value) {
+    router.push({
+      path: "/brushing",
+      query: {
+        source: "home",
+        taskId: currentStory.value.task_id,
+        userName: currentStory.value.child_name,
+        isOtherStory: !currentStory.value.is_own
+      },
+    });
+  } else {
+    // Otherwise go to create page
+    router.push("/create");
+  }
 };
 
 const goToStories = () => {
   router.push("/stories");
-};
-
-const goToParents = () => {
-  router.push("/parents");
 };
 
 // Story card click handler
@@ -354,6 +397,11 @@ onMounted(async () => {
   const total = totalStories.value;
   currentSlide.value = total > 0 ? total : 0;
 
+  // Initial video preload around the first story
+  if (total > 0) {
+    preloadVideosAround(0);
+  }
+
   // Start auto-play timer manually (don't rely only on image load)
   if (total > 0) {
     startAutoPlayTimer();
@@ -368,6 +416,9 @@ onUnmounted(() => {
 // Watch for slide changes to reset timer
 watch(currentSlide, () => {
   resetAutoPlayTimer();
+  // Preload videos around the new position
+  const currentIndex = ((currentSlide.value % totalStories.value) + totalStories.value) % totalStories.value;
+  preloadVideosAround(currentIndex);
 });
 </script>
 
@@ -401,6 +452,8 @@ watch(currentSlide, () => {
   z-index: 1;
   pointer-events: none;
   object-fit: cover;
+  background: #f0f0f0;
+  transition: opacity 0.3s ease;
 }
 
 /* Streak Banner - for users with brushing records */
@@ -501,53 +554,30 @@ watch(currentSlide, () => {
   cursor: pointer;
 }
 
-/* Bottom Navigation Image */
+/* Bottom Navigation - 3个图标 */
 .bottom-nav {
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: 390px;
-  height: 88px;
-  z-index: 9;
-  pointer-events: none;
-}
-
-/* Bottom Navigation Click Areas (invisible, overlay) */
-.bottom-nav-area {
   position: absolute;
   left: 0;
   bottom: 0;
   width: 100%;
   height: 88px;
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
   z-index: 10;
+  background: transparent;
 }
 
-.nav-item {
-  position: absolute;
+.nav-icon {
+  width: 80px;
+  height: 60px;
+  object-fit: contain;
   cursor: pointer;
+  transition: opacity 0.2s ease;
+  pointer-events: auto;
 }
 
-.nav-item.home {
-  left: 5%;
-  width: 20%;
-  height: 100%;
-}
-
-.nav-item.create {
-  left: 30%;
-  width: 20%;
-  height: 100%;
-}
-
-.nav-item.stories {
-  left: 55%;
-  width: 20%;
-  height: 100%;
-}
-
-.nav-item.parents {
-  left: 80%;
-  width: 20%;
-  height: 100%;
+.nav-icon:active {
+  opacity: 0.7;
 }
 </style>

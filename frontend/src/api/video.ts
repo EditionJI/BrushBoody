@@ -143,3 +143,15 @@ export function confirmTask(data: ConfirmTaskRequest) {
     },
   });
 }
+
+/**
+ * Delete a task
+ * DELETE /api/v1/video/tasks/{task_id}
+ * Authentication required
+ */
+export function deleteTask(taskId: string) {
+  return request<void>({
+    url: `/video/tasks/${taskId}`,
+    method: "DELETE",
+  });
+}

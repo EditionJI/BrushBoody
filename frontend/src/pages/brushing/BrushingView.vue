@@ -2,13 +2,14 @@
   <div class="brushing-container">
     <div class="mobile-wrapper">
       <!-- Video Player Area - Full Screen -->
-      <div class="video-player-area">
+      <div class="video-player-area" @click="enableSound">
         <video
           v-if="videoUrl"
           ref="videoPlayer"
           :src="videoUrl"
           class="story-video"
           playsinline
+          muted
           @ended="onVideoEnded"
         ></video>
 
@@ -140,6 +141,14 @@ const autoPlayVideo = () => {
   }
 }
 
+// Enable sound on user interaction
+const enableSound = () => {
+  if (videoPlayer.value) {
+    videoPlayer.value.muted = false
+    console.log('Sound enabled')
+  }
+}
+
 // Video ended handler - show completion screen
 const onVideoEnded = () => {
   isCompleted.value = true
@@ -151,6 +160,12 @@ const onVideoEnded = () => {
 const goBack = (completed: boolean) => {
   if (videoPlayer.value) {
     videoPlayer.value.pause()
+  }
+
+  // If from create page, always go back to home
+  if (source.value === 'create') {
+    router.push({ name: 'home' })
+    return
   }
 
   // If exited early, just go back without recording
@@ -166,11 +181,10 @@ const goBack = (completed: boolean) => {
   switch (source.value) {
     case 'home':
     case 'shared':
-      router.push({ name: 'Home' })
+      router.push({ name: 'home' })
       break
-    case 'create':
     case 'stories_square':
-      router.push({ name: 'StoriesSquare' })
+      router.push({ name: 'stories' })
       break
     default:
       router.back()
@@ -341,20 +355,17 @@ onUnmounted(() => {
 /* Brushing Guide Card */
 .guide-card {
   position: absolute;
-  top: 309px;
-  left: 25px;
-  width: 341px;
-  height: 220px;
-  background: #FFFFFF;
-  border-radius: 24px;
-  overflow: hidden;
+  top: calc(50% - 110px/2 - 268px);
+  left: 16px;
+  width: 134px;
+  height: 110px;
   z-index: 30;
 }
 
 .guide-image {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
+  width: 134px;
+  height: 110px;
+  object-fit: contain;
 }
 
 /* Completion Screen */

@@ -33,10 +33,10 @@
                 <div class="plus-icon"></div>
               </div>
               <img v-else :src="uploadedPhoto" alt="Uploaded photo" class="uploaded-photo" />
-              <!-- Delete button for uploaded photo -->
-              <div v-if="uploadedPhoto" class="delete-button" @click.stop="deletePhoto">
-                <span class="delete-x">×</span>
-              </div>
+            </div>
+            <!-- Delete button for uploaded photo - outside upload-area to avoid clipping -->
+            <div v-if="uploadedPhoto" class="delete-button" @click.stop="deletePhoto">
+              <span class="delete-x">×</span>
             </div>
           </div>
 
@@ -119,14 +119,11 @@
 
         <!-- Top Navigation (54px) -->
         <div class="top-nav">
-          <img src="/images/创建页/返回.png" alt="Back" class="back-button" @click="goToPreviewBack" />
+          <img src="/images/创建页/创建页第3步-返回.png" alt="Back" class="back-button" @click="goToPreviewBack" />
           <img src="/images/创建页/Create a story.png" alt="Create a story" class="title-image" />
         </div>
 
-        <!-- Title Label -->
-        <img src="/images/创建页/Previewing_ page 1.png" alt="Previewing page 1" class="preview-title" />
-
-        <!-- Preview Image Area -->
+        <!-- Preview Image Area - Full Screen -->
         <div class="preview-image-container">
           <img v-if="resImgUrl" :src="resImgUrl" alt="Preview" class="preview-image" />
           <img v-else src="/images/首页/背景.png" alt="Placeholder" class="preview-placeholder" />
@@ -207,7 +204,7 @@ const task_id = ref<string | null>(null);
 const task_status = ref<TaskStatus | null>(null);
 const resImgUrl = ref<string | null>(null);
 const nickname = ref("");
-const childGender = ref<"male" | "female" | "prefer_not_to_say">("prefer_not_to_say");
+const childGender = ref<"male" | "female" | "prefer_not_to_say">("male");
 const childAge = ref(3);
 const selectedTheme = ref<number | null>(null);
 const isPublic = ref(false);
@@ -477,7 +474,8 @@ onMounted(() => {
   if (savedData) {
     const data = JSON.parse(savedData);
     nickname.value = data.nickname || "";
-    childGender.value = data.childGender || "prefer_not_to_say";
+    // Force default to "male" if saved value is "prefer_not_to_say"
+    childGender.value = (data.childGender && data.childGender !== "prefer_not_to_say") ? data.childGender : "male";
     childAge.value = data.childAge || "";
     selectedTheme.value = data.selectedTheme || null;
     isPublic.value = data.isPublic || false;
@@ -609,7 +607,7 @@ const handleConfirm = async () => {
   }
 
   isLoading.value = true;
-  loadingMessage.value = "Creating your child's personalized story, please wait...";
+  loadingMessage.value = "Magic is happening ✨\nYour story will be ready soon...";
 
   try {
     // Confirm the cover and trigger video generation
@@ -671,7 +669,7 @@ const handleConfirm = async () => {
 const pollForVideoGeneration = async () => {
   console.log("开始轮询视频生成, task_id:", task_id.value);
 
-  const maxAttempts = 30; // 30 * 5 seconds = 2.5 minutes
+  const maxAttempts = 60; // 60 * 5 seconds = 5 minutes
   const interval = 5000; // 5 seconds
 
   for (let i = 0; i < maxAttempts; i++) {
@@ -719,7 +717,7 @@ const checkDailyRegenLimit = (): boolean => {
     localStorage.setItem("dailyRegenCount", "0");
   }
 
-  return dailyRegenCount.value < 3;
+  return dailyRegenCount.value < 100;  // Increased to 100 for testing
 };
 
 const handleRegenerateCover = async () => {
@@ -848,15 +846,68 @@ const pollUntilTrue_getTaskStatusAPI = async () => {
 const updatePreviewImage = async (regenerate = false) => {
   try {
     isLoading.value = true;
-    loadingMessage.value = "Regenerating cover...";
+
+    // Check current task status before regenerating
+    if (regenerate) {
+      const currentStatus = await getTaskStatus(task_id.value!);
+      console.log("Current task status before regenerate:", currentStatus.status);
+
+      // Only allow regeneration from specific states
+      const validRegenStates = ["cover_ready", "awaiting_confirmation"];
+      if (!validRegenStates.includes(currentStatus.status)) {
+        triggerToast(`无法重新生成封面，当前状态: ${currentStatus.status}`);
+        return;
+      }
+    }
+
+    loadingMessage.value = regenerate ? "正在重新生成封面..." : "正在生成封面...";
     const obj = {
       regenerate,
       task_id: task_id.value,
     };
+
     const response = await generateCover(obj);
-    resImgUrl.value = response.cover_image_url;  // video API returns unwrapped data
-  } catch (e) {
-    triggerToast("生成失败，请重新尝试");
+    console.log("generateCover response:", response);
+
+    // If regenerating, we need to poll for the new cover to be ready
+    if (regenerate) {
+      console.log("Starting to poll for regenerated cover...");
+      loadingMessage.value = "正在生成新封面...";
+
+      const coverResult = await pollUntilTrue<TaskStatusResponse>(
+        () => getTaskStatusAPI(coverSuccessMap),
+        3000,
+        999
+      );
+
+      if (coverResult.cover_image_url) {
+        resImgUrl.value = coverResult.cover_image_url;
+        console.log("Regenerated cover ready:", coverResult.cover_image_url);
+      } else {
+        throw new Error("封面生成完成但未获取到URL");
+      }
+    } else {
+      // For initial cover generation, use the response directly
+      resImgUrl.value = response.cover_image_url;
+    }
+  } catch (e: any) {
+    console.error("updatePreviewImage error:", e);
+
+    // Extract error message
+    let errorMessage = "生成失败，请重新尝试";
+    if (e?.response?.data?.detail) {
+      if (typeof e.response.data.detail === 'string') {
+        errorMessage = e.response.data.detail;
+      } else if (Array.isArray(e.response.data.detail)) {
+        errorMessage = e.response.data.detail.map((err: any) => err.msg).join(', ');
+      }
+    } else if (e?.message) {
+      errorMessage = e.message;
+    } else if (typeof e === 'string') {
+      errorMessage = e;
+    }
+
+    triggerToast(errorMessage);
     throw e;
   } finally {
     isLoading.value = false;
@@ -1074,8 +1125,8 @@ const updatePreviewImage = async (regenerate = false) => {
 
 .delete-button {
   position: absolute;
-  top: -8px;
-  right: -8px;
+  top: 43px;
+  left: 68px;
   width: 24px;
   height: 24px;
   background: white;
@@ -1086,6 +1137,7 @@ const updatePreviewImage = async (regenerate = false) => {
   justify-content: center;
   cursor: pointer;
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+  z-index: 10;
 }
 
 .delete-x {
@@ -1279,6 +1331,10 @@ const updatePreviewImage = async (regenerate = false) => {
   text-align: center;
 }
 
+.loading-content p {
+  white-space: pre-line;
+}
+
 .spinner {
   width: 50px;
   height: 50px;
@@ -1305,39 +1361,16 @@ const updatePreviewImage = async (regenerate = false) => {
   position: relative;
 }
 
-/* Preview Image Container - According to CSS: top: 156px, left: 24px, height: 257px */
+/* Preview Image Container - Full Screen (390px × 844px) */
 .preview-image-container {
   position: absolute;
-  left: 24px;
-  top: 156px;
-  width: 343px;
-  height: 257px;
+  left: 0;
+  top: 0;
+  width: 390px;
+  height: 844px;
   background: #eaf6ff;
-  border: 1px solid rgba(105, 105, 105, 0.25);
-  border-radius: 16px;
-  overflow: hidden;
-}
-
-/* Preview Title - According to CSS: position absolute, top: 124px, left: 24px, height: 22px */
-.preview-title {
-  position: absolute;
-  left: 24px;
-  top: 124px;
-  width: 343px;
-  height: 22px;
-  display: block;
-  object-fit: contain;
-  object-position: left;
-}
-
-/* Preview Image Container */
-.preview-image-container {
-  position: relative;
-  width: 343px;
-  height: 257px;
-  background: #eaf6ff;
-  border: 1px solid rgba(105, 105, 105, 0.25);
-  border-radius: 16px;
+  border: none;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -1357,54 +1390,54 @@ const updatePreviewImage = async (regenerate = false) => {
   pointer-events: none;
 }
 
-/* Input Section PNG (Question + Two Buttons) - According to CSS: top: 553px, height: 182px */
+/* Input Section PNG (Question + Two Buttons) - New CSS specs */
 .input-section-png {
   position: absolute;
-  left: 24px;
-  top: 553px;
-  width: 343px;
-  height: 182px;
+  width: 342px;
+  height: 188px;
+  left: calc(50% - 342px / 2);
+  top: 611px;
   display: block;
   object-fit: contain;
 }
 
-/* Create Button Overlay (Clickable Area) - Inside 输入框1 */
+/* Create Button Overlay (Clickable Area) - Adjusted for new position */
 .create-button-overlay {
   position: absolute;
-  left: 24px;
-  top: 607px;
-  width: 342px;
-  height: 56px;
+  left: calc(50% - 342px / 2);
+  top: 665px;
+  width: 302px;
+  height: 48px;
   cursor: pointer;
   z-index: 20;
 }
 
-/* Regenerate Button Overlay (Clickable Area) - Inside 输入框1 */
+/* Regenerate Button Overlay (Clickable Area) - Adjusted for new position */
 .regenerate-button-overlay {
   position: absolute;
-  left: 24px;
-  top: 679px;
-  width: 342px;
-  height: 56px;
+  left: calc(50% - 342px / 2);
+  top: 731px;
+  width: 302px;
+  height: 48px;
   cursor: pointer;
   z-index: 20;
 }
 
-/* Public Toggle Main (主按钮) - According to CSS: bottom: 327px, height: 68px */
+/* Public Toggle Main (主按钮) - New CSS from 创建页3.css */
 .public-toggle-main {
   position: absolute;
-  left: 23px;
-  bottom: 327px;
-  width: 343px;
-  height: 68px;
-  background: #ffffff;
-  border: 1px solid rgba(105, 105, 105, 0.25);
+  width: 342px;
+  height: 52px;
+  left: calc(50% - 342px / 2);
+  bottom: 241px;
+  background: rgba(255, 255, 255, 0.5);
+  box-shadow: 0px 1.27226px 15.2672px rgba(0, 0, 0, 0.05);
   border-radius: 12px;
   display: flex;
   flex-direction: row;
   align-items: center;
-  padding: 14px 16px;
-  gap: 8px;
+  padding: 12px 20px;
+  gap: 23px;
   box-sizing: border-box;
 }
 
@@ -1412,23 +1445,23 @@ const updatePreviewImage = async (regenerate = false) => {
 .public-toggle-label {
   flex: none;
   order: 0;
-  width: 252px;
+  width: 228px;
   height: 20px;
   font-family: "PingFang SC";
   font-style: normal;
-  font-weight: 500;
+  font-weight: 600;
   font-size: 14px;
   line-height: 20px;
-  color: #ff9718;
+  color: #222222;
 }
 
-/* Public Toggle Switch */
+/* Public Toggle Switch - 默认灰色，激活时蓝色 */
 .public-toggle-switch {
   position: relative;
   flex: none;
   order: 1;
   width: 51px;
-  height: 30px;
+  height: 28px;
   background: #b4b4b4;
   border-radius: 100px;
   cursor: pointer;
@@ -1436,26 +1469,22 @@ const updatePreviewImage = async (regenerate = false) => {
 }
 
 .public-toggle-switch.active {
-  background: #4a90e2;
+  background: #1484ff;
 }
 
-/* Public Toggle Knob */
+/* Public Toggle Knob - 未激活在左边，激活滑到右边 */
 .public-toggle-knob {
   position: absolute;
-  width: 26px;
-  height: 26px;
-  right: 23px;
-  top: calc(50% - 26px / 2);
+  width: 24px;
+  height: 24px;
+  left: 2px;
+  top: calc(50% - 24px / 2);
   background: #ffffff;
-  box-shadow:
-    0px 0px 0px 1px rgba(0, 0, 0, 0.04),
-    0px 3px 8px rgba(0, 0, 0, 0.15),
-    0px 3px 1px rgba(0, 0, 0, 0.06);
   border-radius: 100px;
-  transition: right 0.3s ease;
+  transition: left 0.3s ease;
 }
 
 .public-toggle-switch.active .public-toggle-knob {
-  right: 2px;
+  left: 27px;
 }
 </style>

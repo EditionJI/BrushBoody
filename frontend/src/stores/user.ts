@@ -238,6 +238,13 @@ export const useUserStore = defineStore('user', () => {
     try {
       const response = await getGlobalFeedForHome({ limit: 50 })
       feedItems.value = response.data || []
+
+      // Check if user has created stories (has_own items)
+      const hasOwnStory = feedItems.value.some(item => item.is_own)
+      if (hasOwnStory) {
+        markStoryCreated()
+      }
+
       console.log('Feed loaded:', feedItems.value.length, 'items')
     } catch (error) {
       console.error('Failed to load feed:', error)
