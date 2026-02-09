@@ -25,7 +25,7 @@ const routes = [
     path: "/create",
     name: "create",
     component: () => import("../pages/create/CreateView.vue"),
-    meta: { hideBottomNav: true, requiresAuth: true },
+    meta: { hideBottomNav: true, requiresAuth: true, title: "Create" },
   },
   {
     path: "/stories",
@@ -43,13 +43,13 @@ const routes = [
     path: "/brushing",
     name: "brushing",
     component: () => import("../pages/brushing/BrushingView.vue"),
-    meta: { hideBottomNav: true, requiresAuth: true },
+    meta: { hideBottomNav: true, requiresAuth: true, title: "Brushing" },
   },
   {
     path: "/payment",
     name: "payment",
     component: () => import("../pages/payment/PaymentView.vue"),
-    meta: { hideBottomNav: true, requiresAuth: true },
+    meta: { hideBottomNav: true, requiresAuth: true, title: "Payment" },
   },
 ];
 

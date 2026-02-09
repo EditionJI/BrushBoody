@@ -11,9 +11,11 @@ import MainLayout from './components/layout/MainLayout.vue'
 
 const route = useRoute()
 
-// Use layout for pages that show bottom nav, otherwise render directly
+// All pages use MainLayout, BottomNav component will handle visibility
 const layoutComponent = computed(() => {
-  return route.meta?.hideBottomNav ? 'div' : MainLayout
+  // Only login and onboarding pages don't use MainLayout
+  const noLayoutRoutes = ['/login', '/onboarding']
+  return noLayoutRoutes.includes(route.path) ? 'div' : MainLayout
 })
 </script>
 

@@ -2,10 +2,7 @@
   <!-- 绘本广场 - 外层容器居中 -->
   <div class="stories-container">
     <div class="mobile-wrapper">
-      <!-- 背景层 -->
-      <div class="bg-layer"></div>
-
-      <!-- Done 按钮 - 编辑模式时显示 -->
+      <!-- Done 按钮 - 编辑模式时显示，覆盖全局导航栏右侧 -->
       <button v-if="editMode" class="done-button" @click="exitEditMode">
         Done
       </button>
@@ -309,6 +306,11 @@ const deleteStory = () => {
   }
 }
 
+// 跳转到创建页
+const goToCreate = () => {
+  router.push('/create')
+}
+
 // 生命周期
 onMounted(() => {
   loadStories()
@@ -320,46 +322,33 @@ onMounted(() => {
    绘本广场 - 主容器
    ============================================ */
 .stories-container {
-  width: 100vw;
-  height: calc(var(--vh, 1vh) * 100);
+  width: 100%;
+  height: 100%;
   position: relative;
   overflow: hidden;
-  background: linear-gradient(135deg, #d4dff5 0%, #e8ecf5 50%, #f5f5f5 100%);
-  display: flex;
-  justify-content: center;
-  align-items: center;
+  background: #FFFFFF;
   font-family: 'PingFang SC', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
 }
 
 .mobile-wrapper {
   position: relative;
-  max-width: 390px;
   width: 100%;
-  max-height: 844px;
-  height: calc(var(--vh, 1vh) * 100);
+  max-width: 430px;
+  height: 100%;
+  margin: 0 auto;
   overflow: hidden;
   background: #FFFFFF;
-  border-radius: 0;
-  box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.15);
 }
 
 .mobile-wrapper::-webkit-scrollbar {
   display: none; /* Chrome/Safari */
 }
 
-/* 背景层 */
-.bg-layer {
-  position: fixed;
-  inset: 0;
-  background: #FFFFFF;
-  z-index: 0;
-}
-
-/* Done 按钮 */
+/* Done 按钮 - 编辑模式时显示在顶部右侧 */
 .done-button {
-  position: fixed;
-  top: 67px;
-  right: 16px;
+  position: absolute;
+  top: 12px;
+  right: 12px;
   padding: 8px 16px;
   background: transparent;
   border: none;
@@ -376,29 +365,45 @@ onMounted(() => {
 }
 
 /* ============================================
-   绘本卡片网格
-   位置: left: 16px, top: 120px
-   尺寸: 358px × 436px
+   绘本卡片网格 - Grid布局
+   一行两列，移动端适配
    ============================================ */
 .stories-grid {
-  position: fixed;
-  top: 120px;
-  left: 0;
-  right: 0;
-  bottom: 100px; /* 留出底部导航栏空间 */
-  padding: 0 16px;
+  position: absolute;
+  top: 50px;
+  left: 12px;
+  right: 12px;
+  bottom: 80px;
   overflow-y: auto;
   overflow-x: hidden;
-  display: flex;
-  flex-wrap: wrap;
-  gap: 16px;
-  align-content: flex-start;
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+  align-content: start;
   transition: all 0.3s ease;
   /* 隐藏滚动条 */
   scrollbar-width: none;
   -ms-overflow-style: none;
-  /* 确保不遮挡底部导航栏和创建按钮 */
+  /* 确保不遮挡创建按钮 */
   z-index: 1;
+}
+
+/* 中等屏幕 */
+@media (min-width: 376px) {
+  .stories-grid {
+    left: 16px;
+    right: 16px;
+    gap: 16px;
+  }
+}
+
+/* 大屏幕时限制最大宽度并居中 */
+@media (min-width: 431px) {
+  .stories-grid {
+    max-width: 390px;
+    left: 50%;
+    transform: translateX(-50%);
+  }
 }
 
 .stories-grid::-webkit-scrollbar {
@@ -523,17 +528,26 @@ onMounted(() => {
 }
 
 /* ============================================
-   故事卡片
-   尺寸: 171px × 210px
+   故事卡片 - Grid布局自适应
+   基础尺寸: 171px × 210px，移动端自适应
    ============================================ */
 .story-card {
   position: relative;
-  width: 171px;
-  height: 210px;
+  width: 100%;
+  aspect-ratio: 171 / 210;
+  max-width: 195px;
   cursor: pointer;
   user-select: none;
   -webkit-user-select: none;
   transition: transform 0.2s cubic-bezier(0.34, 1.56, 0.64, 1);
+  justify-self: center;
+}
+
+/* 小屏幕限制卡片大小 */
+@media (max-width: 375px) {
+  .story-card {
+    max-width: 165px;
+  }
 }
 
 .story-card:active:not(.shake) {
@@ -565,7 +579,7 @@ onMounted(() => {
 
 /* 卡片背景 */
 .card-bg {
-  position: fixed;
+  position: absolute;
   inset: 0;
   background: #F5F5F5;
   border-radius: 16px;
@@ -574,7 +588,7 @@ onMounted(() => {
 
 /* 3D阴影效果 */
 .card-shadow-3d {
-  position: fixed;
+  position: absolute;
   left: 5%;
   right: 5%;
   top: 0;
@@ -588,7 +602,7 @@ onMounted(() => {
 
 /* 阴影层2 */
 .card-shadow-layer-2 {
-  position: fixed;
+  position: absolute;
   left: 5%;
   right: 5%;
   top: 1.73%;
@@ -600,7 +614,7 @@ onMounted(() => {
 
 /* 阴影层3 */
 .card-shadow-layer-3 {
-  position: fixed;
+  position: absolute;
   left: 5%;
   right: 5%;
   top: 1.73%;
@@ -612,7 +626,7 @@ onMounted(() => {
 
 /* 封面图片 */
 .card-cover {
-  position: fixed;
+  position: absolute;
   left: 5%;
   right: 5%;
   top: 2%;
@@ -626,7 +640,7 @@ onMounted(() => {
 
 /* 故事名称 */
 .story-name {
-  position: fixed;
+  position: absolute;
   left: 16%;
   right: 16%;
   bottom: 18%;
@@ -643,7 +657,7 @@ onMounted(() => {
 
 /* 分享按钮 */
 .share-button {
-  position: fixed;
+  position: absolute;
   left: 12%;
   right: 12%;
   bottom: 5%;
@@ -669,7 +683,7 @@ onMounted(() => {
 
 /* 删除按钮 */
 .delete-button {
-  position: fixed;
+  position: absolute;
   top: 50%;
   left: 50%;
   transform: translate(-50%, -50%);
@@ -694,11 +708,12 @@ onMounted(() => {
 /* ============================================
    创建按钮
    尺寸: 74.44px × 73.75px
+   移动端适配：固定在右下角
    ============================================ */
 .create-button {
-  position: fixed;
+  position: absolute;
   right: 16px;
-  bottom: 104px; /* 距离底部导航栏上方 16px */
+  bottom: 16px;
   width: 74.44px;
   height: 73.75px;
   background: transparent;
@@ -722,16 +737,11 @@ onMounted(() => {
 
 /* ============================================
    删除确认弹窗
+   移动端适配：全屏居中
    ============================================ */
 .modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 50%;
-  transform: translateX(-50%);
-  max-width: 390px;
-  width: 100%;
-  max-height: 844px;
-  height: calc(var(--vh, 1vh) * 100);
+  position: absolute;
+  inset: 0;
   background: rgba(0, 0, 0, 0.4);
   backdrop-filter: blur(4px);
   display: flex;

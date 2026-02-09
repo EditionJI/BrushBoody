@@ -28,10 +28,10 @@ import BottomNav from './BottomNav.vue'
 const router = useRouter()
 const route = useRoute()
 
-// Show top nav on pages that need it (not home, create)
+// Show top nav on pages that need it (only show on create page)
 const showTopNav = computed(() => {
-  const hideTopNavRoutes = ['/', '/login', '/onboarding', '/create', '/brushing', '/payment']
-  return !hideTopNavRoutes.includes(route.path)
+  const showTopNavRoutes = ['/create']
+  return showTopNavRoutes.includes(route.path)
 })
 
 // Get page title from route meta

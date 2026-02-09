@@ -3,12 +3,6 @@
     <div class="mobile-wrapper" ref="wrapperRef">
       <!-- ========== STEP 1: Upload Info (New Design) ========== -->
       <div v-if="currentStep === 1" class="step-1">
-        <!-- Top Navigation (54px) -->
-        <div class="top-nav">
-          <img src="/images/创建页/返回.png" alt="Back" class="back-button" @click="goBack" />
-          <img src="/images/创建页/Create a story.png" alt="Create a story" class="title-image" />
-        </div>
-
         <!-- Main Content Area -->
         <div class="main-content">
           <!-- Upload Section -->
@@ -90,12 +84,6 @@
 
       <!-- ========== STEP 3: AI Preview (New Design) ========== -->
       <div v-if="currentStep === 3" class="step-3">
-        <!-- Top Navigation (54px) -->
-        <div class="top-nav">
-          <img src="/images/创建页/创建页第3步-返回.png" alt="Back" class="back-button" @click="goToPreviewBack" />
-          <img src="/images/创建页/Create a story.png" alt="Create a story" class="title-image" />
-        </div>
-
         <!-- Preview Image Area - Full Screen -->
         <div class="preview-image-container">
           <img v-if="resImgUrl" :src="resImgUrl" alt="Preview" class="preview-image" />
@@ -914,43 +902,11 @@ const updatePreviewImage = async (regenerate = false) => {
   position: relative;
 }
 
-/* Top Navigation */
-.top-nav {
-  position: absolute;
-  top: 54px;
-  left: 0;
-  max-width: 390px;
-  width: 100%;
-  height: 54px;
-  display: flex;
-  align-items: center;
-  z-index: 10;
-}
-
-.back-button {
-  position: absolute;
-  left: 16px;
-  top: 50%;
-  transform: translateY(-50%);
-  width: 28px;
-  height: 28px;
-  cursor: pointer;
-  z-index: 11;
-}
-
-.title-image {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-  height: 28px;
-  width: auto;
-}
-
-/* Main Content */
+/* Main Content - adjusted for global nav */
 .main-content {
   position: absolute;
   left: 24px;
-  top: 124px;
+  top: 70px;
   width: 343px;
   display: flex;
   flex-direction: column;

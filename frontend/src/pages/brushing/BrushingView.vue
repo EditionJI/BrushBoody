@@ -22,7 +22,6 @@
         <!-- Error state -->
         <div v-else-if="!videoUrl && !isLoading" class="error-state">
           <p>视频生成失败</p>
-          <button class="retry-button" @click="goBack(false)">返回</button>
         </div>
       </div>
 
@@ -31,11 +30,6 @@
       <div v-if="isOtherStory" class="top-banner">
         <span class="banner-text">Shared with parental permission</span>
       </div>
-
-      <!-- Close button -->
-      <button class="close-button" @click="goBack(false)">
-        <img src="/images/播放器页/x-close.png" alt="close" class="close-icon" />
-      </button>
 
       <!-- Brushing Guide Card (shown during video playback) -->
       <div v-if="!isCompleted && videoUrl" class="guide-card">
@@ -333,25 +327,6 @@ onUnmounted(() => {
   font-size: 12px;
   line-height: 15px;
   color: #222222;
-}
-
-/* Close button */
-.close-button {
-  position: absolute;
-  top: 66px;
-  left: 346px;
-  width: 24px;
-  height: 24px;
-  background: transparent;
-  border: none;
-  cursor: pointer;
-  z-index: 50;
-  padding: 0;
-}
-
-.close-icon {
-  width: 24px;
-  height: 24px;
 }
 
 /* Brushing Guide Card */
