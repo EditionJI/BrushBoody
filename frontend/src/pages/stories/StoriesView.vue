@@ -134,13 +134,6 @@
         <img src="/images/绘本广场/Group 1321316051.png" alt="Create" class="create-btn-img" />
       </button>
 
-      <!-- 底部导航栏 -->
-      <div class="bottom-nav">
-        <img src="/images/HOME.png" alt="Home" class="nav-icon" @click="goToHome" />
-        <img src="/images/CREATE.png" alt="Create" class="nav-icon" @click="goToCreate" />
-        <img src="/images/STORY.png" alt="Stories" class="nav-icon" />
-      </div>
-
       <!-- 删除确认弹窗 -->
       <Teleport to="body">
         <div v-if="showDeleteModal" class="modal-overlay" @click="showDeleteModal = false">
@@ -349,10 +342,6 @@ const deleteStory = () => {
     exitEditMode()
   }
 }
-
-// 导航函数
-const goToCreate = () => router.push('/create')
-const goToHome = () => router.push('/')
 
 // 生命周期
 onMounted(() => {
@@ -831,37 +820,6 @@ onMounted(() => {
   height: 100%;
   object-fit: contain;
   display: block;
-}
-
-/* ============================================
-   底部导航栏 - 3个图标
-   ============================================ */
-.bottom-nav {
-  position: fixed;
-  bottom: 0;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  left: 0;
-  max-width: 390px;
-  width: 100%;
-  height: 88px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 100;
-  background: transparent;
-}
-
-.nav-icon {
-  width: 80px;
-  height: 60px;
-  object-fit: contain;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-  pointer-events: auto;
-}
-
-.nav-icon:active {
-  opacity: 0.7;
 }
 
 /* ============================================

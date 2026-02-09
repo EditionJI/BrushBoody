@@ -1,6 +1,21 @@
 <template>
-  <router-view />
+  <component :is="layoutComponent">
+    <router-view />
+  </component>
 </template>
+
+<script setup lang="ts">
+import { computed } from 'vue'
+import { useRoute } from 'vue-router'
+import MainLayout from './components/layout/MainLayout.vue'
+
+const route = useRoute()
+
+// Use layout for pages that show bottom nav, otherwise render directly
+const layoutComponent = computed(() => {
+  return route.meta?.hideBottomNav ? 'div' : MainLayout
+})
+</script>
 
 <style>
 * {

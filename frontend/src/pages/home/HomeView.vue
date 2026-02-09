@@ -47,13 +47,6 @@
         class="create-button"
         @click="handleBlueButtonClick"
       />
-
-      <!-- Bottom Navigation - Fixed at bottom -->
-      <div class="bottom-nav">
-        <img src="/images/HOME.png" alt="Home" class="nav-icon home" @click="goToHome" />
-        <img src="/images/CREATE.png" alt="Create" class="nav-icon create" @click="goToCreate" />
-        <img src="/images/STORY.png" alt="Stories" class="nav-icon stories" @click="goToStories" />
-      </div>
     </div>
   </div>
 </template>
@@ -154,20 +147,6 @@ const preloadVideosAround = (centerIndex: number) => {
 };
 
 // Navigation
-const goToHome = () => {
-  const total = totalStories.value;
-  disableTransition.value = true;
-  currentSlide.value = total;
-  setTimeout(() => {
-    disableTransition.value = false;
-  }, 50);
-};
-
-const goToCreate = () => {
-  // Always go to create page (for bottom nav)
-  router.push("/create");
-};
-
 const handleBlueButtonClick = () => {
   // If user has created stories, play the current story
   if (hasCreatedStory.value && currentStory.value) {
@@ -184,10 +163,6 @@ const handleBlueButtonClick = () => {
     // Otherwise go to create page
     router.push("/create");
   }
-};
-
-const goToStories = () => {
-  router.push("/stories");
 };
 
 // Story card click handler
@@ -554,33 +529,5 @@ watch(currentSlide, () => {
   height: 56px;
   z-index: 10;
   cursor: pointer;
-}
-
-/* Bottom Navigation - 3个图标 */
-.bottom-nav {
-  position: fixed;
-  left: 0;
-  bottom: 0;
-  padding-bottom: env(safe-area-inset-bottom, 0px);
-  width: 100%;
-  height: 88px;
-  display: flex;
-  justify-content: space-around;
-  align-items: center;
-  z-index: 10;
-  background: transparent;
-}
-
-.nav-icon {
-  width: 80px;
-  height: 60px;
-  object-fit: contain;
-  cursor: pointer;
-  transition: opacity 0.2s ease;
-  pointer-events: auto;
-}
-
-.nav-icon:active {
-  opacity: 0.7;
 }
 </style>
