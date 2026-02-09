@@ -58,9 +58,6 @@
           </span>
         </div>
       </div>
-
-      <!-- Home Indicator -->
-      <div class="home-indicator"></div>
     </div>
 
     <!-- Toast -->
@@ -326,18 +323,6 @@ const handleSubmit = async () => {
 
 .toggle-link:hover {
   text-decoration: underline;
-}
-
-/* Home Indicator */
-.home-indicator {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 134px;
-  height: 5px;
-  background: #000;
-  border-radius: 3px;
 }
 
 /* Toast */

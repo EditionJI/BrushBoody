@@ -76,9 +76,6 @@
 
         <!-- Next Step Button -->
         <img src="/images/创建页/L.png" alt="Next Step" class="next-button" @click="handleNextStep1" />
-
-        <!-- Home Indicator -->
-        <div class="home-indicator"></div>
       </div>
 
       <!-- ========== STEP 2: Select Theme (Keep SVG for now) ========== -->
@@ -120,9 +117,6 @@
             <div class="public-toggle-knob"></div>
           </div>
         </div>
-
-        <!-- Home Indicator -->
-        <div class="home-indicator"></div>
       </div>
 
       <!-- Toast Notification -->
@@ -1156,18 +1150,6 @@ const updatePreviewImage = async (regenerate = false) => {
   height: 48px;
   cursor: pointer;
   z-index: 10;
-}
-
-/* Home Indicator */
-.home-indicator {
-  position: absolute;
-  bottom: 8px;
-  left: 50%;
-  transform: translateX(-50%);
-  width: 139px;
-  height: 5px;
-  background: #000000;
-  border-radius: 100px;
 }
 
 /* ========== STEP 2 & 3 STYLES (Keep SVG) ========== */
