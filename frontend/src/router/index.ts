@@ -31,13 +31,13 @@ const routes = [
     path: "/stories",
     name: "stories",
     component: () => import("../pages/stories/StoriesView.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, title: "Stories" },
   },
   {
     path: "/parents",
     name: "parents",
     component: () => import("../pages/parents/ParentsView.vue"),
-    meta: { requiresAuth: true },
+    meta: { requiresAuth: true, title: "Parents" },
   },
   {
     path: "/brushing",

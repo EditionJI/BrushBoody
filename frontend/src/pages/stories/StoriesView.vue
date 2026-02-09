@@ -5,13 +5,6 @@
       <!-- 背景层 -->
       <div class="bg-layer"></div>
 
-      <!-- 顶部导航 - 54px -->
-      <div class="top-nav">
-        <div class="nav-content">
-          <span class="nav-title">{{ childName }}'s Stories</span>
-        </div>
-      </div>
-
       <!-- Done 按钮 - 编辑模式时显示 -->
       <button v-if="editMode" class="done-button" @click="exitEditMode">
         Done
@@ -360,39 +353,6 @@ onMounted(() => {
   inset: 0;
   background: #FFFFFF;
   z-index: 0;
-}
-
-/* ============================================
-   顶部导航 (54px)
-   ============================================ */
-.top-nav {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(10px);
-  z-index: 90;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
-}
-
-.nav-content {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  gap: 8px;
-}
-
-.nav-title {
-  font-size: 20px;
-  font-weight: 600;
-  color: #111111;
-  text-align: center;
-  letter-spacing: -0.02em;
 }
 
 /* Done 按钮 */
