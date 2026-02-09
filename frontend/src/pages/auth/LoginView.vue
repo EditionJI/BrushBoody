@@ -1,18 +1,6 @@
 <template>
   <div class="login-container">
     <div class="mobile-wrapper">
-      <!-- Status Bar -->
-      <div class="status-bar">
-        <span class="time">9:41</span>
-        <div class="levels">
-          <div class="wifi"></div>
-          <div class="cellular"></div>
-          <div class="battery">
-            <div class="capacity"></div>
-          </div>
-        </div>
-      </div>
-
       <!-- Title -->
       <div class="title-section">
         <h1 class="title">Welcome</h1>
@@ -239,51 +227,6 @@ const handleSubmit = async () => {
   background: white;
   display: flex;
   flex-direction: column;
-}
-
-/* Status Bar */
-.status-bar {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 12px 24px;
-  height: 44px;
-}
-
-.time {
-  font-size: 15px;
-  font-weight: 600;
-  color: #000;
-}
-
-.levels {
-  display: flex;
-  gap: 5px;
-}
-
-.wifi,
-.cellular {
-  width: 16px;
-  height: 12px;
-  background: #000;
-}
-
-.battery {
-  position: relative;
-  width: 24px;
-  height: 12px;
-  border: 1px solid #000;
-  border-radius: 2px;
-}
-
-.capacity {
-  position: absolute;
-  top: 2px;
-  left: 2px;
-  width: 18px;
-  height: 6px;
-  background: #000;
-  border-radius: 1px;
 }
 
 /* Title Section */

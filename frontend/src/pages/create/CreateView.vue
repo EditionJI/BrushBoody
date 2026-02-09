@@ -3,18 +3,6 @@
     <div class="mobile-wrapper" ref="wrapperRef">
       <!-- ========== STEP 1: Upload Info (New Design) ========== -->
       <div v-if="currentStep === 1" class="step-1">
-        <!-- Status Bar (54px) -->
-        <div class="status-bar">
-          <span class="time">9:41</span>
-          <div class="levels">
-            <div class="wifi"></div>
-            <div class="cellular"></div>
-            <div class="battery">
-              <div class="capacity"></div>
-            </div>
-          </div>
-        </div>
-
         <!-- Top Navigation (54px) -->
         <div class="top-nav">
           <img src="/images/创建页/返回.png" alt="Back" class="back-button" @click="goBack" />
@@ -105,18 +93,6 @@
 
       <!-- ========== STEP 3: AI Preview (New Design) ========== -->
       <div v-if="currentStep === 3" class="step-3">
-        <!-- Status Bar (54px) -->
-        <div class="status-bar">
-          <span class="time">9:41</span>
-          <div class="levels">
-            <div class="wifi"></div>
-            <div class="cellular"></div>
-            <div class="battery">
-              <div class="capacity"></div>
-            </div>
-          </div>
-        </div>
-
         <!-- Top Navigation (54px) -->
         <div class="top-nav">
           <img src="/images/创建页/创建页第3步-返回.png" alt="Back" class="back-button" @click="goToPreviewBack" />
@@ -942,77 +918,6 @@ const updatePreviewImage = async (regenerate = false) => {
   width: 100%;
   height: 100%;
   position: relative;
-}
-
-/* Status Bar */
-.status-bar {
-  position: absolute;
-  top: 0;
-  left: 0;
-  max-width: 390px;
-  width: 100%;
-  height: 54px;
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 0 24px;
-  z-index: 10;
-}
-
-.time {
-  font-family: "PingFang SC";
-  font-weight: 600;
-  font-size: 17px;
-  color: #000000;
-}
-
-.levels {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.wifi {
-  width: 17px;
-  height: 12px;
-  background: #000000;
-  clip-path: polygon(0 100%, 50% 0, 100% 100%);
-}
-
-.cellular {
-  width: 19px;
-  height: 12px;
-  background: #000000;
-  clip-path: polygon(0 0, 20% 0, 20% 40%, 40% 40%, 40% 0, 60% 0, 60% 60%, 80% 60%, 80% 0, 100% 0, 100% 100%, 0 100%);
-}
-
-.battery {
-  position: relative;
-  width: 25px;
-  height: 12px;
-  border: 1px solid rgba(0, 0, 0, 0.35);
-  border-radius: 4px;
-}
-
-.battery::after {
-  content: "";
-  position: absolute;
-  right: -2px;
-  top: 3px;
-  width: 1.33px;
-  height: 6px;
-  background: #000000;
-  border-radius: 0 2px 2px 0;
-}
-
-.capacity {
-  position: absolute;
-  left: 2px;
-  top: 2px;
-  width: 21px;
-  height: 8px;
-  background: #000000;
-  border-radius: 2px;
 }
 
 /* Top Navigation */

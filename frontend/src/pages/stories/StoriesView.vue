@@ -5,33 +5,6 @@
       <!-- 背景层 -->
       <div class="bg-layer"></div>
 
-      <!-- 顶部安全区 - 状态栏 54px -->
-      <div class="safe-area">
-        <div class="time">9:41</div>
-        <div class="status-icons">
-          <!-- Cellular Signal -->
-          <svg class="icon-cellular" width="19" height="12" viewBox="0 0 19 12">
-            <rect x="0.5" y="5" width="2" height="6" rx="0.5" fill="#111111"/>
-            <rect x="3.5" y="3" width="2" height="8" rx="0.5" fill="#111111"/>
-            <rect x="6.5" y="1" width="2" height="10" rx="0.5" fill="#111111"/>
-            <rect x="9.5" y="3" width="2" height="8" rx="0.5" fill="#111111"/>
-            <rect x="12.5" y="5" width="2" height="6" rx="0.5" fill="#111111"/>
-          </svg>
-          <!-- WiFi -->
-          <svg class="icon-wifi" width="17" height="12" viewBox="0 0 17 12">
-            <path d="M8.5 3.5C6.5 3.5 4.5 4.5 3 6L2 5C4 3 6.5 1.5 8.5 1.5C10.5 1.5 13 3 15 5L14 6C12.5 4.5 10.5 3.5 8.5 3.5Z" fill="#111111"/>
-            <path d="M8.5 6C7 6 5.5 6.5 4.5 7.5L3.5 6.5C5 5 7 4 8.5 4C10 4 12 5 13.5 6.5L12.5 7.5C11.5 6.5 10 6 8.5 6Z" fill="#111111"/>
-            <circle cx="8.5" cy="9" r="1.5" fill="#111111"/>
-          </svg>
-          <!-- Battery -->
-          <svg class="icon-battery" width="25" height="12" viewBox="0 0 25 12">
-            <rect x="0.5" y="0.5" width="22" height="11" rx="2.5" stroke="#111111" fill="none"/>
-            <rect x="23" y="4" width="2" height="4" rx="0.5" fill="#111111"/>
-            <rect x="2" y="2" width="18" height="8" rx="1" fill="#111111"/>
-          </svg>
-        </div>
-      </div>
-
       <!-- 顶部导航 - 54px -->
       <div class="top-nav">
         <div class="nav-content">
@@ -390,46 +363,11 @@ onMounted(() => {
 }
 
 /* ============================================
-   顶部安全区 - 状态栏 (54px)
-   ============================================ */
-.safe-area {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  height: 54px;
-  display: flex;
-  align-items: center;
-  justify-content: space-between;
-  padding: 0 16px;
-  z-index: 100;
-  background: transparent;
-}
-
-.time {
-  font-size: 17px;
-  font-weight: 600;
-  color: #000000;
-}
-
-.status-icons {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.icon-cellular,
-.icon-wifi,
-.icon-battery {
-  display: block;
-}
-
-/* ============================================
    顶部导航 (54px)
    ============================================ */
 .top-nav {
   position: fixed;
-  top: 54px;
+  top: 0;
   left: 0;
   right: 0;
   height: 54px;
