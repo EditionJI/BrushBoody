@@ -1,9 +1,6 @@
 {
   "buildCommand": "cd frontend && npm install && npm run build:prod",
   "outputDirectory": "frontend/dist",
-  "env": {
-    "VITE_APP_BASE_API": "/api/v1"
-  },
   "rewrites": [
     {
       "source": "/api/v1/:path*",

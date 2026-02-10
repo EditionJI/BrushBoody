@@ -5,13 +5,16 @@ import errorCode from "@/utils/errorCode";
 import { getToken, clearAuthData } from "@/utils/storage";
 import router from "@/router";
 
-axios.defaults.headers["Content-Type"] = "application/json;charset=utf-8";
 // 创建axios实例
 const service: AxiosInstance = axios.create({
   // axios中请求配置有baseURL选项，表示请求URL公共部分
   baseURL: import.meta.env.VITE_APP_BASE_API,
   // 超时
   timeout: 10000,
+  // 默认Content-Type，但会被具体请求的headers覆盖
+  headers: {
+    "Content-Type": "application/json;charset=utf-8",
+  },
 });
 
 // request拦截器
@@ -21,6 +24,12 @@ service.interceptors.request.use(
     const token = getToken();
     if (token) {
       config.headers["Authorization"] = `Bearer ${token}`;
+    }
+
+    // 如果请求没有设置Content-Type，设置默认值
+    // 但不要覆盖已有的Content-Type（如multipart/form-data）
+    if (!config.headers["Content-Type"]) {
+      config.headers["Content-Type"] = "application/json;charset=utf-8";
     }
 
     // get请求映射params参数
