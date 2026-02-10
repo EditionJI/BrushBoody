@@ -3,8 +3,8 @@
   "outputDirectory": "frontend/dist",
   "rewrites": [
     {
-      "source": "/api/(.*)",
-      "destination": "https://163.177.65.65:8082/api/$1"
+      "source": "/api/v1/:path*",
+      "destination": "https://163.177.65.65:8082/api/v1/:path*"
     },
     {
       "source": "/(.*)",
