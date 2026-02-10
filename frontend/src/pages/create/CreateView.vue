@@ -1244,27 +1244,28 @@ const updatePreviewImage = async (regenerate = false) => {
   width: 342px;
   height: 188px;
   left: calc(50% - 342px / 2);
-  bottom: calc(210px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(190px + env(safe-area-inset-bottom, 0px));
   display: block;
   object-fit: contain;
+  z-index: 5;
 }
 
-/* Create Button Overlay (Clickable Area) - Adjusted for new position */
+/* Create Button Overlay (Clickable Area) - inside Input Section PNG */
 .create-button-overlay {
   position: absolute;
   left: calc(50% - 342px / 2);
-  bottom: calc(150px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(272px + env(safe-area-inset-bottom, 0px));
   width: 302px;
   height: 48px;
   cursor: pointer;
   z-index: 20;
 }
 
-/* Regenerate Button Overlay (Clickable Area) - Adjusted for new position */
+/* Regenerate Button Overlay (Clickable Area) - inside Input Section PNG */
 .regenerate-button-overlay {
   position: absolute;
   left: calc(50% - 342px / 2);
-  bottom: calc(85px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(212px + env(safe-area-inset-bottom, 0px));
   width: 302px;
   height: 48px;
   cursor: pointer;
@@ -1277,7 +1278,7 @@ const updatePreviewImage = async (regenerate = false) => {
   width: 342px;
   height: 52px;
   left: calc(50% - 342px / 2);
-  bottom: calc(280px + env(safe-area-inset-bottom, 0px));
+  bottom: calc(390px + env(safe-area-inset-bottom, 0px));
   background: rgba(255, 255, 255, 0.5);
   box-shadow: 0px 1.27226px 15.2672px rgba(0, 0, 0, 0.05);
   border-radius: 12px;

@@ -36,11 +36,6 @@
         <img src="/images/播放器页/x-close.png" alt="close" class="close-icon" />
       </button>
 
-      <!-- Brushing Guide Card (shown during video playback) -->
-      <div v-if="!isCompleted && videoUrl" class="guide-card">
-        <img src="/images/播放器页/刷牙指导.png" alt="brushing guide" class="guide-image" />
-      </div>
-
       <!-- Completion Screen -->
       <div v-if="isCompleted" class="completion-screen">
         <div class="reward-card">
@@ -49,13 +44,12 @@
         <button class="tap-it-button" @click="onTapIt">
           <img src="/images/播放器页/Tap it.png" alt="Tap it" class="tap-it-image" />
         </button>
-      </div>
-
-      <!-- Bottom hint text -->
-      <div v-if="!isCompleted && videoUrl" class="bottom-hint">
-        <p class="hint-text">
-          Wow-wow {{ userName || 'Friend' }}! You're a brushing champion! Look! A rainbow space rock in your rocket! Tap it, see what's the surprise~
-        </p>
+        <!-- Bottom hint text - only show on completion screen -->
+        <div class="bottom-hint">
+          <p class="hint-text">
+            Wow-wow {{ userName || 'Friend' }}! You're a brushing champion! Look! A rainbow space rock in your rocket! Tap it, see what's the surprise~
+          </p>
+        </div>
       </div>
     </div>
   </div>
@@ -65,9 +59,11 @@
 import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getTaskStatus } from '@/api/video'
+import { useUserStore } from '../../stores/user'
 
 const router = useRouter()
 const route = useRoute()
+const userStore = useUserStore()
 
 const videoPlayer = ref<HTMLVideoElement | null>(null)
 const isLoading = ref(true)
@@ -193,6 +189,19 @@ const goBack = (completed: boolean) => {
 // Tap it button handler
 const onTapIt = () => {
   console.log('Tap it clicked - recording completion')
+
+  // Record brushing completion
+  const today = new Date().toISOString().split('T')[0]
+  userStore.addBrushingRecord({
+    storyId: taskId.value || 'unknown',
+    source: source.value as 'home' | 'create' | 'stories_square' | 'shared',
+    completed: true,
+    duration: 120, // 2 minutes in seconds
+    date: today,
+    brushedAt: new Date().toISOString()
+  })
+
+  console.log('Brushing recorded, streak:', userStore.streakCount)
   goBack(true)
 }
 
@@ -221,31 +230,49 @@ onUnmounted(() => {
 
 .mobile-wrapper {
   position: relative;
-  max-width: 390px;
   width: 100%;
-  max-height: 844px;
   height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   background: #000;
 }
 
-/* Video Player Area - Full Screen */
+/* Video Player Area - Full Screen Immersive */
 .video-player-area {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 10;
   background: #000;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .story-video {
+  /* Base: 9:16 aspect ratio container */
   width: 100%;
   height: 100%;
   object-fit: cover;
   background: #000;
+}
+
+/* For taller screens (modern phones): scale video to fit better */
+@media (min-aspect-ratio: 9/19) {
+  .story-video {
+    object-fit: cover;
+  }
+}
+
+/* For standard 16:9 or 9:16 screens: show full video */
+@media (max-aspect-ratio: 9/17) {
+  .story-video {
+    object-fit: contain;
+  }
 }
 
 /* Loading state */
@@ -311,17 +338,17 @@ onUnmounted(() => {
 /* Top Area */
 /* Yellow banner */
 .top-banner {
-  position: absolute;
-  top: 66px;
+  position: fixed;
+  top: calc(66px + env(safe-area-inset-top, 0px));
   left: 0;
   display: flex;
   align-items: center;
-  padding: 4px 12px;
-  gap: 6px;
-  width: 209px;
-  height: 23px;
+  padding: min(4px, 1vw) min(12px, 3vw);
+  gap: min(6px, 1.5vw);
+  width: min(209px, 55vw);
+  height: min(23px, 6vw);
   background: linear-gradient(90deg, rgba(255, 251, 239, 0.3) -15.31%, #FFE27C 108.61%);
-  border-radius: 0px 12px 12px 0px;
+  border-radius: 0 min(12px, 3vw) min(12px, 3vw) 0;
   z-index: 50;
 }
 
@@ -329,21 +356,21 @@ onUnmounted(() => {
   font-family: 'Inter';
   font-style: normal;
   font-weight: 500;
-  font-size: 12px;
-  line-height: 15px;
+  font-size: clamp(10px, 2.5vw, 12px);
+  line-height: 1.3;
   color: #222222;
 }
 
 /* Close button */
 .close-button {
-  position: absolute;
+  position: fixed;
   top: calc(12px + env(safe-area-inset-top, 0px));
-  right: 16px;
-  width: 28px;
-  height: 28px;
+  right: min(16px, 4vw);
+  width: min(28px, 7vw);
+  height: min(28px, 7vw);
   background: rgba(0, 0, 0, 0.3);
   border: none;
-  border-radius: 14px;
+  border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -358,44 +385,37 @@ onUnmounted(() => {
 }
 
 .close-icon {
-  width: 16px;
-  height: 16px;
+  width: min(16px, 4vw);
+  height: min(16px, 4vw);
 }
 
-/* Brushing Guide Card */
-.guide-card {
-  position: absolute;
-  top: calc(50% - 110px/2 - 268px);
-  left: 16px;
-  width: 134px;
-  height: 110px;
-  z-index: 30;
-}
-
-.guide-image {
-  width: 134px;
-  height: 110px;
-  object-fit: contain;
-}
-
-/* Completion Screen */
+/* Completion Screen - Full Screen */
 .completion-screen {
-  position: absolute;
+  position: fixed;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  right: 0;
+  bottom: 0;
+  width: 100vw;
+  height: 100vh;
   z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding-bottom: calc(40px + env(safe-area-inset-bottom, 0px));
+  box-sizing: border-box;
 }
 
 .reward-card {
   position: absolute;
-  top: 309px;
-  left: 25px;
-  width: 341px;
-  height: 220px;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: min(341px, 90vw);
+  aspect-ratio: 341 / 220;
   background: #FFFFFF;
-  border-radius: 24px;
+  border-radius: min(24px, 6vw);
   overflow: hidden;
 }
 
@@ -407,10 +427,11 @@ onUnmounted(() => {
 
 .tap-it-button {
   position: absolute;
-  top: 551px;
-  left: calc(50% - 140px/2 - 6px);
-  width: 140px;
-  height: 44px;
+  top: 70%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(140px, 36vw);
+  aspect-ratio: 140 / 44;
   background: transparent;
   border: none;
   cursor: pointer;
@@ -418,23 +439,20 @@ onUnmounted(() => {
 }
 
 .tap-it-image {
-  width: 140px;
-  height: 44px;
+  width: 100%;
+  height: 100%;
 }
 
-/* Bottom hint text */
+/* Bottom hint text - inside completion screen */
 .bottom-hint {
   position: absolute;
-  top: 710px;
-  left: calc(50% - 363px/2 - 0.5px);
-  width: 363px;
-  height: 60px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 6px 12px;
+  bottom: calc(100px + env(safe-area-inset-bottom, 0px));
+  left: 50%;
+  transform: translateX(-50%);
+  width: min(363px, 90vw);
+  padding: min(12px, 3vw) min(16px, 4vw);
   background: rgba(0, 0, 0, 0.5);
-  border-radius: 12px;
+  border-radius: min(12px, 3vw);
   z-index: 30;
 }
 
@@ -442,9 +460,10 @@ onUnmounted(() => {
   font-family: 'Inter';
   font-style: normal;
   font-weight: 500;
-  font-size: 13px;
-  line-height: 16px;
+  font-size: clamp(12px, 3vw, 13px);
+  line-height: 1.3;
   color: #FFFFFF;
   text-align: center;
+  margin: 0;
 }
 </style>

@@ -29,6 +29,7 @@
           class="story-video"
           loop
           playsinline
+          muted
           @click.prevent
         ></video>
 
@@ -181,7 +182,7 @@ const handleSlideClick = (index: number) => {
   });
 };
 
-// Video click handler - toggle play/pause
+// Video click handler - toggle play/pause and enable sound
 const handleVideoClick = () => {
   // If it's a swipe, don't handle click
   if (isSwipe.value) {
@@ -196,8 +197,14 @@ const handleVideoClick = () => {
     return;
   }
 
-  // Toggle video play/pause
+  // Enable sound on first click and toggle play/pause
   if (videoPlayer.value) {
+    // First interaction: unmute the video
+    if (videoPlayer.value.muted) {
+      videoPlayer.value.muted = false;
+      console.log('Sound enabled by user interaction');
+    }
+
     if (isVideoPaused.value) {
       // Resume video
       videoPlayer.value.play();
@@ -225,14 +232,13 @@ const startAutoPlayTimer = () => {
   autoPlayTimer.value = window.setTimeout(() => {
     shouldPlayVideo.value = true;
     isVideoPaused.value = false;
-    // Auto play video when it's ready
+    // Auto play video when it's ready (muted auto-play is allowed)
     nextTick(() => {
       if (videoPlayer.value) {
-        // Try to play with sound, if user has interacted
-        // Otherwise it will fail silently and user needs to click
+        // Muted auto-play should work without user interaction
         videoPlayer.value.play().catch((err) => {
-          console.log("Auto-play failed (expected if no user interaction yet):", err);
-          // If auto-play fails, video is still loaded and will play when user clicks
+          console.log("Auto-play failed:", err);
+          isVideoPaused.value = true;
         });
       }
     });
@@ -394,6 +400,22 @@ watch(currentSlide, () => {
   // Preload videos around the new position
   const currentIndex = ((currentSlide.value % totalStories.value) + totalStories.value) % totalStories.value;
   preloadVideosAround(currentIndex);
+});
+
+// Watch for video URL changes to auto-play new videos
+watch(currentVideoUrl, (newUrl) => {
+  if (newUrl && shouldPlayVideo.value) {
+    nextTick(() => {
+      if (videoPlayer.value) {
+        // Ensure video is muted for auto-play
+        videoPlayer.value.muted = true;
+        videoPlayer.value.play().catch((err) => {
+          console.log("Auto-play new video failed:", err);
+          isVideoPaused.value = true;
+        });
+      }
+    });
+  }
 });
 </script>
 
