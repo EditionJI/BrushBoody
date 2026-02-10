@@ -1,0 +1,66 @@
+// Vercel Edge Function for API proxy with CORS support
+export const config = {
+  runtime: 'edge',
+};
+
+export default async function handler(request: Request) {
+  // Handle CORS preflight requests
+  if (request.method === 'OPTIONS') {
+    return new Response(null, {
+      status: 200,
+      headers: {
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Credentials': 'true',
+      },
+    });
+  }
+
+  // Get the request details
+  const url = new URL(request.url);
+  const pathname = url.pathname;
+
+  // Build the target URL - proxy to backend
+  const targetUrl = `https://163.177.65.65:8082${pathname}${url.search}`;
+
+  try {
+    // Forward the request to the backend
+    const response = await fetch(targetUrl, {
+      method: request.method,
+      headers: {
+        // Forward all headers except Host
+        ...Object.fromEntries(
+          Array.from(request.headers.entries())
+            .filter(([key]) => key.toLowerCase() !== 'host')
+        ),
+      },
+      body: request.method !== 'GET' && request.method !== 'HEAD' ? request.body : undefined,
+    });
+
+    // Get response data
+    const data = await response.text();
+
+    // Return response with CORS headers
+    return new Response(data, {
+      status: response.status,
+      statusText: response.statusText,
+      headers: {
+        ...Object.fromEntries(response.headers.entries()),
+        'Access-Control-Allow-Origin': '*',
+        'Access-Control-Allow-Methods': 'GET, POST, PUT, DELETE, OPTIONS',
+        'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+        'Access-Control-Allow-Credentials': 'true',
+      },
+    });
+  } catch (error) {
+    console.error('Proxy error:', error);
+    return new Response(JSON.stringify({ error: 'Proxy error' }), {
+      status: 500,
+      headers: {
+        'Content-Type': 'application/json',
+        'Access-Control-Allow-Origin': '*',
+      },
+    });
+  }
+}
