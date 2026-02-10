@@ -11,9 +11,7 @@
               <img src="/images/创建页/上传.png" alt="Upload your kid's photo" class="upload-label" />
             </div>
             <div class="upload-area" @click="triggerUpload">
-              <div v-if="!uploadedPhoto" class="upload-placeholder">
-                <div class="plus-icon"></div>
-              </div>
+              <div v-if="!uploadedPhoto" class="upload-placeholder"></div>
               <img v-else :src="uploadedPhoto" alt="Uploaded photo" class="uploaded-photo" />
             </div>
             <!-- Delete button for uploaded photo - outside upload-area to avoid clipping -->
@@ -197,19 +195,19 @@ const triggerToast = (msg: string) => {
 
 const validateStep1 = () => {
   if (!uploadedPhoto.value) {
-    triggerToast("请上传宝宝的照片");
+    triggerToast("Please upload your child's photo");
     return false;
   }
   if (!nickname.value.trim()) {
-    triggerToast("请输入宝宝的昵称");
+    triggerToast("Please enter your child's nickname");
     return false;
   }
   if (!childGender.value) {
-    triggerToast("请选择宝宝的性别");
+    triggerToast("Please select your child's gender");
     return false;
   }
   if (!childAge.value) {
-    triggerToast("请选择宝宝的年龄");
+    triggerToast("Please select your child's age");
     return false;
   }
   return true;
@@ -370,7 +368,7 @@ const onNewStep2SvgLoad = () => {
         console.log("➡️ Next button clicked (step 2)");
 
         if (!selectedTheme.value) {
-          triggerToast("请选择一个主题");
+          triggerToast("Please select a theme");
           return;
         }
 
@@ -488,7 +486,7 @@ const handleFileUpload = (event: Event) => {
 
     // Validate file size (5MB limit)
     if (file.size > 5 * 1024 * 1024) {
-      triggerToast("图片大小不能超过5MB");
+      triggerToast("Image size cannot exceed 5MB");
       return;
     }
 
@@ -560,7 +558,7 @@ const handleConfirm = async () => {
 
   // Check if task exists and is ready to confirm
   if (!task_id.value) {
-    triggerToast("请先创建绘本任务");
+    triggerToast("Please create a story first");
     return;
   }
 
@@ -680,7 +678,7 @@ const checkDailyRegenLimit = (): boolean => {
 
 const handleRegenerateCover = async () => {
   if (!checkDailyRegenLimit()) {
-    triggerToast("今日重新生成次数已用完，明天再试");
+    triggerToast("Daily regeneration limit reached. Try again tomorrow!");
     return;
   }
 
@@ -721,15 +719,15 @@ const coverSuccessMap = ["cover_ready", "completed"];  // Cover generation done
 const errorMap = ["failed", "cancelled"];
 const getStatusMessage = (status: string) => {
   const messages: Record<string, string> = {
-    "story_generating": "正在生成故事...",
-    "story_generated": "故事已生成，正在生成封面...",
-    "cover_generating": "正在生成封面...",
-    "cover_ready": "封面已就绪",
-    "awaiting_confirmation": "等待确认封面...",
-    "video_generating": "正在生成视频...",
-    "completed": "已完成",
+    "story_generating": "Creating story...",
+    "story_generated": "Story created, generating cover...",
+    "cover_generating": "Generating cover...",
+    "cover_ready": "Cover ready",
+    "awaiting_confirmation": "Awaiting cover confirmation...",
+    "video_generating": "Creating video...",
+    "completed": "Completed",
   };
-  return messages[status] || "处理中...";
+  return messages[status] || "Processing...";
 };
 const getTaskStatusAPI = async (targetSuccessMap: string[]) => {
   console.log(`轮询第: 调用 getTaskStatus, task_id: ${task_id.value}`);
@@ -789,11 +787,11 @@ const pollUntilTrue_getTaskStatusAPI = async () => {
     // Get the final task status to show the actual error message
     try {
       const finalStatus = await getTaskStatus(task_id.value!);
-      const errorMsg = finalStatus.error_message || e?.message || "任务状态超时，请重新尝试";
-      console.log("任务失败，错误信息:", errorMsg);
-      triggerToast(`生成失败: ${errorMsg}`);
+      const errorMsg = finalStatus.error_message || e?.message || "Task timed out, please try again";
+      console.log("Task failed, error:", errorMsg);
+      triggerToast(`Generation failed: ${errorMsg}`);
     } catch {
-      triggerToast("任务状态超时，请重新尝试");
+      triggerToast("Task timed out, please try again");
     }
     throw e;
   } finally {
@@ -813,12 +811,12 @@ const updatePreviewImage = async (regenerate = false) => {
       // Only allow regeneration from specific states
       const validRegenStates = ["cover_ready", "awaiting_confirmation"];
       if (!validRegenStates.includes(currentStatus.status)) {
-        triggerToast(`无法重新生成封面，当前状态: ${currentStatus.status}`);
+        triggerToast(`Cannot regenerate cover, current status: ${currentStatus.status}`);
         return;
       }
     }
 
-    loadingMessage.value = regenerate ? "正在重新生成封面..." : "正在生成封面...";
+    loadingMessage.value = regenerate ? "Regenerating cover..." : "Generating cover...";
     const obj = {
       regenerate,
       task_id: task_id.value,
@@ -830,7 +828,7 @@ const updatePreviewImage = async (regenerate = false) => {
     // If regenerating, we need to poll for the new cover to be ready
     if (regenerate) {
       console.log("Starting to poll for regenerated cover...");
-      loadingMessage.value = "正在生成新封面...";
+      loadingMessage.value = "Generating new cover...";
 
       const coverResult = await pollUntilTrue<TaskStatusResponse>(
         () => getTaskStatusAPI(coverSuccessMap),
@@ -852,7 +850,7 @@ const updatePreviewImage = async (regenerate = false) => {
     console.error("updatePreviewImage error:", e);
 
     // Extract error message
-    let errorMessage = "生成失败，请重新尝试";
+    let errorMessage = "Generation failed, please try again";
     if (e?.response?.data?.detail) {
       if (typeof e.response.data.detail === 'string') {
         errorMessage = e.response.data.detail;
@@ -929,7 +927,7 @@ const updatePreviewImage = async (regenerate = false) => {
   width: 80px;
   height: 80px;
   left: 0;
-  top: 55px;
+  top: 47px;
   background: transparent;
   border-radius: 16px;
   display: flex;
@@ -1101,7 +1099,7 @@ const updatePreviewImage = async (regenerate = false) => {
   position: absolute;
   left: 50%;
   transform: translateX(-50%);
-  bottom: 40px;
+  bottom: calc(60px + env(safe-area-inset-bottom, 0px));
   width: 342px;
   height: 48px;
   cursor: pointer;
@@ -1246,7 +1244,7 @@ const updatePreviewImage = async (regenerate = false) => {
   width: 342px;
   height: 188px;
   left: calc(50% - 342px / 2);
-  bottom: 180px;
+  bottom: calc(210px + env(safe-area-inset-bottom, 0px));
   display: block;
   object-fit: contain;
 }
@@ -1255,7 +1253,7 @@ const updatePreviewImage = async (regenerate = false) => {
 .create-button-overlay {
   position: absolute;
   left: calc(50% - 342px / 2);
-  bottom: 120px;
+  bottom: calc(150px + env(safe-area-inset-bottom, 0px));
   width: 302px;
   height: 48px;
   cursor: pointer;
@@ -1266,7 +1264,7 @@ const updatePreviewImage = async (regenerate = false) => {
 .regenerate-button-overlay {
   position: absolute;
   left: calc(50% - 342px / 2);
-  bottom: 55px;
+  bottom: calc(85px + env(safe-area-inset-bottom, 0px));
   width: 302px;
   height: 48px;
   cursor: pointer;
@@ -1279,7 +1277,7 @@ const updatePreviewImage = async (regenerate = false) => {
   width: 342px;
   height: 52px;
   left: calc(50% - 342px / 2);
-  bottom: 241px;
+  bottom: calc(280px + env(safe-area-inset-bottom, 0px));
   background: rgba(255, 255, 255, 0.5);
   box-shadow: 0px 1.27226px 15.2672px rgba(0, 0, 0, 0.05);
   border-radius: 12px;
@@ -1289,6 +1287,7 @@ const updatePreviewImage = async (regenerate = false) => {
   padding: 12px 20px;
   gap: 23px;
   box-sizing: border-box;
+  z-index: 10;
 }
 
 /* Public Toggle Label */

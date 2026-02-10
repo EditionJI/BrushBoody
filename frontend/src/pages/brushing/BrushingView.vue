@@ -16,12 +16,12 @@
         <!-- Loading state -->
         <div v-if="isLoading" class="loading-state">
           <div class="loading-spinner"></div>
-          <p>视频生成中，请稍候...</p>
+          <p>Generating video, please wait...</p>
         </div>
 
         <!-- Error state -->
         <div v-else-if="!videoUrl && !isLoading" class="error-state">
-          <p>视频生成失败</p>
+          <p>Video generation failed</p>
         </div>
       </div>
 
@@ -30,6 +30,11 @@
       <div v-if="isOtherStory" class="top-banner">
         <span class="banner-text">Shared with parental permission</span>
       </div>
+
+      <!-- Close button -->
+      <button class="close-button" @click="goBack(false)">
+        <img src="/images/播放器页/x-close.png" alt="close" class="close-icon" />
+      </button>
 
       <!-- Brushing Guide Card (shown during video playback) -->
       <div v-if="!isCompleted && videoUrl" class="guide-card">
@@ -327,6 +332,34 @@ onUnmounted(() => {
   font-size: 12px;
   line-height: 15px;
   color: #222222;
+}
+
+/* Close button */
+.close-button {
+  position: absolute;
+  top: calc(12px + env(safe-area-inset-top, 0px));
+  right: 16px;
+  width: 28px;
+  height: 28px;
+  background: rgba(0, 0, 0, 0.3);
+  border: none;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  z-index: 50;
+  padding: 0;
+  transition: opacity 0.2s ease;
+}
+
+.close-button:active {
+  opacity: 0.7;
+}
+
+.close-icon {
+  width: 16px;
+  height: 16px;
 }
 
 /* Brushing Guide Card */

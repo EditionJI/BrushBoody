@@ -33,7 +33,7 @@
         @click.stop="completeOnboarding"
         class="skip-button"
       >
-        跳过
+        Skip
       </button>
     </div>
   </div>
@@ -53,28 +53,28 @@ const currentSlide = ref(0)
 const slides = [
   {
     image: '/images/onboarding-slide1.png',
-    title: '欢迎来到 BrushBuddy',
-    description: '让刷牙变得有趣，培养孩子良好的刷牙习惯'
+    title: 'Welcome to BrushBuddy',
+    description: 'Make brushing fun and build healthy habits'
   },
   {
     image: '/images/onboarding-slide2.png',
-    title: '个性化绘本',
-    description: 'AI 为您的孩子生成专属的刷牙故事绘本'
+    title: 'Personalized Storybooks',
+    description: 'AI creates unique brushing stories for your child'
   },
   {
     image: '/images/onboarding-slide3.png',
-    title: '有趣的刷牙体验',
-    description: '跟着故事角色一起刷牙，2分钟不知不觉过去'
+    title: 'Fun Brushing Experience',
+    description: 'Follow story characters while brushing - 2 minutes fly by!'
   },
   {
     image: '/images/onboarding-slide4.png',
-    title: '建立刷牙习惯',
-    description: '每日打卡，培养孩子终身受益的刷牙习惯'
+    title: 'Build Healthy Habits',
+    description: 'Daily check-ins help establish lifelong healthy habits'
   },
   {
     image: '/images/onboarding-slide5.png',
-    title: '家长放心',
-    description: '详细记录孩子的刷牙情况，让您随时了解'
+    title: 'Peace of Mind for Parents',
+    description: 'Track your child\'s brushing progress anytime'
   },
   {
     image: '/images/onboarding-slide6.png',
@@ -180,9 +180,9 @@ const goToSlide = (index: number) => {
 
 .mobile-wrapper {
   position: relative;
-  width: min(375px, 100vw, calc(var(--vh, 1vh) * 100 * 375 / 812));
-  aspect-ratio: 375 / 812;
-  height: min(calc(var(--vh, 1vh) * 100), calc(100vw * 812 / 375));
+  width: min(390px, 100vw, calc(var(--vh, 1vh) * 100 * 390 / 844));
+  aspect-ratio: 390 / 844;
+  height: min(calc(var(--vh, 1vh) * 100), calc(100vw * 844 / 390));
   overflow: hidden;
   background: #000;
 }
@@ -215,18 +215,18 @@ const goToSlide = (index: number) => {
 
 .button-click-area {
   position: absolute;
-  bottom: 10%; /* Approx 80px / 812px */
+  bottom: 10%; /* Approx 84px / 844px */
   left: 50%;
   transform: translateX(-50%);
-  width: 53%; /* 200px / 375px */
-  height: 7.5%; /* 60px / 812px */
+  width: 51%; /* 200px / 390px */
+  height: 7%; /* 60px / 844px */
   z-index: 20;
   /* Transparent but clickable - covers the button area in UI */
 }
 
 .dots-indicator {
   position: absolute;
-  bottom: 5%; /* Approx 40px / 812px */
+  bottom: 5%; /* Approx 42px / 844px */
   left: 0;
   right: 0;
   display: flex;
@@ -251,7 +251,7 @@ const goToSlide = (index: number) => {
 
 .skip-button {
   position: absolute;
-  top: 2.5%; /* Approx 20px / 812px */
+  top: 2.5%; /* Approx 21px / 844px */
   right: 5%; /* Approx 20px / 375px */
   background: rgba(255, 255, 255, 0.2);
   backdrop-filter: blur(10px);

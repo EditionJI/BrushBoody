@@ -41,18 +41,18 @@ const currentSlide = ref(0)
 const slides = [
   {
     image: '/images/payment-1.png',
-    title: '解锁更多故事',
-    description: '订阅即可解锁所有主题故事'
+    title: 'Unlock More Stories',
+    description: 'Subscribe to unlock all themed stories'
   },
   {
     image: '/images/payment-2.png',
-    title: '多种订阅方案',
-    description: '选择最适合您的订阅计划'
+    title: 'Multiple Plans Available',
+    description: 'Choose the subscription plan that fits you best'
   },
   {
     image: '/images/payment-3.png',
-    title: '立即开始',
-    description: '完成订阅，开启刷牙冒险之旅'
+    title: 'Get Started Now',
+    description: 'Complete your subscription and start the brushing adventure'
   }
 ]
 
@@ -134,9 +134,9 @@ const goToSlide = (index: number) => {
 
 .mobile-wrapper {
   position: relative;
-  width: min(375px, 100vw, calc(var(--vh, 1vh) * 100 * 375 / 812));
-  aspect-ratio: 375 / 812;
-  height: min(calc(var(--vh, 1vh) * 100), calc(100vw * 812 / 375));
+  width: min(390px, 100vw, calc(var(--vh, 1vh) * 100 * 390 / 844));
+  aspect-ratio: 390 / 844;
+  height: min(calc(var(--vh, 1vh) * 100), calc(100vw * 844 / 390));
   overflow: hidden;
   background: #FFF9F0;
 }
@@ -169,11 +169,11 @@ const goToSlide = (index: number) => {
 
 .button-click-area {
   position: absolute;
-  bottom: 15%; /* Approx 120px / 812px */
+  bottom: 15%; /* Approx 127px / 844px */
   left: 50%;
   transform: translateX(-50%);
-  width: 53%; /* 200px / 375px */
-  height: 7.5%; /* 60px / 812px */
+  width: 51%; /* 200px / 390px */
+  height: 7%; /* 60px / 844px */
   z-index: 20;
   cursor: pointer;
   /* Transparent but clickable - covers the button area in UI */
@@ -181,7 +181,7 @@ const goToSlide = (index: number) => {
 
 .dots-indicator {
   position: absolute;
-  bottom: 5%; /* Approx 40px / 812px */
+  bottom: 5%; /* Approx 42px / 844px */
   left: 0;
   right: 0;
   display: flex;

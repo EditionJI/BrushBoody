@@ -6,8 +6,8 @@
 
       <!-- Streak Days Banner - Only for users with brushing records, hidden when video plays -->
       <div v-if="showStreakBanner && !shouldPlayVideo" class="streak-banner">
-        <span class="streak-count">{{ streakCount }} 天</span>
-        <span class="streak-message">连续刷牙</span>
+        <span class="streak-count">{{ streakCount }} days</span>
+        <span class="streak-message">in a row</span>
       </div>
 
       <!-- Public Badge - Fixed at top left, hidden when video plays -->

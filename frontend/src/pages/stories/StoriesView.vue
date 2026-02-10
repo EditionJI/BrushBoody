@@ -544,7 +544,7 @@ onMounted(() => {
 }
 
 /* 小屏幕限制卡片大小 */
-@media (max-width: 375px) {
+@media (max-width: 360px) {
   .story-card {
     max-width: 165px;
   }
