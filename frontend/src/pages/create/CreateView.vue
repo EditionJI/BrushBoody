@@ -80,10 +80,10 @@
               :key="theme.id"
               class="theme-option"
               :class="{ 'selected': selectedTheme === theme.id }"
-              :role="'button'"
-              :tabindex="0"
+              role="button"
+              tabindex="0"
               :aria-pressed="selectedTheme === theme.id"
-              :aria-label="`Select ${theme.name} theme`"
+              :aria-label="'Select ' + theme.name + ' theme'"
               @click="selectTheme(theme.id)"
               @keydown.enter="selectTheme(theme.id)"
             >
