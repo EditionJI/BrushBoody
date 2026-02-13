@@ -29,6 +29,9 @@
           class="story-video"
           loop
           playsinline
+          webkit-playsinline
+          x5-video-player-type="h5"
+          x5-video-player-fullscreen="false"
           muted
           @click.prevent
         ></video>
@@ -223,6 +226,21 @@ const onBgImageLoad = () => {
   startAutoPlayTimer();
 };
 
+// Detect if device is Android
+const isAndroid = /Android/i.test(navigator.userAgent);
+
+// Handle fullscreen change - try to prevent Android from entering fullscreen
+const handleFullscreenChange = () => {
+  if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
+    // Android entered fullscreen, try to exit
+    if (document.exitFullscreen) {
+      document.exitFullscreen().catch(() => {});
+    } else if ((document as any).webkitExitFullscreen) {
+      (document as any).webkitExitFullscreen();
+    }
+  }
+};
+
 // Start 1.5-second auto-play timer
 const startAutoPlayTimer = () => {
   // Clear any existing timer
@@ -235,6 +253,12 @@ const startAutoPlayTimer = () => {
     // Auto play video when it's ready (muted auto-play is allowed)
     nextTick(() => {
       if (videoPlayer.value) {
+        // Add fullscreen event listener for Android
+        if (isAndroid) {
+          document.addEventListener('fullscreenchange', handleFullscreenChange);
+          document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
+        }
+
         // Muted auto-play should work without user interaction
         videoPlayer.value.play().catch((err) => {
           console.log("Auto-play failed:", err);
@@ -253,6 +277,12 @@ const stopAutoPlayTimer = () => {
   }
   shouldPlayVideo.value = false;
   isVideoPaused.value = false;
+
+  // Remove fullscreen event listeners
+  if (isAndroid) {
+    document.removeEventListener('fullscreenchange', handleFullscreenChange);
+    document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
+  }
 
   // Pause video if playing
   if (videoPlayer.value) {

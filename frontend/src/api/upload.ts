@@ -24,13 +24,12 @@ export interface UploadPhotoResponse {
  * Upload photo to backend (uploads to OSS and returns URL)
  * POST /api/v1/upload
  * Uses multipart/form-data to upload the file
+ * Uses longer timeout (60s) for slow mobile connections
  */
 export function uploadPhoto(data: UploadPhotoRequest) {
   const formData = new FormData();
   formData.append("file", data.file);
 
-  // Use request utility to go through Vercel proxy
-  // Vercel rewrites support multipart/form-data
   return request<UploadPhotoResponse>({
     url: "/upload",
     method: "POST",
@@ -38,5 +37,6 @@ export function uploadPhoto(data: UploadPhotoRequest) {
     headers: {
       "Content-Type": "multipart/form-data",
     },
+    timeout: 60000, // 60 seconds for slow mobile connections
   });
 }

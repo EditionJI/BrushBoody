@@ -1,24 +1,12 @@
-/* Group 1321316069 */
-
-position: absolute;
-width: 390px;
-height: 844px;
-left: 616px;
-top: 283px;
-
-
-
 /* 创建绘本（2/3） */
 
-position: absolute;
+position: relative;
 width: 390px;
 height: 844px;
 left: 616px;
 top: 283px;
 
 background: #FFFFFF;
-border: 4px solid #000000;
-border-radius: 24px;
 
 
 /* 顶部安全区 */
@@ -429,29 +417,6 @@ align-self: stretch;
 flex-grow: 0;
 
 
-/* Home Indicator */
-
-position: absolute;
-left: 0%;
-right: 0%;
-top: 97.51%;
-bottom: 0%;
-
-
-
-/* Home Indicator */
-
-position: absolute;
-width: 139px;
-height: 5px;
-left: calc(50% - 139px/2 - 0.5px);
-bottom: 8px;
-
-background: #000000;
-border-radius: 100px;
-transform: matrix(-1, 0, 0, 1, 0, 0);
-
-
 /* buttons/L */
 
 box-sizing: border-box;
@@ -535,7 +500,7 @@ top: calc(50% - 28px/2);
 /* Icon */
 
 position: absolute;
-left: 16.67%;
+left: 16.66%;
 right: 16.67%;
 top: 25%;
 bottom: 25%;
@@ -977,8 +942,8 @@ background: #1484FF;
 
 position: absolute;
 visibility: hidden;
-left: 21.19%;
-right: 21.14%;
+left: 21.18%;
+right: 21.15%;
 top: 29.04%;
 bottom: 29.96%;
 

@@ -28,19 +28,40 @@ import BottomNav from './BottomNav.vue'
 const router = useRouter()
 const route = useRoute()
 
-// Show top nav on pages that need it (only show on create page)
+// Show top nav on pages that need it (Step 1 shows nav, Step 2/3 show nav for back button)
 const showTopNav = computed(() => {
-  const showTopNavRoutes = ['/create']
-  return showTopNavRoutes.includes(route.path)
+  const path = route.path
+  const step = route.query?.step
+
+  // Show top nav on /create page when step is 1, 2, or 3
+  if (path === '/create') {
+    return step === '1' || step === '2' || step === '3'
+  }
+  return false
 })
 
 // Get page title from route meta
 const pageTitle = computed(() => route.meta?.title as string || '')
 
 // Check if bottom nav is visible
-const hideBottomNav = computed(() => route.meta?.hideBottomNav === true)
+const hideBottomNav = computed(() => route.meta?.hideBottomNav == true)
 
 const goBack = () => {
+  const step = route.query?.step
+  const path = route.path
+
+  // For /create page step 3, navigate to step 2
+  if (path === '/create' && step === '3') {
+    router.replace({ query: { step: '2' } })
+    return
+  }
+
+  // For /create page step 2, navigate to step 1
+  if (path === '/create' && step === '2') {
+    router.replace({ query: { step: '1' } })
+    return
+  }
+
   if (window.history.state && window.history.state.back) {
     router.back()
   } else {
@@ -70,7 +91,6 @@ const goBack = () => {
   align-items: center;
   justify-content: center;
   z-index: 100;
-  padding-top: env(safe-area-inset-top, 0px);
   background: rgba(255, 255, 255, 0.95);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid rgba(0, 0, 0, 0.05);
@@ -107,8 +127,8 @@ const goBack = () => {
   position: relative;
 }
 
-.content-area.has-top-nav {
-  padding-top: calc(54px + env(safe-area-inset-top, 0px));
+.content-area {
+  padding-top: 54px;
 }
 
 .content-area.has-bottom-nav {

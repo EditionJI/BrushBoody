@@ -1,4 +1,4 @@
-<template>
+﻿<template>
   <div class="create-container">
     <div class="mobile-wrapper" ref="wrapperRef">
       <!-- ========== STEP 1: Upload Info (New Design) ========== -->
@@ -70,37 +70,104 @@
         <img src="/images/创建页/L.png" alt="Next Step" class="next-button" @click="handleNextStep1" />
       </div>
 
-      <!-- ========== STEP 2: Select Theme (Keep SVG for now) ========== -->
-      <div v-if="currentStep === 2" class="step-2">
-        <object
-          data="/SVG/create-new-2.svg"
-          type="image/svg+xml"
-          class="full-screen-svg step-new-2-svg"
-          @load="onNewStep2SvgLoad"
-        ></object>
+      <!-- ========== STEP 2: Select Theme (PNG + CSS) ========== -->
+      <div v-if="currentStep === 2" class="step-2-container">
+        <!-- Theme scroll area -->
+        <div class="theme-scroll-area">
+          <div class="theme-options">
+            <div
+              v-for="theme in THEMES"
+              :key="theme.id"
+              class="theme-option"
+              :class="{ 'selected': selectedTheme === theme.id }"
+              :role="'button'"
+              :tabindex="0"
+              :aria-pressed="selectedTheme === theme.id"
+              :aria-label="`Select ${theme.name} theme`"
+              @click="selectTheme(theme.id)"
+              @keydown.enter="selectTheme(theme.id)"
+            >
+              <img
+                :src="theme.image"
+                :alt="theme.name"
+                class="theme-image"
+                @error="(e) => handleImageError(e, theme.id)"
+                @load="loadedImages[theme.id] = true"
+              />
+              <span class="theme-name">{{ theme.name }}</span>
+              <!-- Selected marker -->
+              <div v-if="selectedTheme === theme.id" class="selected-marker">
+                <svg class="checkmark" viewBox="0 0 20 20">
+                  <circle cx="10" cy="10" r="10" fill="#1484FF"/>
+                  <path d="M6 10l3 3 6-6" stroke="white" stroke-width="2" fill="none" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Next button (fixed bottom) -->
+        <div class="next-button-area">
+          <img
+            src="/images/创建页/next23.png"
+            alt="Next"
+            class="next-button"
+            @click="handleNextStep2"
+          />
+        </div>
       </div>
 
       <!-- ========== STEP 3: AI Preview (New Design) ========== -->
       <div v-if="currentStep === 3" class="step-3">
         <!-- Preview Image Area - Full Screen -->
-        <div class="preview-image-container">
-          <img v-if="resImgUrl" :src="resImgUrl" alt="Preview" class="preview-image" />
-          <img v-else src="/images/首页/背景.png" alt="Placeholder" class="preview-placeholder" />
-          <!-- <img src="/images/创建页/Mask group.png" alt="Mask" class="preview-mask" /> -->
-        </div>
+        <img v-if="resImgUrl" :src="resImgUrl" alt="Preview" class="preview-background-image" />
+        <img v-else src="/images/首页/背景.png" alt="Placeholder" class="preview-background-image" />
 
-        <!-- Input Section PNG (Question + Two Buttons) -->
-        <img src="/images/创建页/输入框1.png" alt="Input section" class="input-section-png" />
+        <!-- Controls Container - Flexbox 自适应布局 -->
+        <div class="step-3-controls">
+          <!-- Public Toggle (主按钮) -->
+          <div class="public-toggle-main">
+            <span class="public-toggle-label">Public: Others can read this book.</span>
+            <div class="public-toggle-switch" :class="{ active: isPublic }" @click="togglePublic">
+              <div class="public-toggle-knob"></div>
+            </div>
+          </div>
 
-        <!-- Clickable overlays for buttons -->
-        <div class="create-button-overlay" @click="handleConfirm"></div>
-        <div class="regenerate-button-overlay" @click="handleRegenerateCover"></div>
+          <!-- Input Section with Button Overlays - 包装容器 -->
+          <div class="input-section-wrapper">
+            <!-- Input Section PNG (Question + Two Buttons) - 作为背景视觉元素 -->
+            <img src="/images/创建页/输入框1.png" alt="Input section" class="input-section-png" />
 
-        <!-- Public Toggle (主按钮) - Separate element with text and toggle -->
-        <div class="public-toggle-main">
-          <span class="public-toggle-label">Public: Others can read this book.</span>
-          <div class="public-toggle-switch" :class="{ active: isPublic }" @click="togglePublic">
-            <div class="public-toggle-knob"></div>
+            <!-- Button Overlays - 绝对定位在输入框PNG上方 -->
+            <div class="button-overlays">
+              <!-- Create Button Overlay - 上方蓝色按钮：创建绘本 -->
+              <div
+                class="create-button-overlay"
+                role="button"
+                aria-label="Create story"
+                tabindex="0"
+                @click.stop="handleConfirmCoverAndGenerateVideo"
+                @touchend.stop.prevent="handleCreateStory"
+                @keydown.enter.prevent="handleCreateStory"
+                :style="{ background: debugMode ? 'rgba(0, 0, 255, 0.3)' : 'transparent', border: debugMode ? '2px solid blue' : 'none' }"
+              >
+                <div v-if="debugMode" class="debug-label">📘 创建绘本 (Create)</div>
+              </div>
+
+              <!-- Regenerate Button Overlay - 下方白色按钮：重建封面 -->
+              <div
+                class="regenerate-button-overlay"
+                role="button"
+                aria-label="Regenerate cover"
+                tabindex="0"
+                @click.stop="handleRegenerateCover"
+                @touchend.stop.prevent="handleRegenerateCover"
+                @keydown.enter.prevent="handleRegenerateCover"
+                :style="{ background: debugMode ? 'rgba(0, 255, 0, 0.3)' : 'transparent', border: debugMode ? '2px solid green' : 'none' }"
+              >
+                <div v-if="debugMode" class="debug-label">🟢 重建封面</div>
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -127,8 +194,8 @@
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, watch, nextTick } from "vue";
-import { useRouter } from "vue-router";
+import { ref, computed, onMounted, onUnmounted, watch, nextTick, onBeforeUnmount } from "vue";
+import { useRouter, useRoute } from "vue-router";
 import { uploadPhoto } from "@/api/upload";
 import { createTask, getTaskStatus, generateCover, confirmTask } from "@/api/video";
 import type { TaskStatus, TaskStatusResponse } from "@/api/video";
@@ -136,6 +203,7 @@ import { useUserStore } from "../../stores/user";
 import { pollUntilTrue } from "@/utils";
 
 const router = useRouter();
+const route = useRoute();
 const userStore = useUserStore();
 
 const wrapperRef = ref<HTMLElement | null>(null);
@@ -147,8 +215,7 @@ const currentStep = ref(1);
 const fileInput = ref<HTMLInputElement | null>(null);
 const nicknameInputRef = ref<HTMLInputElement | null>(null);
 
-// SVG document references (for Step 2 & 3)
-let newStep2SvgDoc: Document | null = null;
+// SVG document reference (for Step 3 only)
 let previewSvgDoc: Document | null = null;
 
 // Form data
@@ -165,6 +232,12 @@ const childAge = ref(3);
 const selectedTheme = ref<number | null>(null);
 const isPublic = ref(false);
 
+// Debug mode for button visualization
+const debugMode = ref(false);
+
+// Image loading states for Step 2
+const loadedImages = ref<Record<number, boolean>>({});
+
 // Dropdown states
 const showGenderDropdown = ref(false);
 const showAgeDropdown = ref(false);
@@ -176,6 +249,21 @@ const genderOptions = {
   prefer_not_to_say: "Prefer not to say",
 };
 const ageOptions = Array.from({ length: 12 }, (_, i) => i + 1);
+
+// Theme interface and data (single source of truth)
+interface Theme {
+  id: number;
+  name: string;
+  nameCn: string;
+  image: string;
+}
+
+const THEMES: readonly Theme[] = [
+  { id: 1, name: 'Super Hero', nameCn: '超级英雄', image: '/images/创建页/superhero.png' },
+  { id: 2, name: 'Magic Kingdom', nameCn: '魔法王国', image: '/images/创建页/magic kingdom.png' },
+  { id: 3, name: 'Jungle Safari', nameCn: '森林探险', image: '/images/创建页/jungle safari.png' },
+  { id: 4, name: 'Space Explorer', nameCn: '太空探险', image: '/images/创建页/space explorer.png' },
+] as const;
 
 // User stats
 const userStoryCount = ref(0);
@@ -242,6 +330,140 @@ const isNewUser = computed(() => {
   return stories.length === 0;
 });
 
+// DEBUG: 添加一个全局测试函数，可以在控制台调用测试按钮点击
+(window as any).testCreateButton = () => {
+  console.log('🧪 [TEST] ========== 手动调用创建绘本功能 ==========');
+  handleCreateStory();
+};
+
+(window as any).testRegenerateButton = () => {
+  console.log('🧪 [TEST] ========== 手动调用重建封面功能 ==========');
+  handleRegenerateCover();
+};
+
+// Test: Verify the regenerate button click event is properly wired
+(window as any).testRegenerateButtonClick = () => {
+  console.log('🧪 [TEST] ========== 测试重建封面按钮点击事件 ==========');
+  const btn = document.querySelector('.regenerate-button-overlay');
+  console.log('🧪 [TEST] 按钮元素:', btn);
+  if (btn) {
+    console.log('🧪 [TEST] 按钮存在，触发点击事件');
+    // 创建并分发一个点击事件
+    const clickEvent = new MouseEvent('click', {
+      view: window,
+      bubbles: true,
+      cancelable: true
+    });
+    btn.dispatchEvent(clickEvent);
+    console.log('🧪 [TEST] 点击事件已触发');
+  } else {
+    console.error('❌ [TEST] 按钮元素不存在');
+  }
+};
+
+// Test: Verify the create button click event is properly wired
+(window as any).testCreateButtonClick = () => {
+  console.log('🧪 [TEST] ========== 测试创建绘本按钮点击事件 ==========');
+  const btn = document.querySelector('.create-button-overlay');
+  console.log('🧪 [TEST] 按钮元素:', btn);
+  if (btn) {
+    console.log('🧪 [TEST] 按钮存在，触发点击事件');
+    // 创建并分发一个点击事件
+    const clickEvent = new MouseEvent('click', {
+      view: window,
+      bubbles: true,
+      cancelable: true
+    });
+    btn.dispatchEvent(clickEvent);
+    console.log('🧪 [TEST] 点击事件已触发');
+  } else {
+    console.error('❌ [TEST] 按钮元素不存在');
+  }
+};
+
+(window as any).getButtonPositions = () => {
+  const createBtn = document.querySelector('.create-button-overlay');
+  const regenBtn = document.querySelector('.regenerate-button-overlay');
+  const inputPng = document.querySelector('.input-section-png');
+  const wrapper = document.querySelector('.input-section-wrapper');
+
+  const result = {
+    timestamp: new Date().toISOString(),
+    wrapper: wrapper ? {
+      exists: true,
+      rect: wrapper.getBoundingClientRect(),
+      description: '包装容器（定位基准）'
+    } : { exists: false },
+    createButton: createBtn ? {
+      exists: true,
+      rect: createBtn.getBoundingClientRect(),
+      zIndex: window.getComputedStyle(createBtn).zIndex,
+      pointerEvents: window.getComputedStyle(createBtn).pointerEvents,
+      description: '📘 上方按钮 - 创建绘本 (handleCreateStory)',
+      expectedLog: '应该看到 📘 [创建绘本] 日志'
+    } : { exists: false },
+    regenerateButton: regenBtn ? {
+      exists: true,
+      rect: regenBtn.getBoundingClientRect(),
+      zIndex: window.getComputedStyle(regenBtn).zIndex,
+      pointerEvents: window.getComputedStyle(regenBtn).pointerEvents,
+      description: '🟢 下方按钮 - 重建封面 (handleRegenerateCover)',
+      expectedLog: '应该看到 🟢 [重建封面] 日志'
+    } : { exists: false },
+    inputPng: inputPng ? {
+      exists: true,
+      rect: inputPng.getBoundingClientRect(),
+    } : { exists: false },
+  };
+
+  console.table(result);
+  console.log('📊 [DEBUG] 按钮位置信息：');
+  if (result.wrapper.exists) {
+    console.log(`  📦 Wrapper容器: top=${Math.round(result.wrapper.rect.top)}, bottom=${Math.round(result.wrapper.rect.bottom)}, height=${Math.round(result.wrapper.rect.height)}`);
+  }
+  console.log(`  📘 创建绘本按钮（上方）: top=${Math.round(result.createButton.rect?.top)}, bottom=${Math.round(result.createButton.rect?.bottom)}`);
+  console.log(`  🟢 重建封面按钮（下方）: top=${Math.round(result.regenerateButton.rect?.top)}, bottom=${Math.round(result.regenerateButton.rect?.bottom)}`);
+  console.log('');
+  console.log('💡 [提示] 在控制台输入以下命令来测试：');
+  console.log('  window.testCreateButton()        - 直接测试创建绘本功能');
+  console.log('  window.testCreateButtonClick()   - 模拟点击创建绘本按钮');
+  console.log('  window.testRegenerateButton()    - 直接测试重建封面功能');
+  console.log('  window.testRegenerateButtonClick() - 模拟点击重建封面按钮');
+  console.log('  window.debugButtons = true        - 开启调试模式（显示按钮区域）');
+  console.log('  window.getButtonPositions()      - 获取按钮位置信息');
+  console.log('');
+  console.log('🎨 [提示] 调试模式颜色：');
+  console.log('  🔵 蓝色边框 = 创建绘本按钮（上方）');
+  console.log('  🟢 绿色边框 = 重建封面按钮（下方）');
+
+  return result;
+};
+
+// 添加快捷命令：在控制台输入 'debug' 可以快速查看所有调试信息
+(window as any).debug = () => {
+  console.log('🐛 [DEBUG] ========== BrushBuddy H5 调试工具 ==========');
+  console.log('');
+  console.log('📋 可用命令：');
+  console.log('  📘 window.testCreateButton()        - 直接测试创建绘本功能');
+  console.log('  📘 window.testCreateButtonClick()   - 模拟点击创建绘本按钮');
+  console.log('  🟢 window.testRegenerateButton()    - 直接测试重建封面功能');
+  console.log('  🟢 window.testRegenerateButtonClick() - 模拟点击重建封面按钮');
+  console.log('  📊 window.getButtonPositions()      - 获取按钮位置信息');
+  console.log('  🎨 window.debugButtons = true       - 开启调试模式（显示按钮区域）');
+  console.log('');
+  console.log('📊 当前状态：');
+  console.log('  task_id:', task_id.value);
+  console.log('  isLoading:', isLoading.value);
+  console.log('  userStoryCount:', userStoryCount.value);
+  console.log('  dailyRegenCount:', dailyRegenCount.value);
+  console.log('  checkDailyRegenLimit():', checkDailyRegenLimit());
+  console.log('');
+  console.log('🎨 按钮功能：');
+  console.log('  📘 上方按钮（蓝色边框）= 创建绘本 → 应看到 📘 [创建绘本] 日志');
+  console.log('  🟢 下方按钮（绿色边框）= 重建封面 → 应看到 🟢 [重建封面] 日志');
+  console.log('  ==========================================');
+};
+
 // Helper functions
 const getGenderLabel = (gender: string) => {
   return genderOptions[gender as keyof typeof genderOptions] || "Unknown";
@@ -288,136 +510,7 @@ const handleGlobalClick = (e: MouseEvent) => {
   }
 };
 
-// ========== SVG INTERACTIONS - Step 2 (Theme Selection) ==========
-const onNewStep2SvgLoad = () => {
-  console.log("=== create-new-2.svg loaded ===");
 
-  const objectEl = document.querySelector(".step-new-2-svg") as HTMLObjectElement;
-  if (!objectEl) {
-    console.error("SVG object element not found for create-new-2");
-    return;
-  }
-
-  newStep2SvgDoc = objectEl.contentDocument;
-  if (!newStep2SvgDoc) {
-    console.error("Cannot access SVG document for create-new-2");
-    return;
-  }
-
-  console.log("SVG loaded, setting up interactions for theme selection...");
-
-  const svgRoot = newStep2SvgDoc.querySelector("svg");
-  if (!svgRoot) {
-    console.error("SVG root not found");
-    return;
-  }
-
-  // 1. 返回按钮
-  const backButton = newStep2SvgDoc.getElementById("back-button");
-  if (backButton) {
-    console.log("✅ Found back-button");
-    backButton.style.cursor = "pointer";
-    backButton.style.pointerEvents = "auto";
-    backButton.addEventListener("click", (e) => {
-      e.stopPropagation();
-      console.log("🔙 Back button clicked (step 2)");
-      goToStep(1);
-    });
-  }
-
-  // 2. 主题选项
-  for (let i = 1; i <= 4; i++) {
-    const themeOption = newStep2SvgDoc.getElementById(`theme-option-${i}`) as SVGRectElement;
-    if (themeOption) {
-      console.log(`✅ Found theme-option-${i}`);
-      themeOption.style.cursor = "pointer";
-      themeOption.style.pointerEvents = "auto";
-
-      themeOption.addEventListener("click", (e) => {
-        e.stopPropagation();
-        console.log(`🎨 Theme ${i} clicked`);
-        selectTheme(i);
-        updateThemeSelection(newStep2SvgDoc, svgRoot, i);
-      });
-
-      if (selectedTheme.value === i) {
-        updateThemeSelection(newStep2SvgDoc, svgRoot, i);
-      }
-    }
-  }
-
-  watch(selectedTheme, (newTheme) => {
-    if (newStep2SvgDoc && svgRoot) {
-      updateThemeSelection(newStep2SvgDoc, svgRoot, newTheme);
-    }
-  });
-
-  // 3. Next 按钮
-  const allRects = newStep2SvgDoc.querySelectorAll("rect");
-  allRects.forEach((rect) => {
-    const x = parseFloat(rect.getAttribute("x") || "0");
-    const y = parseFloat(rect.getAttribute("y") || "0");
-    const width = parseFloat(rect.getAttribute("width") || "0");
-    const height = parseFloat(rect.getAttribute("height") || "0");
-
-    if (Math.abs(x - 28) < 1 && Math.abs(y - 752) < 2 && width >= 340 && width <= 343 && height >= 47 && height <= 49) {
-      rect.style.cursor = "pointer";
-      rect.style.pointerEvents = "auto";
-      rect.addEventListener("click", async (e) => {
-        e.stopPropagation();
-        console.log("➡️ Next button clicked (step 2)");
-
-        if (!selectedTheme.value) {
-          triggerToast("Please select a theme");
-          return;
-        }
-
-        // todo
-        await createVideoTasksAPI();
-        goToStep(3);
-        await pollUntilTrue_getTaskStatusAPI();  // This now also updates resImgUrl
-      });
-      console.log("✅ Added click to next button rect");
-    }
-  });
-
-  console.log("create-new-2.svg interactions setup complete");
-};
-
-const updateThemeSelection = (svgDoc: Document, svgRoot: SVGSVGElement, selectedId: number) => {
-  for (let i = 1; i <= 4; i++) {
-    const oldRadio = svgDoc.getElementById(`theme-radio-${i}`);
-    oldRadio?.remove();
-  }
-
-  const themeOption = svgDoc.getElementById(`theme-option-${selectedId}`) as SVGRectElement;
-  if (!themeOption) return;
-
-  const x = parseFloat(themeOption.getAttribute("x") || "0");
-  const y = parseFloat(themeOption.getAttribute("y") || "0");
-  const width = parseFloat(themeOption.getAttribute("width") || "0");
-
-  const radioGroup = document.createElementNS("http://www.w3.org/2000/svg", "g");
-  radioGroup.setAttribute("id", `theme-radio-${selectedId}`);
-
-  const circle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  circle.setAttribute("cx", (x + width - 30).toString());
-  circle.setAttribute("cy", (y + 34).toString());
-  circle.setAttribute("r", "10");
-  circle.setAttribute("fill", "none");
-  circle.setAttribute("stroke", "#4A90E2");
-  circle.setAttribute("stroke-width", "3");
-
-  const innerCircle = document.createElementNS("http://www.w3.org/2000/svg", "circle");
-  innerCircle.setAttribute("cx", (x + width - 30).toString());
-  innerCircle.setAttribute("cy", (y + 34).toString());
-  innerCircle.setAttribute("r", "5");
-  innerCircle.setAttribute("fill", "#4A90E2");
-
-  radioGroup.appendChild(circle);
-  radioGroup.appendChild(innerCircle);
-  svgRoot.appendChild(radioGroup);
-};
 
 onMounted(() => {
   // Load user stats
@@ -437,12 +530,88 @@ onMounted(() => {
     isPublic.value = data.isPublic || false;
   }
 
-  // Set initial step
-  currentStep.value = 1;
+  // Set initial step from route query, default to 1
+  const currentStepQuery = route.query.step as string;
+  currentStep.value = currentStepQuery ? parseInt(currentStepQuery) : 1;
+
+  // Only update route if step is not already set correctly
+  if (!currentStepQuery || currentStepQuery !== '1') {
+    router.replace({ query: { step: '1' } });
+  }
 
   // Add global click listener for closing dropdowns
   document.addEventListener("click", handleGlobalClick);
+
+  // DEBUG: 初始化时输出按钮信息
+  nextTick(() => {
+    const createBtn = document.querySelector('.create-button-overlay');
+    const regenBtn = document.querySelector('.regenerate-button-overlay');
+    console.log('🔍 [INIT] Step 3 按钮元素检查:', {
+      createButton: createBtn ? '✅ 存在' : '❌ 不存在',
+      regenerateButton: regenBtn ? '✅ 存在' : '❌ 不存在',
+    });
+
+    if (createBtn && regenBtn) {
+      const createRect = createBtn.getBoundingClientRect();
+      const regenRect = regenBtn.getBoundingClientRect();
+      console.log('📐 [INIT] 按钮位置:', {
+        createButton: {
+          top: Math.round(createRect.top),
+          bottom: Math.round(createRect.bottom),
+          height: Math.round(createRect.height),
+          description: '📘 上方按钮 - 创建绘本 (handleCreateStory)'
+        },
+        regenerateButton: {
+          top: Math.round(regenRect.top),
+          bottom: Math.round(regenRect.bottom),
+          height: Math.round(regenRect.height),
+          description: '🟢 下方按钮 - 重建封面 (handleRegenerateCover)'
+        }
+      });
+      console.log('');
+      console.log('💡 [提示] 在控制台输入 debug() 查看所有调试命令');
+      console.log('🎨 [提示] 设置 window.debugButtons = true 可显示按钮区域');
+
+      // 添加额外的事件监听器用于调试
+      if (process.env.NODE_ENV === 'development') {
+        createBtn.addEventListener('click', () => {
+          console.log('📘 [EVENT] 创建绘本按钮点击事件被触发');
+        }, true); // 使用捕获阶段
+
+        regenBtn.addEventListener('click', () => {
+          console.log('🟢 [EVENT] 重建封面按钮点击事件被触发');
+        }, true); // 使用捕获阶段
+
+        // 添加触摸事件监听器
+        regenBtn.addEventListener('touchend', (e) => {
+          console.log('🟢 [EVENT] 重建封面按钮 touchend 事件被触发', e);
+        }, true);
+
+        createBtn.addEventListener('touchend', (e) => {
+          console.log('📘 [EVENT] 创建绘本按钮 touchend 事件被触发', e);
+        }, true);
+
+        console.log('✅ [INIT] 已添加按钮事件监听器（开发模式）');
+      }
+    }
+  });
 });
+
+// Watch for route query changes to sync step
+watch(() => route.query.step, (newStep, oldStep) => {
+  // Skip if step hasn't changed
+  if (newStep === oldStep) return;
+
+  if (newStep && typeof newStep === 'string') {
+    const stepNum = parseInt(newStep);
+    if (!isNaN(stepNum) && stepNum >= 1 && stepNum <= 3) {
+      // Use nextTick to avoid recursive updates
+      nextTick(() => {
+        currentStep.value = stepNum;
+      });
+    }
+  }
+}, { immediate: false });
 
 onUnmounted(() => {
   document.removeEventListener("click", handleGlobalClick);
@@ -471,7 +640,19 @@ const goToPreviewBack = () => {
 };
 
 const goToStep = (step: number) => {
-  currentStep.value = step;
+  // Check if we're already on this step to avoid unnecessary route updates
+  const currentStepQuery = route.query.step as string;
+  if (currentStepQuery === step.toString()) {
+    // Already on this step, just update currentStep directly
+    currentStep.value = step;
+    saveData();
+    return;
+  }
+
+  // Update route query - watch will sync currentStep automatically
+  router.replace({
+    query: { step: step.toString() }
+  });
   saveData();
 };
 
@@ -512,6 +693,37 @@ const selectTheme = (themeId: number) => {
   selectedTheme.value = themeId;
 };
 
+// Watch for theme changes to persist data
+watch(selectedTheme, () => {
+  saveData();
+});
+
+// DEBUG: 可以在控制台设置 window.debugButtons = true 来显示按钮区域
+(window as any).debugButtons = false;
+// DEBUG: 也可以设置 window.debugMode = true 来显示按钮标签
+(window as any).debugMode = false;
+watch(() => (window as any).debugButtons, (newValue) => {
+  debugMode.value = newValue;
+  console.log('🎨 [DEBUG] 调试模式:', newValue ? '开启' : '关闭');
+});
+
+// Handle theme image load errors
+const handleImageError = (e: Event, themeId: number) => {
+  console.error(`Failed to load theme image for theme ${themeId}:`, e);
+  // You could add a fallback image here
+};
+
+// Step 2 Next button handler
+const handleNextStep2 = async () => {
+  if (!selectedTheme.value) {
+    triggerToast("Please select a theme");
+    return;
+  }
+  await createVideoTasksAPI();
+  goToStep(3);
+  await pollUntilTrue_getTaskStatusAPI();
+};
+
 const saveData = () => {
   const data = {
     nickname: nickname.value,
@@ -529,14 +741,12 @@ const togglePublic = () => {
 };
 
 const getThemeName = (id: number) => {
-  const themes = ["Space Adventure", "Jungle Safari", "Ocean Explorer", "Superhero"];
-  return themes[id - 1] || "Space Adventure";
+  return THEMES.find(t => t.id === id)?.name || '';
 };
 
 // Theme mapping for Chinese API
 const getThemeNameChinese = (id: number) => {
-  const themes = ["太空冒险", "森林冒险", "海洋探险", "超级英雄"];
-  return themes[id - 1] || "森林冒险";
+  return THEMES.find(t => t.id === id)?.nameCn || '';
 };
 
 // Gender mapping for Chinese API
@@ -549,38 +759,53 @@ const getGenderChinese = (gender: string) => {
   return mapping[gender as keyof typeof mapping] || "保密";
 };
 
-const handleConfirm = async () => {
+const handleConfirmCoverAndGenerateVideo = async () => {
+  console.log('📘 [创建绘本] ========== 开始创建绘本故事 ==========');
+  console.log('📘 [创建绘本] 功能: 确认封面并生成视频');
+  console.log('📘 [创建绘本] 当前状态:');
+  console.log('  - task_id:', task_id.value);
+  console.log('  - userStoryCount:', userStoryCount.value);
+  console.log('  - isPublic:', isPublic.value);
+  console.log('  - isLoading:', isLoading.value);
+  console.log('  - nickname:', nickname.value);
+  console.log('  - selectedTheme:', selectedTheme.value);
+
   if (userStoryCount.value >= 100) {
-    console.log("User has generated 100+ stories, redirecting to payment");
+    console.log('📘 [创建绘本] 用户已生成100+个故事，跳转到支付页面');
     router.push("/payment");
     return;
   }
 
   // Check if task exists and is ready to confirm
   if (!task_id.value) {
+    console.log('❌ [创建绘本] task_id 不存在，提示用户');
     triggerToast("Please create a story first");
     return;
   }
 
+  console.log('✅ [创建绘本] task_id 有效，开始确认任务并生成视频...');
   isLoading.value = true;
   loadingMessage.value = "Magic is happening ✨\nYour story will be ready soon...";
 
   try {
+    console.log('📘 [创建绘本] 调用 confirmTask API...');
     // Confirm the cover and trigger video generation
-    const response = await confirmTask({
+    await confirmTask({
       task_id: task_id.value,
       confirm: true,
       is_shared: isPublic.value,
     });
+    console.log('✅ [创建绘本] 封面已确认');
 
-    console.log("✅ 封面已确认:", response);
-
+    console.log('📘 [创建绘本] 开始轮询视频生成状态...');
     // Wait for video generation to complete before navigating
     await pollForVideoGeneration();
 
+    console.log('✅ [创建绘本] 视频生成完成');
     userStoryCount.value++;
     localStorage.setItem("userStoryCount", userStoryCount.value.toString());
 
+    console.log('📘 [创建绘本] 保存故事到 store...');
     userStore.addStory({
       title: `${nickname.value || "Hero"}'s ${getThemeName(selectedTheme.value || 2)} Story`,
       characterName: nickname.value || "Hero",
@@ -589,6 +814,7 @@ const handleConfirm = async () => {
       isPublic: isPublic.value,
     });
 
+    console.log('📘 [创建绘本] 导航到视频播放页面...');
     // Navigate to video player with task_id only after video is ready
     router.push({
       path: "/brushing",
@@ -599,10 +825,10 @@ const handleConfirm = async () => {
       }
     });
   } catch (error: any) {
-    console.error("确认失败:", error);
+    console.error('❌ [创建绘本] 创建失败:', error);
 
     // Extract error message from response
-    let errorMessage = "确认失败，请重新尝试";
+    let errorMessage = "创建失败，请重新尝试";
     if (error.response?.data?.detail) {
       if (typeof error.response.data.detail === 'string') {
         errorMessage = error.response.data.detail;
@@ -620,6 +846,9 @@ const handleConfirm = async () => {
     isLoading.value = false;
   }
 };
+
+// Alias for handleCreateStory to match the event handler names
+const handleCreateStory = handleConfirmCoverAndGenerateVideo;
 
 // Poll for video generation completion
 const pollForVideoGeneration = async () => {
@@ -661,6 +890,11 @@ const pollForVideoGeneration = async () => {
 };
 
 const checkDailyRegenLimit = (): boolean => {
+  // TEMPORARY: Always return true for testing
+  console.log('🟢 [DEBUG] checkDailyRegenLimit() - BYPASSING DAILY LIMIT FOR TESTING');
+  return true;
+
+  /* Original code - will restore after testing
   const today = new Date().toDateString();
   const savedDate = localStorage.getItem("regenDate");
   const savedCount = localStorage.getItem("dailyRegenCount");
@@ -674,18 +908,62 @@ const checkDailyRegenLimit = (): boolean => {
   }
 
   return dailyRegenCount.value < 100;  // Increased to 100 for testing
+  */
 };
 
 const handleRegenerateCover = async () => {
-  if (!checkDailyRegenLimit()) {
-    triggerToast("Daily regeneration limit reached. Try again tomorrow!");
-    return;
-  }
+  console.log('🟢 [重建封面] ========== 开始重新生成封面 ==========');
+  console.log('🟢 [重建封面] 功能: 重新生成封面图片');
+  console.log('🟢 [重建封面] 当前状态:');
+  console.log('  - task_id:', task_id.value);
+  console.log('  - dailyRegenCount:', dailyRegenCount.value);
+  console.log('  - isLoading:', isLoading.value);
+  console.log('  - 当前时间:', new Date().toISOString());
+  console.log('🟢 [重建封面] 检查是否可以重建...');
 
-  await updatePreviewImage(true);
-  dailyRegenCount.value++;
-  localStorage.setItem("dailyRegenCount", dailyRegenCount.value.toString());
-  localStorage.setItem("regenDate", new Date().toDateString());
+  try {
+    // Check daily limit
+    if (!checkDailyRegenLimit()) {
+      console.log('❌ [重建封面] 超过每日重建限制');
+      triggerToast("Daily regeneration limit reached. Try again tomorrow!");
+      return;
+    }
+
+    console.log('✅ [重建封面] 每日限制检查通过，开始重建封面...');
+    console.log('🟢 [重建封面] 调用 updatePreviewImage(true)...');
+
+    await updatePreviewImage(true);
+
+    console.log('✅ [重建封面] updatePreviewImage(true) 调用成功');
+    dailyRegenCount.value++;
+    localStorage.setItem("dailyRegenCount", dailyRegenCount.value.toString());
+    localStorage.setItem("regenDate", new Date().toDateString());
+
+    console.log('✅ [重建封面] 重建封面成功完成！');
+    console.log('🟢 [重建封面] ========== 重建封面流程结束 ==========');
+  } catch (error: any) {
+    console.error('❌ [重建封面] 重建失败:', error);
+    console.error('❌ [重建封面] 错误详情:');
+    console.error('  - 错误类型:', error?.constructor?.name);
+    console.error('  - 错误消息:', error?.message);
+    console.error('  - 错误堆栈:', error?.stack);
+
+    // Extract error message from API response
+    let errorMessage = "重建失败，请重新尝试";
+    if (error?.response?.data?.detail) {
+      if (typeof error.response.data.detail === 'string') {
+        errorMessage = error.response.data.detail;
+      } else if (Array.isArray(error.response.data.detail)) {
+        errorMessage = error.response.data.detail.map((e: any) => e.msg).join(', ');
+      }
+    } else if (error?.response?.data?.message) {
+      errorMessage = error.response.data.message;
+    } else if (error?.message) {
+      errorMessage = error.message;
+    }
+
+    triggerToast(errorMessage);
+  }
 };
 
 const createVideoTasksAPI = async () => {
@@ -887,10 +1165,12 @@ const updatePreviewImage = async (regenerate = false) => {
   position: relative;
   max-width: 390px;
   width: 100%;
-  max-height: 844px;
   height: calc(var(--vh, 1vh) * 100);
   overflow: hidden;
   background: #ffffff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 /* ========== STEP 1 STYLES ========== */
@@ -1106,25 +1386,128 @@ const updatePreviewImage = async (regenerate = false) => {
   z-index: 10;
 }
 
-/* ========== STEP 2 & 3 STYLES (Keep SVG) ========== */
-.full-screen-svg {
+/* ========== STEP 2 STYLES (PNG + CSS) ========== */
+.step-2-container {
+  position: relative;
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
+  background: #FFFFFF;
+}
+
+/* Theme scroll area */
+.theme-scroll-area {
+  flex: 1;
+  overflow-y: auto;
+  overflow-x: hidden;
+  padding: 16px 24px 0 24px;
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+
+.theme-scroll-area::-webkit-scrollbar {
+  display: none;
+}
+
+.theme-options {
+  display: flex;
+  flex-direction: column;
+  gap: 16px;
+  padding-bottom: 80px;
+}
+
+.theme-option {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  min-height: 68px;
+  padding: 14px 16px;
+  background: #FFFFFF;
+  border: 1px solid rgba(105, 105, 105, 0.25);
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-sizing: border-box;
+}
+
+.theme-option.selected {
+  border: 1px solid #1484FF;
+  box-shadow: 0 0 0 1px #1484FF;
+}
+
+.theme-option:active {
+  transform: scale(0.98);
+  background: #F8F8F8;
+}
+
+.theme-image {
+  width: 44px;
+  height: 40px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+
+.theme-name {
+  flex: 1;
+  font-family: 'PingFang SC';
+  font-size: 14px;
+  font-weight: 500;
+  color: #333333;
+  white-space: nowrap;
+}
+
+.selected-marker {
+  width: 20px;
+  height: 20px;
+  flex-shrink: 0;
+}
+
+/* Skeleton loader for theme images */
+.skeleton-loader {
+  width: 44px;
+  height: 40px;
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: shimmer 1.5s infinite;
+  border-radius: 8px;
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: 200% 0;
+  }
+  100% {
+    background-position: -200% 0;
+  }
+}
+
+/* Next button area (fixed bottom) */
+.next-button-area {
   position: absolute;
-  top: 0;
+  bottom: 0;
   left: 0;
-  z-index: 1;
+  right: 0;
+  padding: 16px 24px;
+  padding-bottom: max(16px, env(safe-area-inset-bottom, 16px));
+  background: linear-gradient(to top, #FFFFFF 80%, transparent);
+  z-index: 10;
+}
+
+/* ========== STEP 3 STYLES (SVG) - DEPRECATED ========== */
+.full-screen-svg {
+  width: 390px;
+  height: 844px;
+  flex-shrink: 0;
 }
 
 .step-new-2-svg,
 .step-preview-svg {
-  max-width: 390px;
-  width: 100%;
-  height: 836px;
-  left: 0;
-  top: 4px;
-  position: absolute;
-  object-fit: contain;
+  width: 390px;
+  height: 844px;
+  display: block;
 }
 
 /* ========== COMMON ========== */
@@ -1200,33 +1583,26 @@ const updatePreviewImage = async (regenerate = false) => {
   }
 }
 
-/* ========== STEP 3 STYLES (Preview - New Design) ========== */
+/* ========== STEP 3 STYLES (Preview - Flexbox 自适应布局) ========== */
 .step-3 {
   width: 100%;
   height: 100%;
+  display: flex;
+  flex-direction: column;
   position: relative;
-}
-
-/* Preview Image Container - Full Screen (390px × 844px) */
-.preview-image-container {
-  position: absolute;
-  left: 0;
-  top: 0;
-  max-width: 390px;
-  width: 100%;
-  max-height: 844px;
-  height: calc(var(--vh, 1vh) * 100);
-  background: #eaf6ff;
-  border: none;
-  border-radius: 0;
   overflow: hidden;
 }
 
-.preview-image,
-.preview-placeholder {
+/* Preview Background Image - 作为背景，不占据flex空间 */
+.preview-background-image {
+  position: absolute;
+  left: 0;
+  top: 0;
   width: 100%;
   height: 100%;
   object-fit: cover;
+  z-index: 1;
+  pointer-events: none;
 }
 
 .preview-mask {
@@ -1238,47 +1614,115 @@ const updatePreviewImage = async (regenerate = false) => {
   pointer-events: none;
 }
 
-/* Input Section PNG (Question + Two Buttons) - New CSS specs */
-.input-section-png {
-  position: absolute;
+/* Step 3 Controls Container - 占据剩余空间并让内容自然推到底部 */
+.step-3-controls {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  justify-content: flex-end;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  padding: 16px 24px max(40px, env(safe-area-inset-bottom, 40px)) 24px;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  z-index: 5;
+  gap: 12px;
+  pointer-events: none;
+}
+
+.step-3-controls > * {
+  pointer-events: auto;
+}
+
+/* Input Section Wrapper - 包装输入框PNG和按钮overlay */
+.input-section-wrapper {
+  position: relative;
   width: 342px;
   height: 188px;
-  left: calc(50% - 342px / 2);
-  bottom: calc(190px + env(safe-area-inset-bottom, 0px));
-  display: block;
-  object-fit: contain;
-  z-index: 5;
+  flex-shrink: 0;
 }
 
-/* Create Button Overlay (Clickable Area) - inside Input Section PNG */
-.create-button-overlay {
+/* Input Section PNG - 作为最底层的视觉元素 */
+.input-section-png {
   position: absolute;
-  left: calc(50% - 342px / 2);
-  bottom: calc(272px + env(safe-area-inset-bottom, 0px));
-  width: 302px;
-  height: 48px;
-  cursor: pointer;
-  z-index: 20;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  display: block;
+  z-index: 1;
 }
 
-/* Regenerate Button Overlay (Clickable Area) - inside Input Section PNG */
+/* Button Overlays Container - 包含两个可点击按钮区域，使用absolute定位相对于wrapper */
+.button-overlays {
+  position: absolute;
+  left: 0;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  pointer-events: none;
+  z-index: 10;
+}
+
+/* Regenerate Button Overlay - 下方白色按钮：重建封面 */
 .regenerate-button-overlay {
   position: absolute;
-  left: calc(50% - 342px / 2);
-  bottom: calc(212px + env(safe-area-inset-bottom, 0px));
-  width: 302px;
-  height: 48px;
+  width: 280px;
+  height: 44px;
   cursor: pointer;
-  z-index: 20;
+  pointer-events: auto;
+  z-index: 11;
+  bottom: 8%;
+  left: 50%;
+  transform: translateX(-50%);
 }
 
-/* Public Toggle Main (主按钮) - New CSS from 创建页3.css */
-.public-toggle-main {
+.regenerate-button-overlay:hover {
+  opacity: 0.9;
+}
+
+/* Create Button Overlay - 上方蓝色按钮：创建绘本 */
+.create-button-overlay {
   position: absolute;
+  width: 280px;
+  height: 44px;
+  cursor: pointer;
+  pointer-events: auto;
+  z-index: 11;
+  bottom: 36%;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.create-button-overlay:hover {
+  opacity: 0.9;
+}
+
+/* Debug Label - 在调试模式下显示按钮功能 */
+.debug-label {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-family: 'PingFang SC', sans-serif;
+  font-size: 12px;
+  font-weight: 600;
+  color: #000;
+  background: rgba(255, 255, 255, 0.9);
+  padding: 4px 8px;
+  border-radius: 4px;
+  white-space: nowrap;
+  pointer-events: none;
+  z-index: 1002;
+}
+
+/* Public Toggle - 在控制区顶部 */
+.public-toggle-main {
+  position: relative;
   width: 342px;
   height: 52px;
-  left: calc(50% - 342px / 2);
-  bottom: calc(390px + env(safe-area-inset-bottom, 0px));
   background: rgba(255, 255, 255, 0.5);
   box-shadow: 0px 1.27226px 15.2672px rgba(0, 0, 0, 0.05);
   border-radius: 12px;
@@ -1289,6 +1733,7 @@ const updatePreviewImage = async (regenerate = false) => {
   gap: 23px;
   box-sizing: border-box;
   z-index: 10;
+  flex-shrink: 0;
 }
 
 /* Public Toggle Label */
@@ -1296,13 +1741,13 @@ const updatePreviewImage = async (regenerate = false) => {
   flex: none;
   order: 0;
   width: 228px;
-  height: 20px;
   font-family: "PingFang SC";
   font-style: normal;
   font-weight: 600;
   font-size: 14px;
   line-height: 20px;
   color: #222222;
+  align-self: center;
 }
 
 /* Public Toggle Switch - 默认灰色，激活时蓝色 */
@@ -1337,4 +1782,72 @@ const updatePreviewImage = async (regenerate = false) => {
 .public-toggle-switch.active .public-toggle-knob {
   left: 27px;
 }
+
+/* ========== RESPONSIVE DESIGN ========== */
+
+/* Extra small devices - 压缩间距 */
+@media (max-height: 700px) {
+  .step-3-controls {
+    padding-top: 8px;
+    padding-bottom: max(28px, env(safe-area-inset-bottom, 28px));
+  }
+
+  .public-toggle-main {
+    margin-bottom: 4px;
+  }
+}
+
+/* iPhone SE and similar small screens (667px) */
+@media (max-height: 667px) {
+  .step-3-controls {
+    padding-top: 4px;
+    padding-bottom: max(24px, env(safe-area-inset-bottom, 24px));
+  }
+
+  .public-toggle-main {
+    margin-bottom: 2px;
+    height: 48px;
+    padding: 8px 16px;
+  }
+
+  .public-toggle-label {
+    font-size: 13px;
+    width: 200px;
+    height: 18px;
+  }
+
+  .public-toggle-switch {
+    width: 44px;
+    height: 24px;
+  }
+
+  .public-toggle-knob {
+    width: 20px;
+    height: 20px;
+    top: calc(50% - 20px / 2);
+  }
+
+  .public-toggle-switch.active .public-toggle-knob {
+    left: 22px;
+  }
+}
+
+/* Landscape orientation - 提示旋转 */
+@media (orientation: landscape) and (max-height: 500px) {
+  .step-3::before {
+    content: "Please rotate your device to portrait mode";
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background: rgba(0, 0, 0, 0.8);
+    color: white;
+    padding: 16px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    text-align: center;
+    z-index: 100;
+  }
+}
 </style>
+
