@@ -11,6 +11,7 @@ background: #FFFFFF;
 
 /* 顶部安全区 */
 
+display: none;
 position: absolute;
 width: 390px;
 height: 54px;
@@ -433,7 +434,7 @@ position: absolute;
 width: 342px;
 height: 48px;
 left: calc(50% - 342px/2);
-top: 748px;
+top: 640px;
 
 background: url(.png), linear-gradient(180deg, #0073FF 0%, #0DA2FF 100%);
 background-blend-mode: plus-lighter, normal;
@@ -466,6 +467,7 @@ flex-grow: 0;
 
 /* 顶部导航 */
 
+display: none;
 position: absolute;
 width: 390px;
 height: 54px;
@@ -540,7 +542,7 @@ position: absolute;
 width: 343px;
 height: 352px;
 left: 24px;
-top: 124px;
+top: 16px;
 
 
 
