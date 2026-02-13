@@ -20,6 +20,8 @@ export default defineConfig(({ mode, command }) => {
       // https://cn.vitejs.dev/config/#resolve-extensions
       extensions: [".mjs", ".js", ".ts", ".jsx", ".tsx", ".json", ".vue"],
     },
+    // Fix Vercel build issue with image paths
+    assetsInclude: ['**/*.png', '**/*.jpg', '**/*.jpeg', '**/*.svg', '**/*.gif', '**/*.webp'],
     server: {
       port: 5173,
       host: true,
