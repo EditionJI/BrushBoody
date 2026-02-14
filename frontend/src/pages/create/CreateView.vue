@@ -1,4 +1,4 @@
-﻿<template>
+﻿﻿<template>
   <div class="create-container">
     <div class="mobile-wrapper" ref="wrapperRef">
       <!-- ========== STEP 1: Upload Info (New Design) ========== -->
