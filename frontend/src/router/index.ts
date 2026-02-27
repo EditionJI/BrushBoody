@@ -51,6 +51,12 @@ const routes = [
     component: () => import("../pages/payment/PaymentView.vue"),
     meta: { hideBottomNav: true, requiresAuth: true, title: "Payment" },
   },
+  {
+    path: "/privacy",
+    name: "privacy",
+    component: () => import("../pages/privacy/PrivacyView.vue"),
+    meta: { hideBottomNav: true, public: true },
+  },
 ];
 
 const router = createRouter({

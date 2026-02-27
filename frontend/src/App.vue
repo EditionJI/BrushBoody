@@ -13,8 +13,8 @@ const route = useRoute()
 
 // All pages use MainLayout, BottomNav component will handle visibility
 const layoutComponent = computed(() => {
-  // Only login and onboarding pages don't use MainLayout
-  const noLayoutRoutes = ['/login', '/onboarding']
+  // Only login, onboarding and privacy pages don't use MainLayout
+  const noLayoutRoutes = ['/login', '/onboarding', '/privacy']
   return noLayoutRoutes.includes(route.path) ? 'div' : MainLayout
 })
 </script>
