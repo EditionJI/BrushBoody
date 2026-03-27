@@ -189,6 +189,44 @@
 
       <!-- Hidden file input -->
       <input ref="fileInput" type="file" @change="handleFileUpload" accept="image/*" class="hidden" />
+
+      <!-- Story Limit Modal -->
+      <Transition name="modal-fade">
+        <div v-if="showLimitModal" class="limit-modal-overlay" @click.self="closeLimitModal">
+          <div class="limit-modal-card">
+            <!-- Close button -->
+            <button class="modal-close-btn" @click="closeLimitModal">
+              <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+                <path d="M4 4l10 10M14 4L4 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+              </svg>
+            </button>
+
+            <!-- Content -->
+            <div class="modal-content">
+              <!-- Cute bear face -->
+              <div class="bear-face">
+                <div class="bear-ear left"></div>
+                <div class="bear-ear right"></div>
+                <div class="bear-head">
+                  <div class="bear-eye left"></div>
+                  <div class="bear-eye right"></div>
+                  <div class="bear-nose"></div>
+                  <div class="bear-mouth"></div>
+                </div>
+              </div>
+
+              <!-- Title -->
+              <h2 class="modal-title">3 of 3 Free Stories</h2>
+              <p class="modal-subtitle">Go Premium — create more stories starring your little one!</p>
+
+              <!-- CTA Button -->
+              <button class="pay-btn" @click="handleWantToPay">
+                <span class="pay-btn-text">Go Premium</span>
+              </button>
+            </div>
+          </div>
+        </div>
+      </Transition>
     </div>
   </div>
 </template>
@@ -200,6 +238,8 @@ import { uploadPhoto } from "@/api/upload";
 import { createTask, getTaskStatus, generateCover, confirmTask } from "@/api/video";
 import type { TaskStatus, TaskStatusResponse } from "@/api/video";
 import { useUserStore } from "../../stores/user";
+import { useAuthStore } from "@/stores/auth";
+import { recordVideoPlay } from "@/api/analytics";
 import { pollUntilTrue } from "@/utils";
 
 const router = useRouter();
@@ -713,8 +753,56 @@ const handleImageError = (e: Event, themeId: number) => {
   // You could add a fallback image here
 };
 
+// Story limit modal
+const showLimitModal = ref(false);
+
+const closeLimitModal = () => {
+  showLimitModal.value = false;
+};
+
+const handleWantToPay = () => {
+  // Get user ID from auth store
+  const authStore = useAuthStore();
+  const userId = authStore.userInfo?.id?.toString() || 'unknown';
+
+  // Log all parameters for debugging
+  console.log('[DEBUG recordVideoPlay params]', {
+    videoUrl: `want_to_pay:user_${userId}`,
+    playStartTime: new Date().toISOString(),
+    playEndTime: undefined,
+    fromHomePage: false,
+    useBeacon: true,
+    userId: userId,
+  });
+
+  // Record analytics - video_url carries the user ID
+  recordVideoPlay(
+    `want_to_pay:user_${userId}`,
+    new Date().toISOString(),
+    undefined,
+    false,
+    true
+  );
+  closeLimitModal();
+  triggerToast("Got it! We'll contact you shortly about premium access.");
+};
+
 // Step 2 Next button handler
 const handleNextStep2 = async () => {
+  // Ensure feed is loaded before checking story count
+  if (userStore.feedItems.length === 0) {
+    console.log('[DEBUG] feedItems is empty, loading feed...');
+    await userStore.loadFeed();
+  }
+
+  // Check story limit (max 3)
+  const userStoryCount = userStore.feedItems.filter(item => item.is_own).length;
+  console.log('[DEBUG] userStoryCount:', userStoryCount, 'feedItems:', userStore.feedItems);
+  if (userStoryCount >= 3) {
+    showLimitModal.value = true;
+    return;
+  }
+
   if (!selectedTheme.value) {
     triggerToast("Please select a theme");
     return;
@@ -1959,6 +2047,216 @@ const updatePreviewImage = async (regenerate = false) => {
     text-align: center;
     z-index: 100;
   }
+}
+
+/* ==================== Story Limit Modal ==================== */
+.limit-modal-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.4);
+  backdrop-filter: blur(6px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  padding: 20px;
+}
+
+.limit-modal-card {
+  position: relative;
+  width: 100%;
+  max-width: 300px;
+  background: #FFF9F0;
+  border-radius: 24px;
+  padding: 36px 28px 32px;
+  overflow: hidden;
+  box-shadow:
+    0 16px 48px rgba(0, 0, 0, 0.2),
+    0 0 0 1px rgba(0, 0, 0, 0.05);
+}
+
+/* Close button */
+.modal-close-btn {
+  position: absolute;
+  top: 12px;
+  right: 12px;
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
+  background: #F5F0EB;
+  border: none;
+  color: #999;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  z-index: 10;
+}
+
+.modal-close-btn:hover {
+  background: #EDE8E3;
+  color: #666;
+}
+
+/* Modal content */
+.modal-content {
+  position: relative;
+  z-index: 5;
+  text-align: center;
+}
+
+/* Cute bear face */
+.bear-face {
+  position: relative;
+  width: 80px;
+  height: 70px;
+  margin: 0 auto 20px;
+}
+
+.bear-ear {
+  position: absolute;
+  width: 28px;
+  height: 28px;
+  background: #F5D6C6;
+  border-radius: 50%;
+  top: 0;
+}
+
+.bear-ear.left { left: 4px; }
+.bear-ear.right { right: 4px; }
+
+.bear-head {
+  position: absolute;
+  width: 64px;
+  height: 56px;
+  background: #F5D6C6;
+  border-radius: 50%;
+  bottom: 0;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bear-eye {
+  position: absolute;
+  width: 8px;
+  height: 10px;
+  background: #333;
+  border-radius: 50%;
+  top: 18px;
+}
+
+.bear-eye.left { left: 16px; }
+.bear-eye.right { right: 16px; }
+
+.bear-eye::after {
+  content: '';
+  position: absolute;
+  width: 3px;
+  height: 3px;
+  background: #fff;
+  border-radius: 50%;
+  top: 2px;
+  left: 2px;
+}
+
+.bear-nose {
+  position: absolute;
+  width: 12px;
+  height: 8px;
+  background: #333;
+  border-radius: 50%;
+  top: 28px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+.bear-mouth {
+  position: absolute;
+  width: 16px;
+  height: 8px;
+  border: 2px solid #333;
+  border-top: none;
+  border-radius: 0 0 10px 10px;
+  top: 36px;
+  left: 50%;
+  transform: translateX(-50%);
+}
+
+/* Title */
+.modal-title {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 18px;
+  font-weight: 700;
+  color: #333;
+  margin: 0 0 6px;
+  line-height: 1.3;
+}
+
+/* Subtitle */
+.modal-subtitle {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 20px;
+  font-weight: 700;
+  color: transparent;
+  background: linear-gradient(135deg, #FF8C00 0%, #FF6B6B 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  margin: 0 0 28px;
+  line-height: 1.4;
+}
+
+/* Pay button */
+.pay-btn {
+  width: 100%;
+  padding: 14px 24px;
+  background: linear-gradient(135deg, #FFB088 0%, #FF9A6C 100%);
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  box-shadow: 0 4px 16px rgba(255, 154, 108, 0.4);
+}
+
+.pay-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 6px 20px rgba(255, 154, 108, 0.5);
+}
+
+.pay-btn:active {
+  transform: translateY(0);
+}
+
+.pay-btn-text {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+  font-size: 16px;
+  font-weight: 700;
+  color: #fff;
+  letter-spacing: 0.3px;
+}
+
+/* Modal fade transition */
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.25s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-fade-enter-active .limit-modal-card {
+  animation: modal-pop 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+}
+
+@keyframes modal-pop {
+  0% { transform: scale(0.9); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
 }
 </style>
 
