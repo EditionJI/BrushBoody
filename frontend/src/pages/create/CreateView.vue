@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div class="create-container">
     <div class="mobile-wrapper" ref="wrapperRef">
       <!-- ========== STEP 1: Upload Info (New Design) ========== -->
@@ -7,11 +7,14 @@
         <div class="main-content">
           <!-- Upload Section -->
           <div class="upload-section">
+            <div class="upload-labels">
+              <img src="/images/创建页/上传.png" alt="Upload your kid's photo" class="upload-label" />
+            </div>
             <div class="upload-area" @click="triggerUpload">
               <div v-if="!uploadedPhoto" class="upload-placeholder"></div>
               <img v-else :src="uploadedPhoto" alt="Uploaded photo" class="uploaded-photo" />
             </div>
-            <!-- Delete button for uploaded photo -->
+            <!-- Delete button for uploaded photo - outside upload-area to avoid clipping -->
             <div v-if="uploadedPhoto" class="delete-button" @click.stop="deletePhoto">
               <span class="delete-x">×</span>
             </div>
@@ -1299,24 +1302,25 @@ const updatePreviewImage = async (regenerate = false) => {
   gap: 28px;
 }
 
-/* Upload Section - 使用背景图片 + 百分比定位 */
+/* Upload Section */
 .upload-section {
   position: relative;
-  width: 343px;
-  height: 136px;
-  background-image: url('/images/创建页/上传.png');
-  background-size: 100% 100%;
-  background-repeat: no-repeat;
+  width: 342px;
+  height: 135px;
+}
+
+.upload-label {
+  display: block;
 }
 
 .upload-area {
   position: absolute;
-  width: 80px;      /* 固定像素 - Figma设计稿精确值 */
-  height: 80px;     /* 固定像素 - Figma设计稿精确值 */
-  left: 0;          /* 紧贴容器左边（.main-content已有24px左边距） */
-  top: 55px;        /* Figma设计稿精确值 */
+  width: 80px;
+  height: 80px;
+  left: 0;
+  top: 47px;
   background: transparent;
-  border-radius: 12px;
+  border-radius: 16px;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1369,8 +1373,8 @@ const updatePreviewImage = async (regenerate = false) => {
 
 .delete-button {
   position: absolute;
-  top: 43px;      /* 55px - 12px，在上传框右上角 */
-  left: 68px;     /* 80px - 12px，在上传框右边缘 */
+  top: 43px;
+  left: 68px;
   width: 24px;
   height: 24px;
   background: white;
@@ -1570,14 +1574,6 @@ const updatePreviewImage = async (regenerate = false) => {
   width: 20px;
   height: 20px;
   flex-shrink: 0;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-}
-
-.checkmark {
-  width: 100%;
-  height: 100%;
 }
 
 /* Skeleton loader for theme images */

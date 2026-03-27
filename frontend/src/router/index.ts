@@ -70,8 +70,17 @@ router.beforeEach((to, from, next) => {
   const isPublicRoute = to.meta.public === true;
   const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding") === "true";
 
+  // 调试日志
+  console.log("[Router Guard]", {
+    to: to.path,
+    token: token ? `${token.substring(0, 10)}...` : null,
+    isPublicRoute,
+    hasSeenOnboarding,
+  });
+
   // 1. 如果没有 token 且访问的是需要认证的页面，跳转到登录页
   if (!token && !isPublicRoute) {
+    console.log("[Router Guard] No token, redirecting to login");
     next("/login");
     return;
   }

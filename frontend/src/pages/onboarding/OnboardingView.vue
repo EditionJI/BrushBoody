@@ -57,14 +57,44 @@ const slides = [
     description: 'Make brushing fun and build healthy habits'
   },
   {
+    image: '/images/onboarding-slide2.png',
+    title: 'Personalized Storybooks',
+    description: 'AI creates unique brushing stories for your child'
+  },
+  {
     image: '/images/onboarding-slide3.png',
     title: 'Fun Brushing Experience',
     description: 'Follow story characters while brushing - 2 minutes fly by!'
   },
   {
+    image: '/images/onboarding-slide4.png',
+    title: 'Build Healthy Habits',
+    description: 'Daily check-ins help establish lifelong healthy habits'
+  },
+  {
     image: '/images/onboarding-slide5.png',
     title: 'Peace of Mind for Parents',
     description: 'Track your child\'s brushing progress anytime'
+  },
+  {
+    image: '/images/onboarding-slide6.png',
+    title: '多种主题',
+    description: '太空、海洋、森林等多种主题，总有孩子喜欢的'
+  },
+  {
+    image: '/images/onboarding-slide7.png',
+    title: 'AI 智能生成',
+    description: '上传照片，AI 自动生成孩子专属的卡通角色'
+  },
+  {
+    image: '/images/onboarding-slide8.png',
+    title: '隐私安全',
+    description: '所有数据加密存储，保护孩子的隐私安全'
+  },
+  {
+    image: '/images/onboarding-slide9.png',
+    title: '立即开始',
+    description: '创建第一个绘本，开启刷牙冒险之旅！'
   }
 ]
 
