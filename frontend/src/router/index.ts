@@ -67,33 +67,29 @@ const router = createRouter({
 // Navigation guard for authentication and onboarding
 router.beforeEach((to, from, next) => {
   const token = getToken();
+  const isPublicRoute = to.meta.public === true;
+  const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding") === "true";
 
-  // Check if route requires authentication
-  const requiresAuth = to.meta.requiresAuth !== false && to.meta.public !== true;
-
-  // If route requires auth and no token, redirect to login
-  if (requiresAuth && !token) {
+  // 1. 如果没有 token 且访问的是需要认证的页面，跳转到登录页
+  if (!token && !isPublicRoute) {
     next("/login");
     return;
   }
 
-  // If logged in and trying to access login page, redirect to home
-  if (to.path === "/login" && token) {
+  // 2. 如果已登录且访问登录页，跳转到首页
+  if (token && to.path === "/login") {
     next("/");
     return;
   }
 
-  // Onboarding check
-  const hasSeenOnboarding = localStorage.getItem("hasSeenOnboarding") === "true";
-
-  // If trying to access home and hasn't seen onboarding, redirect to onboarding
-  if (to.path === "/" && !hasSeenOnboarding) {
+  // 3. 如果已登录且访问首页，检查是否看过 onboarding
+  if (token && to.path === "/" && !hasSeenOnboarding) {
     next("/onboarding");
     return;
   }
 
-  // If onboarding is done and trying to access onboarding page, redirect to home
-  if (to.path === "/onboarding" && hasSeenOnboarding) {
+  // 4. 如果已看过 onboarding 且访问 onboarding 页，跳转到首页
+  if (token && to.path === "/onboarding" && hasSeenOnboarding) {
     next("/");
     return;
   }
