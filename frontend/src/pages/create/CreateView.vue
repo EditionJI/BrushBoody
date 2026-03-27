@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div class="create-container">
     <div class="mobile-wrapper" ref="wrapperRef">
       <!-- ========== STEP 1: Upload Info (New Design) ========== -->
@@ -776,10 +776,12 @@ const handleConfirmCoverAndGenerateVideo = async () => {
     return;
   }
 
-  // Check if task exists and is ready to confirm
+  // Check if task exists - if not, guide user back to step 2
   if (!task_id.value) {
-    console.log('❌ [创建绘本] task_id 不存在，提示用户');
-    triggerToast("Please create a story first");
+    console.log('❌ [创建绘本] task_id 不存在，引导用户返回第二步');
+    triggerToast("请先返回第二步生成封面");
+    currentStep.value = 2;
+    router.push({ query: { step: '2' } });
     return;
   }
 
@@ -827,8 +829,94 @@ const handleConfirmCoverAndGenerateVideo = async () => {
   } catch (error: any) {
     console.error('❌ [创建绘本] 创建失败:', error);
 
-    // Extract error message from response
-    let errorMessage = "创建失败，请重新尝试";
+    // Handle 409 Conflict - task may already be confirmed/processed
+    if (error.response?.status === 409) {
+      console.log('⚠️ [创建绘本] 任务已被处理 (409)，检查任务状态...');
+      try {
+        // Check task status first
+        const status = await getTaskStatus(task_id.value);
+        console.log('📋 [创建绘本] 任务状态:', status);
+
+        if (status.status === 'completed' && status.video_url) {
+          // Video is ready, proceed
+          console.log('✅ [创建绘本] 视频已就绪，继续导航');
+          userStoryCount.value++;
+          localStorage.setItem("userStoryCount", userStoryCount.value.toString());
+          userStore.addStory({
+            title: `${nickname.value || "Hero"}'s ${getThemeName(selectedTheme.value || 2)} Story`,
+            characterName: nickname.value || "Hero",
+            coverImage: resImgUrl.value || uploadedPhotoUrl.value,
+            theme: getThemeName(selectedTheme.value || 2),
+            isPublic: isPublic.value,
+          });
+          router.push({
+            path: "/brushing",
+            query: {
+              taskId: task_id.value,
+              source: "create",
+              userName: nickname.value || ""
+            }
+          });
+          return;
+        } else if (status.status === 'video_generating' || status.status === 'processing' || status.status === 'pending' || status.status === 'awaiting_confirmation') {
+          // Task still processing - poll for completion
+          console.log('⏳ [创建绘本] 任务仍在处理中，继续轮询...');
+          triggerToast("视频生成中，请稍候...");
+          try {
+            await pollForVideoGeneration();
+            console.log('✅ [创建绘本] 轮询完成，视频已就绪');
+            userStoryCount.value++;
+            localStorage.setItem("userStoryCount", userStoryCount.value.toString());
+            userStore.addStory({
+              title: `${nickname.value || "Hero"}'s ${getThemeName(selectedTheme.value || 2)} Story`,
+              characterName: nickname.value || "Hero",
+              coverImage: resImgUrl.value || uploadedPhotoUrl.value,
+              theme: getThemeName(selectedTheme.value || 2),
+              isPublic: isPublic.value,
+            });
+            router.push({
+              path: "/brushing",
+              query: {
+                taskId: task_id.value,
+                source: "create",
+                userName: nickname.value || ""
+              }
+            });
+            return;
+          } catch (pollError: any) {
+            console.error('❌ [创建绘本] 轮询失败:', pollError);
+            // Keep task_id so user can retry
+            triggerToast("视频生成中，请稍后再试");
+            isLoading.value = false;
+            return;
+          }
+        } else if (status.status === 'failed' || status.status === 'cancelled') {
+          // Task failed or cancelled - need new task
+          console.log('❌ [创建绘本] 任务失败或取消，状态:', status.status);
+          task_id.value = '';
+          triggerToast("任务失败，请重新生成绘本");
+          isLoading.value = false;
+          return;
+        } else {
+          // Unknown status - might be recoverable, keep task_id
+          console.log('⚠️ [创建绘本] 未知状态:', status.status + '，保留 task_id');
+          triggerToast("任务处理中，请稍后再试");
+          isLoading.value = false;
+          return;
+        }
+      } catch (pollError: any) {
+        console.error('❌ [创建绘本] 获取任务状态失败:', pollError);
+        // Keep task_id - might be a temporary issue
+        triggerToast("请稍后再试");
+        isLoading.value = false;
+        return;
+      }
+    }
+
+    // Handle other errors
+    let errorMessage = "创建失败，请重试";
+    let shouldClearTaskId = false;
+
     if (error.response?.data?.detail) {
       if (typeof error.response.data.detail === 'string') {
         errorMessage = error.response.data.detail;
@@ -839,6 +927,22 @@ const handleConfirmCoverAndGenerateVideo = async () => {
       errorMessage = error.response.data.message;
     } else if (error.message) {
       errorMessage = error.message;
+      // Check if it's a timeout error - don't clear task_id
+      if (error.message.includes('超时') || error.message.includes('timeout')) {
+        shouldClearTaskId = false;
+        console.log('⏰ 超时错误，保留 task_id 供稍后重试');
+      } else if (error.message.includes('失败') || error.message.includes('failed')) {
+        // Task failed - clear task_id
+        shouldClearTaskId = true;
+      }
+    }
+
+    // Only clear task_id for permanent failures
+    if (shouldClearTaskId) {
+      task_id.value = '';
+      console.log('🗑️ 清除 task_id，需要重新创建任务');
+    } else {
+      console.log('✅ 保留 task_id，用户可以稍后重试');
     }
 
     triggerToast(errorMessage);
@@ -867,26 +971,33 @@ const pollForVideoGeneration = async () => {
         return;
       }
 
-      if (response.status === 'failed') {
+      if (response.status === 'failed' || response.status === 'cancelled') {
         throw new Error(response.error_message || '视频生成失败');
       }
+
+      // For processing states, continue polling
+      // video_generating, processing, pending, awaiting_confirmation
 
     } catch (error: any) {
       console.error(`轮询 ${i + 1} 出错:`, error?.message || error);
 
-      // Only throw on fatal errors, continue polling on timeout/network errors
-      if (error?.response?.status === 409 || error?.response?.status === 404) {
-        // Fatal errors: task not found or conflict
+      // Only throw on fatal errors that won't recover
+      if (error?.response?.status === 404) {
+        // Task not found - fatal
         throw error;
       }
-      // Continue polling for timeout/network errors
+      // For timeout/network errors, continue polling
+      // For 409, continue polling (task might still be processing)
     }
 
     // Wait before next poll
     await new Promise(resolve => setTimeout(resolve, interval));
   }
 
-  throw new Error('视频生成超时');
+  // Timeout - but task might still be processing in background
+  // Don't throw error, just log and let user retry later
+  console.warn('⏰ 轮询超时，但任务可能仍在后台处理');
+  throw new Error('视频生成超时，请稍后再试');
 };
 
 const checkDailyRegenLimit = (): boolean => {
