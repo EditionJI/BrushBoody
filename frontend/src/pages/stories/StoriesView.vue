@@ -189,6 +189,7 @@ const handleImageError = (event: Event, story: FeedItemWithOwn) => {
 // 卡片点击
 const handleCardClick = (story: FeedItemWithOwn) => {
   if (editMode.value) return
+
   router.push({
     path: '/brushing',
     query: {

@@ -1,49 +1,31 @@
 <template>
   <div class="home-container">
     <div class="mobile-wrapper" ref="wrapperRef">
-      <!-- Background Image - Changes based on current slide (3 backgrounds) -->
-      <img :src="currentBackgroundImage" alt="Home" class="full-screen-image" @load="onBgImageLoad" />
+      <!-- Background Image - Changes based on current slide -->
+      <img :src="currentBackgroundImage" alt="Home" class="full-screen-image" />
 
-      <!-- Streak Days Banner - Only for users with brushing records, hidden when video plays -->
-      <div v-if="showStreakBanner && !shouldPlayVideo" class="streak-banner">
+      <!-- Streak Days Banner - Only for users with brushing records -->
+      <div v-if="showStreakBanner" class="streak-banner">
         <span class="streak-count">{{ streakCount }} days</span>
         <span class="streak-message">in a row</span>
       </div>
 
-      <!-- Public Badge - Fixed at top left, hidden when video plays -->
-      <img v-if="!shouldPlayVideo" src="/images/首页/绘本已公开.png" alt="Public" class="public-badge" />
+      <!-- Public Badge - Fixed at top left -->
+      <img src="/images/首页/绘本已公开.png" alt="Public" class="public-badge" />
 
-      <!-- Video Screen Interaction Area - Full background size for video playback -->
+      <!-- Story card interaction area -->
       <div
         class="story-card-area"
         @touchstart="handleTouchStart"
         @touchmove="handleTouchMove"
         @touchend="handleTouchEnd"
-        @click="handleVideoClick"
-      >
-        <!-- Video player (shown when shouldPlayVideo is true) -->
-        <video
-          v-if="shouldPlayVideo && currentVideoUrl"
-          ref="videoPlayer"
-          :src="currentVideoUrl"
-          class="story-video"
-          loop
-          playsinline
-          webkit-playsinline
-          x5-video-player-type="h5"
-          x5-video-player-fullscreen="false"
-          muted
-          @click.prevent
-        ></video>
+        @click="handleCardClick"
+      ></div>
 
-        <!-- Pause button - shown when video is paused -->
-        <img v-if="shouldPlayVideo && isVideoPaused" src="/images/首页/Vector.png" alt="Pause" class="pause-button" />
-      </div>
+      <!-- Toast Message - Fixed above bottom nav -->
+      <img src="/images/首页/提示信息.png" alt="Toast" class="toast-message" />
 
-      <!-- Toast Message - Fixed above bottom nav, hidden when video plays -->
-      <img v-if="!shouldPlayVideo" src="/images/首页/提示信息.png" alt="Toast" class="toast-message" />
-
-      <!-- Create Button - Always visible, different image based on whether user has created a story -->
+      <!-- Create Button - Always visible -->
       <img
         v-if="!isPaidUser"
         :src="hasCreatedStory ? '/images/首页/创建过，开始刷牙.png' : '/images/首页/L.png'"
@@ -51,30 +33,67 @@
         class="create-button"
         @click="handleBlueButtonClick"
       />
+
+      <!-- First-time Guide Overlay -->
+      <Transition name="guide-fade">
+        <div v-if="showGuide" class="guide-overlay" @click="dismissGuide">
+          <div class="guide-content" @click="dismissGuide">
+            <!-- Swipe hint animation -->
+            <div class="swipe-hint">
+              <div class="hand-icon">
+                <svg width="48" height="48" viewBox="0 0 48 48" fill="none">
+                  <path d="M24 4C24 4 24 4 24 4C24 4 24 4 24 4" stroke="white" stroke-width="2" stroke-linecap="round"/>
+                  <path d="M24 8L24 40" stroke="white" stroke-width="2" stroke-linecap="round" stroke-dasharray="4 4">
+                    <animate attributeName="stroke-dashoffset" from="0" to="8" dur="1s" repeatCount="indefinite"/>
+                  </path>
+                  <circle cx="24" cy="44" r="3" fill="white" opacity="0.6">
+                    <animate attributeName="opacity" values="0.6;1;0.6" dur="1s" repeatCount="indefinite"/>
+                  </circle>
+                </svg>
+              </div>
+              <div class="swipe-arrows">
+                <div class="arrow up">
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <path d="M16 24L16 8M16 8L10 14M16 8L22 14" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite"/>
+                    </path>
+                  </svg>
+                </div>
+                <div class="arrow down">
+                  <svg width="32" height="32" viewBox="0 0 32 32" fill="none">
+                    <path d="M16 8L16 24M16 24L10 18M16 24L22 18" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                      <animate attributeName="opacity" values="0.3;1;0.3" dur="1.5s" repeatCount="indefinite" begin="0.75s"/>
+                    </path>
+                  </svg>
+                </div>
+              </div>
+              <p class="guide-text">Swipe up or down to switch stories</p>
+              <p class="guide-hint">Tap anywhere to close</p>
+            </div>
+          </div>
+        </div>
+      </Transition>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-import { ref, computed, onMounted, onUnmounted, nextTick, watch } from "vue";
+import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/user";
+import { useAudioStore } from "../../stores/audio";
 
 const router = useRouter();
 const userStore = useUserStore();
+const audioStore = useAudioStore();
 
 const wrapperRef = ref<HTMLElement | null>(null);
 const currentSlide = ref(0);
 const disableTransition = ref(false);
 
-// Auto-play video state
-const shouldPlayVideo = ref(false);
-const autoPlayTimer = ref<number | null>(null);
-const videoPlayer = ref<HTMLVideoElement | null>(null);
-const hasUserInteracted = ref(false);
-
-// Video pause state
-const isVideoPaused = ref(false);
+// Guide overlay state
+const showGuide = ref(false);
+const GUIDE_STORAGE_KEY = 'hasSeenHomeGuide';
 
 // Total stories count from API
 const totalStories = computed(() => userStore.totalFeedCount || 0);
@@ -101,58 +120,19 @@ const hasBrushingRecords = computed(() => userStore.brushingRecords.length > 0);
 // Show streak banner for users with brushing records
 const showStreakBanner = computed(() => hasBrushingRecords.value && streakCount.value > 0);
 
-// Get current video URL from API
-const currentVideoUrl = computed(() => {
-  return currentStory.value?.video_url || "";
-});
-
-// Check if current story is from other user
-const isOtherStory = computed(() => {
-  return currentStory.value ? !currentStory.value.is_own : false;
-});
-
-// Track already preloaded videos to avoid duplicate loading
-const preloadedVideos = ref<Set<string>>(new Set());
-
-// Preload cover images for smooth sliding - preload ALL images for circular navigation
+// Preload cover images for smooth sliding
 const preloadCoverImages = () => {
-  // Preload all cover images to ensure smooth circular navigation
   for (let i = 0; i < userStore.feedItems.length; i++) {
     const img = new Image();
     img.src = userStore.feedItems[i].cover_image_url;
   }
 };
 
-// Preload videos around current position (前后各2个, 共5个)
-const preloadVideosAround = (centerIndex: number) => {
-  const total = totalStories.value;
-  if (total === 0) return;
-
-  // Preload range: [center-2, center-1, center, center+1, center+2]
-  const preloadRange = [-2, -1, 0, 1, 2];
-
-  preloadRange.forEach(offset => {
-    // Handle circular navigation
-    let index = ((centerIndex + offset) % total + total) % total;
-    const story = userStore.feedItems[index];
-
-    if (story && story.video_url && !preloadedVideos.value.has(story.video_url)) {
-      // Create video element to preload
-      const video = document.createElement('video');
-      video.preload = 'metadata'; // Only preload metadata, not full video
-      video.src = story.video_url;
-
-      // Mark as preloaded
-      preloadedVideos.value.add(story.video_url);
-
-      console.log(`Preloading video for story ${index}:`, story.video_url);
-    }
-  });
-};
-
-// Navigation
+// Navigation - Blue button click
 const handleBlueButtonClick = () => {
-  // If user has created stories, play the current story
+  // Unlock audio before navigating to brushing page
+  audioStore.unlockAudio();
+
   if (hasCreatedStory.value && currentStory.value) {
     router.push({
       path: "/brushing",
@@ -164,14 +144,20 @@ const handleBlueButtonClick = () => {
       },
     });
   } else {
-    // Otherwise go to create page
     router.push("/create");
   }
 };
 
-// Story card click handler
-const handleSlideClick = (index: number) => {
-  const story = userStore.feedItems[index];
+// Card click - Navigate to brushing page
+const handleCardClick = () => {
+  if (isSwipe.value) return;
+
+  // Unlock audio before navigating to brushing page
+  audioStore.unlockAudio();
+
+  const total = totalStories.value;
+  const actualIndex = ((currentSlide.value % total) + total) % total;
+  const story = userStore.feedItems[actualIndex];
   if (!story) return;
 
   router.push({
@@ -185,116 +171,10 @@ const handleSlideClick = (index: number) => {
   });
 };
 
-// Video click handler - toggle play/pause and enable sound
-const handleVideoClick = () => {
-  // If it's a swipe, don't handle click
-  if (isSwipe.value) {
-    return;
-  }
-
-  // If video is not playing yet, navigate to brushing page
-  if (!shouldPlayVideo.value) {
-    const total = totalStories.value;
-    const actualIndex = ((currentSlide.value % total) + total) % total;
-    handleSlideClick(actualIndex);
-    return;
-  }
-
-  // Enable sound on first click and toggle play/pause
-  if (videoPlayer.value) {
-    // First interaction: unmute the video
-    if (videoPlayer.value.muted) {
-      videoPlayer.value.muted = false;
-      console.log('Sound enabled by user interaction');
-    }
-
-    if (isVideoPaused.value) {
-      // Resume video
-      videoPlayer.value.play();
-      isVideoPaused.value = false;
-    } else {
-      // Pause video
-      videoPlayer.value.pause();
-      isVideoPaused.value = true;
-    }
-  }
-};
-
-// Background image load handler
-const onBgImageLoad = () => {
-  // Image loaded successfully, start auto-play timer
-  startAutoPlayTimer();
-};
-
-// Detect if device is Android
-const isAndroid = /Android/i.test(navigator.userAgent);
-
-// Handle fullscreen change - try to prevent Android from entering fullscreen
-const handleFullscreenChange = () => {
-  if (document.fullscreenElement || (document as any).webkitFullscreenElement) {
-    // Android entered fullscreen, try to exit
-    if (document.exitFullscreen) {
-      document.exitFullscreen().catch(() => {});
-    } else if ((document as any).webkitExitFullscreen) {
-      (document as any).webkitExitFullscreen();
-    }
-  }
-};
-
-// Start 1.5-second auto-play timer
-const startAutoPlayTimer = () => {
-  // Clear any existing timer
-  stopAutoPlayTimer();
-
-  // Start new 1.5-second timer
-  autoPlayTimer.value = window.setTimeout(() => {
-    shouldPlayVideo.value = true;
-    isVideoPaused.value = false;
-    // Auto play video when it's ready (muted auto-play is allowed)
-    nextTick(() => {
-      if (videoPlayer.value) {
-        // Add fullscreen event listener for Android
-        if (isAndroid) {
-          document.addEventListener('fullscreenchange', handleFullscreenChange);
-          document.addEventListener('webkitfullscreenchange', handleFullscreenChange);
-        }
-
-        // Muted auto-play should work without user interaction
-        videoPlayer.value.play().catch((err) => {
-          console.log("Auto-play failed:", err);
-          isVideoPaused.value = true;
-        });
-      }
-    });
-  }, 1500);
-};
-
-// Stop auto-play timer
-const stopAutoPlayTimer = () => {
-  if (autoPlayTimer.value !== null) {
-    clearTimeout(autoPlayTimer.value);
-    autoPlayTimer.value = null;
-  }
-  shouldPlayVideo.value = false;
-  isVideoPaused.value = false;
-
-  // Remove fullscreen event listeners
-  if (isAndroid) {
-    document.removeEventListener('fullscreenchange', handleFullscreenChange);
-    document.removeEventListener('webkitfullscreenchange', handleFullscreenChange);
-  }
-
-  // Pause video if playing
-  if (videoPlayer.value) {
-    videoPlayer.value.pause();
-    videoPlayer.value.currentTime = 0;
-  }
-};
-
-// Reset timer on user interaction
-const resetAutoPlayTimer = () => {
-  stopAutoPlayTimer();
-  startAutoPlayTimer();
+// Guide overlay - dismiss on click or swipe
+const dismissGuide = () => {
+  showGuide.value = false;
+  localStorage.setItem(GUIDE_STORAGE_KEY, 'true');
 };
 
 // Touch and swipe handling with circular navigation
@@ -310,16 +190,9 @@ const handleTouchStart = (e: TouchEvent) => {
   touchStartTime.value = Date.now();
   isSwipe.value = false;
   hasMoved.value = false;
-
-  // Mark that user has interacted with the page
-  if (!hasUserInteracted.value) {
-    hasUserInteracted.value = true;
-    console.log("User interacted, future videos can play with sound");
-  }
 };
 
 const handleTouchMove = (e: TouchEvent) => {
-  // Prevent default to avoid page scrolling
   e.preventDefault();
 
   const currentY = e.touches[0].clientY;
@@ -327,12 +200,10 @@ const handleTouchMove = (e: TouchEvent) => {
   const deltaY = Math.abs(currentY - touchStartY.value);
   const deltaX = Math.abs(currentX - touchStartX.value);
 
-  // If vertical movement is more than 5px, mark as moved
   if (deltaY > 5 || deltaX > 5) {
     hasMoved.value = true;
   }
 
-  // If vertical movement is more than 20px, mark as potential swipe
   if (deltaY > 20) {
     isSwipe.value = true;
   }
@@ -347,22 +218,20 @@ const handleTouchEnd = (e: TouchEvent) => {
   const absDiffY = Math.abs(diffY);
   const absDiffX = Math.abs(diffX);
 
-  // Distinguish between tap and swipe
   const SWIPE_THRESHOLD = 40;
-  const TAP_MAX_DURATION = 300;
+
+  // If guide is showing, dismiss it on any swipe
+  if (showGuide.value && absDiffY > 30) {
+    dismissGuide();
+  }
 
   if (absDiffY > SWIPE_THRESHOLD && absDiffY > absDiffX && touchDuration < 1000) {
-    // Vertical swipe - change slide with circular navigation (always smooth)
     if (diffY > 0) {
-      // Swipe up - next slide
       currentSlide.value++;
     } else if (diffY < 0) {
-      // Swipe down - previous slide
       currentSlide.value--;
     }
 
-    // Reset position when we go too far (after animation completes)
-    // This keeps currentSlide in a reasonable range
     setTimeout(() => {
       const total = totalStories.value;
       if (currentSlide.value >= total * 2) {
@@ -381,15 +250,12 @@ const handleTouchEnd = (e: TouchEvent) => {
     }, 350);
   }
 
-  // Reset swipe state after a delay to prevent click from firing
   if (isSwipe.value) {
-    // Keep isSwipe true for a bit to prevent click
     setTimeout(() => {
       isSwipe.value = false;
       hasMoved.value = false;
     }, 200);
   } else {
-    // Immediately reset if no swipe
     hasMoved.value = false;
   }
 };
@@ -408,43 +274,13 @@ onMounted(async () => {
   const total = totalStories.value;
   currentSlide.value = total > 0 ? total : 0;
 
-  // Initial video preload around the first story
-  if (total > 0) {
-    preloadVideosAround(0);
-  }
-
-  // Start auto-play timer manually (don't rely only on image load)
-  if (total > 0) {
-    startAutoPlayTimer();
-  }
-});
-
-onUnmounted(() => {
-  // Cleanup timers
-  stopAutoPlayTimer();
-});
-
-// Watch for slide changes to reset timer
-watch(currentSlide, () => {
-  resetAutoPlayTimer();
-  // Preload videos around the new position
-  const currentIndex = ((currentSlide.value % totalStories.value) + totalStories.value) % totalStories.value;
-  preloadVideosAround(currentIndex);
-});
-
-// Watch for video URL changes to auto-play new videos
-watch(currentVideoUrl, (newUrl) => {
-  if (newUrl && shouldPlayVideo.value) {
-    nextTick(() => {
-      if (videoPlayer.value) {
-        // Ensure video is muted for auto-play
-        videoPlayer.value.muted = true;
-        videoPlayer.value.play().catch((err) => {
-          console.log("Auto-play new video failed:", err);
-          isVideoPaused.value = true;
-        });
-      }
-    });
+  // Check if user has seen the guide
+  const hasSeenGuide = localStorage.getItem(GUIDE_STORAGE_KEY);
+  if (!hasSeenGuide && total > 0) {
+    // Show guide after a short delay
+    setTimeout(() => {
+      showGuide.value = true;
+    }, 500);
   }
 });
 </script>
@@ -528,7 +364,7 @@ watch(currentVideoUrl, (newUrl) => {
   pointer-events: none;
 }
 
-/* Story card click area - Match background image size */
+/* Story card click area */
 .story-card-area {
   position: fixed;
   top: 0;
@@ -538,27 +374,6 @@ watch(currentVideoUrl, (newUrl) => {
   z-index: 5;
   cursor: pointer;
   overflow: hidden;
-}
-
-.story-video {
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  position: fixed;
-  top: 0;
-  left: 0;
-  pointer-events: none;
-}
-
-/* Pause button - Centered on video */
-.pause-button {
-  position: fixed;
-  left: calc(50% - 56px / 2);
-  top: calc(50% - 56px / 2);
-  width: 56px;
-  height: 56px;
-  z-index: 6;
-  pointer-events: none;
 }
 
 /* Toast Message - Above bottom nav */
@@ -581,5 +396,95 @@ watch(currentVideoUrl, (newUrl) => {
   height: 56px;
   z-index: 10;
   cursor: pointer;
+}
+
+/* Guide Overlay Styles */
+.guide-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7);
+  z-index: 100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  backdrop-filter: blur(4px);
+}
+
+.guide-content {
+  text-align: center;
+  color: white;
+}
+
+.swipe-hint {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 20px;
+}
+
+.hand-icon {
+  animation: bounce 2s ease-in-out infinite;
+}
+
+@keyframes bounce {
+  0%, 100% { transform: translateY(0); }
+  50% { transform: translateY(-20px); }
+}
+
+.swipe-arrows {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 40px;
+}
+
+.arrow {
+  opacity: 0.8;
+}
+
+.arrow.up {
+  animation: fadeUp 1.5s ease-in-out infinite;
+}
+
+.arrow.down {
+  animation: fadeDown 1.5s ease-in-out infinite;
+  animation-delay: 0.75s;
+}
+
+@keyframes fadeUp {
+  0%, 100% { opacity: 0.3; transform: translateY(5px); }
+  50% { opacity: 1; transform: translateY(-5px); }
+}
+
+@keyframes fadeDown {
+  0%, 100% { opacity: 0.3; transform: translateY(-5px); }
+  50% { opacity: 1; transform: translateY(5px); }
+}
+
+.guide-text {
+  font-size: 20px;
+  font-weight: 600;
+  margin-top: 30px;
+  letter-spacing: 2px;
+}
+
+.guide-hint {
+  font-size: 14px;
+  opacity: 0.6;
+  margin-top: 10px;
+}
+
+/* Guide transition */
+.guide-fade-enter-active,
+.guide-fade-leave-active {
+  transition: opacity 0.3s ease;
+}
+
+.guide-fade-enter-from,
+.guide-fade-leave-to {
+  opacity: 0;
 }
 </style>

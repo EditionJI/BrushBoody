@@ -56,14 +56,17 @@
 </template>
 
 <script setup lang="ts">
-import { ref, onMounted, onUnmounted, nextTick } from 'vue'
+import { ref, onMounted, onUnmounted, onBeforeUnmount, nextTick } from 'vue'
 import { useRouter, useRoute } from 'vue-router'
 import { getTaskStatus } from '@/api/video'
 import { useUserStore } from '../../stores/user'
+import { useAudioStore } from '../../stores/audio'
+import { recordVideoPlay } from '@/api/analytics'
 
 const router = useRouter()
 const route = useRoute()
 const userStore = useUserStore()
+const audioStore = useAudioStore()
 
 const videoPlayer = ref<HTMLVideoElement | null>(null)
 const isLoading = ref(true)
@@ -77,6 +80,50 @@ const isOtherStory = ref(route.query.isOtherStory === 'true')
 
 // User name (should come from user store or route param)
 const userName = ref((route.query.userName as string) || '')
+
+// ==================== 埋点相关 ====================
+// 播放开始时间
+let playStartTime: string | null = null
+// 是否已上报埋点（防止重复上报）
+let hasReportedAnalytics = false
+
+/**
+ * 上报视频播放埋点
+ * @param useBeacon 是否使用 beacon 方式（页面关闭时用 true）
+ */
+const reportVideoPlayAnalytics = (useBeacon: boolean = false) => {
+  // 防止重复上报
+  if (hasReportedAnalytics) return
+
+  // 必须有视频地址和开始时间
+  if (!videoUrl.value || !playStartTime) return
+
+  // 只有首页和绘本广场需要埋点
+  if (source.value !== 'home' && source.value !== 'stories_square') return
+
+  // 标记已上报
+  hasReportedAnalytics = true
+
+  // 计算来源
+  const fromHomePage = source.value === 'home'
+
+  // 记录结束时间
+  const playEndTime = new Date().toISOString()
+
+  // 上报埋点
+  recordVideoPlay(
+    videoUrl.value,
+    playStartTime,
+    playEndTime,
+    fromHomePage,
+    useBeacon
+  )
+}
+
+// 页面关闭事件处理（用于杀死浏览器等场景）
+const handlePageHide = () => {
+  reportVideoPlayAnalytics(true) // 使用 beacon 方式
+}
 
 // Poll for video generation
 const pollForVideo = async () => {
@@ -100,6 +147,11 @@ const pollForVideo = async () => {
         videoUrl.value = response.video_url
         isLoading.value = false
         console.log('视频生成成功:', videoUrl.value)
+
+        // 视频加载成功后，记录播放开始时间
+        playStartTime = new Date().toISOString()
+        console.log('[Analytics] Play start time recorded:', playStartTime)
+
         nextTick(() => {
           autoPlayVideo()
         })
@@ -128,6 +180,12 @@ const pollForVideo = async () => {
 // Auto-play video
 const autoPlayVideo = () => {
   if (videoPlayer.value && videoUrl.value) {
+    // If audio was unlocked from home page, enable sound
+    if (audioStore.isAudioUnlocked) {
+      videoPlayer.value.muted = false
+      console.log('Audio unlocked from home page, playing with sound')
+    }
+
     videoPlayer.value.play().then(() => {
       console.log('视频自动播放成功')
     }).catch(err => {
@@ -207,12 +265,24 @@ const onTapIt = () => {
 
 onMounted(() => {
   pollForVideo()
+
+  // 监听页面关闭事件（用于杀死浏览器等场景）
+  window.addEventListener('pagehide', handlePageHide)
 })
 
-onUnmounted(() => {
+onBeforeUnmount(() => {
+  // 组件销毁前上报埋点（正常退出场景）
+  reportVideoPlayAnalytics(false)
+
+  // 暂停视频
   if (videoPlayer.value) {
     videoPlayer.value.pause()
   }
+})
+
+onUnmounted(() => {
+  // 移除页面关闭事件监听
+  window.removeEventListener('pagehide', handlePageHide)
 })
 </script>
 
