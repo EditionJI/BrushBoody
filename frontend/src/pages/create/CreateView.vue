@@ -238,6 +238,7 @@ import { uploadPhoto } from "@/api/upload";
 import { createTask, getTaskStatus, generateCover, confirmTask } from "@/api/video";
 import type { TaskStatus, TaskStatusResponse } from "@/api/video";
 import { useUserStore } from "../../stores/user";
+import { useAudioStore } from "@/stores/audio";
 import { useAuthStore } from "@/stores/auth";
 import { recordVideoPlay } from "@/api/analytics";
 import { pollUntilTrue } from "@/utils";
@@ -905,6 +906,10 @@ const handleConfirmCoverAndGenerateVideo = async () => {
     });
 
     console.log('📘 [创建绘本] 导航到视频播放页面...');
+    // Unlock audio before navigating to brushing page
+    const audioStore = useAudioStore();
+    audioStore.unlockAudio();
+
     // Navigate to video player with task_id only after video is ready
     router.push({
       path: "/brushing",
@@ -937,6 +942,9 @@ const handleConfirmCoverAndGenerateVideo = async () => {
             theme: getThemeName(selectedTheme.value || 2),
             isPublic: isPublic.value,
           });
+          // Unlock audio before navigating to brushing page
+          const audioStore = useAudioStore();
+          audioStore.unlockAudio();
           router.push({
             path: "/brushing",
             query: {
@@ -962,6 +970,9 @@ const handleConfirmCoverAndGenerateVideo = async () => {
               theme: getThemeName(selectedTheme.value || 2),
               isPublic: isPublic.value,
             });
+            // Unlock audio before navigating to brushing page
+            const audioStore = useAudioStore();
+            audioStore.unlockAudio();
             router.push({
               path: "/brushing",
               query: {
