@@ -173,6 +173,16 @@ const handleSubmit = async () => {
     // Extract error message from various possible formats
     let errorMsg = "Authentication failed";
 
+    // Map backend Chinese error messages to English
+    const errorMessageMap: Record<string, string> = {
+      "用户名或邮箱已被注册": "Username or email already registered",
+      "邮箱已被注册": "Email already registered",
+      "用户名已被注册": "Username already taken",
+      "用户不存在": "User not found",
+      "密码错误": "Incorrect password",
+      "登录失败": "Login failed",
+    };
+
     if (error?.response?.data?.detail) {
       // Pydantic validation error format: { detail: [{ msg: "...", loc: ["body", "field"] }] }
       const detail = error.response.data.detail;
@@ -180,16 +190,18 @@ const handleSubmit = async () => {
         // Get field name from location (e.g., ["body", "username"] -> "username")
         const field = detail[0].loc?.[1] || "field";
         const msg = detail[0].msg;
-        errorMsg = `${field}: ${msg}`;
+        // Map Chinese validation messages to English
+        const mappedMsg = errorMessageMap[msg] || msg;
+        errorMsg = `${field}: ${mappedMsg}`;
       } else if (typeof detail === "string") {
-        errorMsg = detail;
+        errorMsg = errorMessageMap[detail] || detail;
       }
     } else if (error?.response?.data?.message) {
       // Backend returned { message: "..." }
-      errorMsg = error.response.data.message;
+      errorMsg = errorMessageMap[error.response.data.message] || error.response.data.message;
     } else if (error?.response?.data?.msg) {
       // Backend returned { msg: "..." }
-      errorMsg = error.response.data.msg;
+      errorMsg = errorMessageMap[error.response.data.msg] || error.response.data.msg;
     } else if (error?.message) {
       // Fallback to axios error message
       errorMsg = error.message;

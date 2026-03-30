@@ -133,12 +133,21 @@ service.interceptors.response.use(
       }
     }
 
+    // Handle HTTP 500 - extract backend error message
+    if (error.response?.status === 500) {
+      const backendMsg = error.response?.data?.message ||
+                         error.response?.data?.msg ||
+                         error.response?.data?.detail ||
+                         "Server error, please try again later";
+      return Promise.reject(new Error(backendMsg));
+    }
+
     if (message == "Network Error") {
-      message = "后端接口连接异常";
+      message = "Unable to connect to server";
     } else if (message.includes("timeout")) {
-      message = "系统接口请求超时";
+      message = "Request timeout";
     } else if (message.includes("Request failed with status code")) {
-      message = "系统接口" + message.substr(message.length - 3) + "异常";
+      message = "Request failed: " + message.substr(message.length - 3);
     }
 
     return Promise.reject(error);

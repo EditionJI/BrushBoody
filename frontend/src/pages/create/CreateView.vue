@@ -257,6 +257,8 @@ const loadingMessage = ref("Creating magic...");
 const currentStep = ref(1);
 const fileInput = ref<HTMLInputElement | null>(null);
 const step3StartTime = ref<number>(0);
+const regenerateStartTime = ref<number>(0);
+const createBookStartTime = ref<number>(0); // 点击"Create Full Book"按钮时开始计时
 const nicknameInputRef = ref<HTMLInputElement | null>(null);
 
 // SVG document reference (for Step 3 only)
@@ -871,8 +873,11 @@ const getGenderChinese = (gender: string) => {
 };
 
 const handleConfirmCoverAndGenerateVideo = async () => {
+  // 记录点击"Create Full Book"按钮的时间
+  createBookStartTime.value = Date.now()
   console.log('📘 [创建绘本] ========== 开始创建绘本故事 ==========');
   console.log('📘 [创建绘本] 功能: 确认封面并生成视频');
+  console.log('📘 [创建绘本] 点击时间:', new Date().toISOString());
   console.log('📘 [创建绘本] 当前状态:');
   console.log('  - task_id:', task_id.value);
   console.log('  - userStoryCount:', userStoryCount.value);
@@ -910,14 +915,6 @@ const handleConfirmCoverAndGenerateVideo = async () => {
     });
     console.log('✅ [创建绘本] 封面已确认');
 
-    // 埋点：storybook_cover_generated
-    const coverGenerateDuration = Date.now() - step3StartTime.value
-    posthog.capture('storybook_cover_generated', {
-      ...getDeviceProperties(),
-      storybook_id: task_id.value,
-      cover_generate_duration_ms: coverGenerateDuration
-    })
-
     console.log('📘 [创建绘本] 开始轮询视频生成状态...');
     // Wait for video generation to complete before navigating
     await pollForVideoGeneration();
@@ -936,6 +933,20 @@ const handleConfirmCoverAndGenerateVideo = async () => {
     });
 
     console.log('📘 [创建绘本] 导航到视频播放页面...');
+
+    // 埋点：storybook_generated（绘本/视频生成完成）
+    const storybookGenerateStartTime = new Date(createBookStartTime.value).toISOString()
+    const storybookGenerateEndTime = new Date().toISOString()
+    const storybookGenerateDuration = Date.now() - createBookStartTime.value
+    posthog.capture('storybook_generated', {
+      ...getDeviceProperties(),
+      storybook_id: task_id.value,
+      start_time: storybookGenerateStartTime,
+      end_time: storybookGenerateEndTime,
+      storybook_generate_duration_ms: storybookGenerateDuration
+    })
+    console.log('📘 [创建绘本] 绘本生成耗时:', storybookGenerateDuration, 'ms');
+
     // Unlock audio before navigating to brushing page
     const audioStore = useAudioStore();
     audioStore.unlockAudio();
@@ -972,6 +983,17 @@ const handleConfirmCoverAndGenerateVideo = async () => {
             theme: getThemeName(selectedTheme.value || 2),
             isPublic: isPublic.value,
           });
+          // 埋点：storybook_generated（绘本/视频生成完成）
+          const storybookGenerateStartTime2 = new Date(createBookStartTime.value).toISOString()
+          const storybookGenerateEndTime2 = new Date().toISOString()
+          const storybookGenerateDuration2 = Date.now() - createBookStartTime.value
+          posthog.capture('storybook_generated', {
+            ...getDeviceProperties(),
+            storybook_id: task_id.value,
+            start_time: storybookGenerateStartTime2,
+            end_time: storybookGenerateEndTime2,
+            storybook_generate_duration_ms: storybookGenerateDuration2
+          })
           // Unlock audio before navigating to brushing page
           const audioStore = useAudioStore();
           audioStore.unlockAudio();
@@ -1000,6 +1022,17 @@ const handleConfirmCoverAndGenerateVideo = async () => {
               theme: getThemeName(selectedTheme.value || 2),
               isPublic: isPublic.value,
             });
+            // 埋点：storybook_generated（绘本/视频生成完成）
+            const storybookGenerateStartTime3 = new Date(createBookStartTime.value).toISOString()
+            const storybookGenerateEndTime3 = new Date().toISOString()
+            const storybookGenerateDuration3 = Date.now() - createBookStartTime.value
+            posthog.capture('storybook_generated', {
+              ...getDeviceProperties(),
+              storybook_id: task_id.value,
+              start_time: storybookGenerateStartTime3,
+              end_time: storybookGenerateEndTime3,
+              storybook_generate_duration_ms: storybookGenerateDuration3
+            })
             // Unlock audio before navigating to brushing page
             const audioStore = useAudioStore();
             audioStore.unlockAudio();
@@ -1159,6 +1192,9 @@ const handleRegenerateCover = async () => {
   console.log('  - dailyRegenCount:', dailyRegenCount.value);
   console.log('  - isLoading:', isLoading.value);
   console.log('  - 当前时间:', new Date().toISOString());
+  // 记录重新生成封面开始时间
+  regenerateStartTime.value = Date.now()
+
   console.log('🟢 [重建封面] 检查是否可以重建...');
 
   try {
@@ -1296,6 +1332,19 @@ const pollUntilTrue_getTaskStatusAPI = async () => {
     if (coverResult.cover_image_url) {
       resImgUrl.value = coverResult.cover_image_url;
       console.log("设置封面图片URL:", coverResult.cover_image_url);
+
+      // 埋点：storybook_cover_generated（新建封面）
+      const coverGenerateStartTime = new Date(step3StartTime.value).toISOString()
+      const coverGenerateEndTime = new Date().toISOString()
+      const coverGenerateDuration = Date.now() - step3StartTime.value
+      posthog.capture('storybook_cover_generated', {
+        ...getDeviceProperties(),
+        storybook_id: task_id.value,
+        cover_regenerated: false,
+        start_time: coverGenerateStartTime,
+        end_time: coverGenerateEndTime,
+        cover_generate_duration_ms: coverGenerateDuration
+      })
     } else {
       console.warn("轮询成功但未找到 cover_image_url，结果:", coverResult);
     }
@@ -1360,9 +1409,22 @@ const updatePreviewImage = async (regenerate = false) => {
       } else {
         throw new Error("封面生成完成但未获取到URL");
       }
+
+      // 埋点：storybook_cover_generated（重建封面）
+      const coverEndTime = new Date().toISOString();
+      const coverDuration = Date.now() - regenerateStartTime.value;
+      posthog.capture('storybook_cover_generated', {
+        ...getDeviceProperties(),
+        storybook_id: task_id.value,
+        cover_regenerated: true,
+        start_time: new Date(regenerateStartTime.value).toISOString(),
+        end_time: coverEndTime,
+        cover_generate_duration_ms: coverDuration
+      });
     } else {
       // For initial cover generation, use the response directly
       resImgUrl.value = response.cover_image_url;
+      // 注意：新建封面的打点在 pollUntilTrue_getTaskStatusAPI 中处理
     }
   } catch (e: any) {
     console.error("updatePreviewImage error:", e);
