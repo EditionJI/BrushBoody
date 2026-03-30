@@ -949,7 +949,7 @@ const handleConfirmCoverAndGenerateVideo = async () => {
 
     // Unlock audio before navigating to brushing page
     const audioStore = useAudioStore();
-    audioStore.unlockAudio();
+    await audioStore.unlockAudio();
 
     // Navigate to video player with task_id only after video is ready
     router.push({
@@ -996,7 +996,7 @@ const handleConfirmCoverAndGenerateVideo = async () => {
           })
           // Unlock audio before navigating to brushing page
           const audioStore = useAudioStore();
-          audioStore.unlockAudio();
+          await audioStore.unlockAudio();
           router.push({
             path: "/brushing",
             query: {
@@ -1035,7 +1035,7 @@ const handleConfirmCoverAndGenerateVideo = async () => {
             })
             // Unlock audio before navigating to brushing page
             const audioStore = useAudioStore();
-            audioStore.unlockAudio();
+            await audioStore.unlockAudio();
             router.push({
               path: "/brushing",
               query: {
