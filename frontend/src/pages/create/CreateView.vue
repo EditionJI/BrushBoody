@@ -1,4 +1,4 @@
-﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
+﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿﻿<template>
   <div class="create-container">
     <div class="mobile-wrapper" ref="wrapperRef">
       <!-- ========== STEP 1: Upload Info (New Design) ========== -->
@@ -242,6 +242,8 @@ import { useAudioStore } from "@/stores/audio";
 import { useAuthStore } from "@/stores/auth";
 import { recordVideoPlay } from "@/api/analytics";
 import { pollUntilTrue } from "@/utils";
+import { getDeviceProperties } from "@/composables/usePosthog";
+import posthog from "posthog-js";
 
 const router = useRouter();
 const route = useRoute();
@@ -254,6 +256,7 @@ const isLoading = ref(false);
 const loadingMessage = ref("Creating magic...");
 const currentStep = ref(1);
 const fileInput = ref<HTMLInputElement | null>(null);
+const step3StartTime = ref<number>(0);
 const nicknameInputRef = ref<HTMLInputElement | null>(null);
 
 // SVG document reference (for Step 3 only)
@@ -352,6 +355,14 @@ const handleNextStep1 = async () => {
         const response = await uploadPhoto({ file: uploadedPhotoFile.value });
         uploadedPhotoUrl.value = response.url;
         console.log("✅ Photo uploaded to OSS:", response.url);
+
+        // 埋点：storybook_step1_completed
+        posthog.capture('storybook_step1_completed', {
+          ...getDeviceProperties(),
+          child_gender: childGender.value,
+          child_age: childAge.value
+        })
+
         goToStep(2);
       } catch (error) {
         console.error("❌ Photo upload failed:", error);
@@ -766,15 +777,10 @@ const handleWantToPay = () => {
   const authStore = useAuthStore();
   const userId = authStore.userInfo?.id?.toString() || 'unknown';
 
-  // Log all parameters for debugging
-  console.log('[DEBUG recordVideoPlay params]', {
-    videoUrl: `want_to_pay:user_${userId}`,
-    playStartTime: new Date().toISOString(),
-    playEndTime: undefined,
-    fromHomePage: false,
-    useBeacon: true,
-    userId: userId,
-  });
+  // 埋点：upgrade_cta_clicked
+  posthog.capture('upgrade_cta_clicked', {
+    ...getDeviceProperties()
+  })
 
   // Record analytics - video_url carries the user ID
   recordVideoPlay(
@@ -801,6 +807,11 @@ const handleNextStep2 = async () => {
   console.log('[DEBUG] userStoryCount:', userStoryCount, 'feedItems:', userStore.feedItems);
   if (userStoryCount >= 3) {
     showLimitModal.value = true;
+
+    // 埋点：paywall_viewed
+    posthog.capture('paywall_viewed', {
+      ...getDeviceProperties()
+    })
     return;
   }
 
@@ -808,6 +819,17 @@ const handleNextStep2 = async () => {
     triggerToast("Please select a theme");
     return;
   }
+
+  // 埋点：storybook_step2_completed
+  posthog.capture('storybook_step2_completed', {
+    ...getDeviceProperties(),
+    theme_id: selectedTheme.value,
+    theme_name: getThemeName(selectedTheme.value)
+  })
+
+  // 记录第三步开始时间
+  step3StartTime.value = Date.now()
+
   await createVideoTasksAPI();
   goToStep(3);
   await pollUntilTrue_getTaskStatusAPI();
@@ -887,6 +909,14 @@ const handleConfirmCoverAndGenerateVideo = async () => {
       is_shared: isPublic.value,
     });
     console.log('✅ [创建绘本] 封面已确认');
+
+    // 埋点：storybook_cover_generated
+    const coverGenerateDuration = Date.now() - step3StartTime.value
+    posthog.capture('storybook_cover_generated', {
+      ...getDeviceProperties(),
+      storybook_id: task_id.value,
+      cover_generate_duration_ms: coverGenerateDuration
+    })
 
     console.log('📘 [创建绘本] 开始轮询视频生成状态...');
     // Wait for video generation to complete before navigating

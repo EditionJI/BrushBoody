@@ -82,6 +82,8 @@ import { ref, computed, onMounted, watch } from "vue";
 import { useRouter } from "vue-router";
 import { useUserStore } from "../../stores/user";
 import { useAudioStore } from "../../stores/audio";
+import { getDeviceProperties } from "@/composables/usePosthog";
+import posthog from "posthog-js";
 
 const router = useRouter();
 const userStore = useUserStore();
@@ -269,6 +271,11 @@ onMounted(async () => {
 
   // Preload cover images for smooth sliding
   preloadCoverImages();
+
+  // 埋点：home_page_viewed
+  posthog.capture('home_page_viewed', {
+    ...getDeviceProperties()
+  })
 
   // Initialize to middle position for smooth circular navigation
   const total = totalStories.value;

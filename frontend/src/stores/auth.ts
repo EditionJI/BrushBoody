@@ -3,6 +3,7 @@ import { ref, computed } from "vue";
 import type { UserInfo } from "@/api/auth";
 import * as authApi from "@/api/auth";
 import { getToken, setToken, removeToken, clearAuthData } from "@/utils/storage";
+import posthog from "posthog-js";
 
 export const useAuthStore = defineStore(
   "auth",
@@ -61,6 +62,11 @@ export const useAuthStore = defineStore(
       setAccessToken(response.data.access_token);
       userInfo.value = response.data.user;
       saveUserInfo();
+      // Identify user in PostHog
+      posthog.identify(response.data.user.id.toString(), {
+        email: response.data.user.email,
+        username: response.data.user.username,
+      });
       return response;
     };
 
@@ -72,6 +78,11 @@ export const useAuthStore = defineStore(
       setAccessToken(response.data.access_token);
       userInfo.value = response.data.user;
       saveUserInfo();
+      // Identify user in PostHog
+      posthog.identify(response.data.user.id.toString(), {
+        email: response.data.user.email,
+        username: response.data.user.username,
+      });
       return response;
     };
 
@@ -84,6 +95,8 @@ export const useAuthStore = defineStore(
       } catch (error) {
         console.error("Logout API error:", error);
       } finally {
+        // Reset PostHog user identification
+        posthog.reset();
         clearAuth();
       }
     };
@@ -95,6 +108,11 @@ export const useAuthStore = defineStore(
       const response = await authApi.getUserInfo();
       userInfo.value = response.data;
       saveUserInfo();
+      // Identify user in PostHog
+      posthog.identify(response.data.id.toString(), {
+        email: response.data.email,
+        username: response.data.username,
+      });
       return response;
     };
 

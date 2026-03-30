@@ -59,6 +59,8 @@ import { getTaskStatus } from '@/api/video'
 import { recordVideoPlay } from '@/api/analytics'
 import { useUserStore } from '../../stores/user'
 import { useAudioStore } from '../../stores/audio'
+import { getDeviceProperties } from '@/composables/usePosthog'
+import posthog from 'posthog-js'
 
 const router = useRouter()
 const route = useRoute()
@@ -71,8 +73,9 @@ const taskId = ref(route.query.taskId as string | null)
 const videoUrl = ref<string | null>(null)
 const isCompleted = ref(false)
 
-// 视频播放埋点 - 记录开始时间
+// 视频播放埋点 - 记录开始时间和视频时长
 const playStartTime = ref<string | null>(null)
+const videoDurationSeconds = ref<number>(0)
 
 // Source tracking: home | create | stories_square | shared
 const source = ref((route.query.source as string) || 'home')
@@ -141,6 +144,18 @@ const autoPlayVideo = () => {
 
     videoPlayer.value.play().then(() => {
       console.log('视频自动播放成功')
+      // 视频开始播放时记录视频时长
+      videoDurationSeconds.value = videoPlayer.value?.duration || 0
+      console.log('视频时长记录:', videoDurationSeconds.value, '秒')
+
+      // 埋点：brushing_started
+      posthog.capture('brushing_started', {
+        ...getDeviceProperties(),
+        storybook_id: taskId.value,
+        source: source.value,
+        user_name: userName.value,
+        start_time: playStartTime.value
+      })
     }).catch(err => {
       console.log('Auto-play failed, user needs to interact:', err)
     })
@@ -228,14 +243,33 @@ onUnmounted(() => {
   // 页面关闭时上报埋点（使用 keepalive 确保页面关闭后仍能发送）
   if (videoUrl.value && playStartTime.value) {
     const fromHomePage = source.value === 'home' || source.value === 'shared'
+    const endTime = new Date().toISOString()
+    const videoDuration = videoDurationSeconds.value || videoPlayer.value?.duration || 0
+    const startTimestamp = new Date(playStartTime.value).getTime()
+    const endTimestamp = Date.now()
+    const watchedSeconds = (endTimestamp - startTimestamp) / 1000
+    const watchedPercent = videoDuration > 0 ? Math.round((watchedSeconds / videoDuration) * 100) : 0
+
     recordVideoPlay(
       videoUrl.value,
       playStartTime.value,
-      new Date().toISOString(), // 结束时间
+      endTime,
       fromHomePage,
-      true // 使用 beacon 方式
+      true
     )
-    console.log('页面关闭，上报埋点结束时间:', new Date().toISOString())
+
+    // 埋点：brushing_completed
+    posthog.capture('brushing_completed', {
+      ...getDeviceProperties(),
+      storybook_id: taskId.value,
+      source: source.value,
+      start_time: playStartTime.value,
+      end_time: endTime,
+      video_duration_seconds: videoDuration,
+      watched_seconds: Math.round(watchedSeconds),
+      watched_percent: Math.min(watchedPercent, 100)
+    })
+    console.log('页面关闭，上报埋点结束时间:', endTime)
   }
 })
 </script>

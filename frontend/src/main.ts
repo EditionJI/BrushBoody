@@ -1,7 +1,7 @@
 import { createApp } from 'vue'
 import { createPinia } from 'pinia'
 import piniaPluginPersistedstate from 'pinia-plugin-persistedstate'
-// import posthog from 'posthog-js' // Disabled - PostHog analytics
+import posthog from 'posthog-js'
 import 'amfe-flexible'
 import './style.css'
 import App from './App.vue'
@@ -9,19 +9,19 @@ import router from './router'
 
 const app = createApp(App)
 
-// PostHog analytics disabled
-// posthog.init(import.meta.env.VITE_POSTHOG_API_KEY, {
-//   api_host: import.meta.env.VITE_POSTHOG_HOST,
-//   person_profiles: 'identified_only',
-//   capture_pageview: false, // We will handle this manually via router
-// })
+// Initialize PostHog analytics
+posthog.init(import.meta.env.VITE_POSTHOG_API_KEY, {
+  api_host: import.meta.env.VITE_POSTHOG_HOST,
+  person_profiles: 'identified_only',
+  capture_pageview: false, // We will handle this manually via router
+})
 
 // Track page views via Router
-// router.afterEach((to) => {
-//   posthog.capture('$pageview', {
-//     $current_url: window.location.origin + to.fullPath
-//   })
-// })
+router.afterEach((to) => {
+  posthog.capture('$pageview', {
+    $current_url: window.location.origin + to.fullPath
+  })
+})
 
 // Create pinia instance with persist plugin
 const pinia = createPinia()
